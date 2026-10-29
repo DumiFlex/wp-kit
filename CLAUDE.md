@@ -15,10 +15,10 @@ The Vue 3 component kit shared by the Wildcard Pipeline extension (DumiFlex/Comf
 - Corners `min(Npx, var(--wp-radius-cap, 999px))`, pills `var(--wp-radius-cap, 999px)`, circles inside controls `min(50%, var(--wp-radius-cap, 999px))`.
 - Props: `size` / `variant` / `tone` / `v-model:open`; heights from `--wp-control-h-*`. Keyboard + Escape + focus return for anything interactive.
 - No `as any`, `@ts-ignore`, `@ts-expect-error`. No `v-html`.
-- A new piece also needs its kit-page entry and demo in the extension (`src/manager/kit/registry.ts` + `demos/<id>.vue`) when that app pulls the version that adds it.
+- A new piece needs its site entry and demo in the same PR: `site/src/registry.ts` + `site/src/demos/<id>.vue` (`site/src/coverage.test.ts` fails otherwise). The site (`site/`, Vite, imports the kit through `@kit/`) is the kit's docs, deployed to GitHub Pages by `site.yml` on each release; `pnpm site:dev` to look at it.
 
 ## Workflow
 
 - Branches `feat/x`, `fix/x`, `docs/x`, `refactor/x`, `chore/x`, `test/x` off `dev`; PRs into `dev`, squash-merged. The PR title is the commit release-please reads, so it must be a Conventional Commit.
 - `dev` → `main` by a plain merge ships a release (release-please PR merges itself; tag `vX.Y.Z`; main syncs back into dev).
-- Before pushing: `pnpm lint && pnpm typecheck && pnpm test`.
+- Before pushing: `pnpm lint && pnpm typecheck && pnpm test && pnpm site:build`.

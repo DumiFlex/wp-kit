@@ -6,6 +6,8 @@ Buttons, inputs, selects, checkboxes and toggles, cards, chips, tables, modals, 
 
 Every piece uses CSS custom properties, so it takes on the colours, corners and type of whichever app it sits in.
 
+**See every piece live:** [dumiflex.github.io/wp-kit](https://dumiflex.github.io/wp-kit/), with a switcher for the palette, the look and light or dark.
+
 ## How the apps use it
 
 The kit is not published to npm. Each app copies it in at a release tag:
@@ -33,7 +35,7 @@ Pieces are imported one file at a time (`@/kit/WpButton.vue`), so an app's bundl
 - Overlays place themselves through `floating.ts` and handle Escape, Tab and focus return through `useDialogFocus`.
 - No app code: no stores, routers, ComfyUI globals or `@/` imports. A piece only imports `vue` and other kit files.
 
-The longer component standard lives in the extension repo: `docs/component-standard.md`.
+Every piece has an entry and a demo on the site (`site/src/registry.ts` + `site/src/demos/<id>.vue`); `site/src/coverage.test.ts` fails when one is missing. The longer component standard lives in the extension repo: `docs/component-standard.md`.
 
 ## Develop
 
@@ -42,9 +44,11 @@ pnpm install
 pnpm lint
 pnpm typecheck
 pnpm test
+pnpm site:dev     # the showcase site on localhost
+pnpm site:build   # site/dist, what Pages serves
 ```
 
-Node 22+ and pnpm 9.
+Node 22+ and pnpm 9. The site lives in `site/` (outside `src/`, so the apps never copy it). It is deployed to GitHub Pages by `.github/workflows/site.yml` on every release and on "Run workflow"; CI builds it on every PR.
 
 ## Versions and releases
 
