@@ -15,6 +15,7 @@ The Vue 3 component kit shared by the Wildcard Pipeline extension (DumiFlex/Comf
 - Corners `min(Npx, var(--wp-radius-cap, 999px))`, pills `var(--wp-radius-cap, 999px)`, circles inside controls `min(50%, var(--wp-radius-cap, 999px))`.
 - Props: `size` / `variant` / `tone` / `v-model:open`; heights from `--wp-control-h-*`. Keyboard + Escape + focus return for anything interactive.
 - No `as any`, `@ts-ignore`, `@ts-expect-error`. No `v-html`.
+- Type-checked with `exactOptionalPropertyTypes` (the community site uses it): an optional prop or option is `name?: T | undefined`, so a parent can pass `undefined` through. In a template read a defaulted prop as `props.x` when you do maths or call a method on it.
 - A new piece needs its site entry and demo in the same PR: `site/src/registry.ts` + `site/src/demos/<id>.vue` (`site/src/coverage.test.ts` fails otherwise). The site (`site/`, Vite, imports the kit through `@kit/`) is the kit's docs, deployed to GitHub Pages by `site.yml` on each release; `pnpm site:dev` to look at it.
 
 ## Workflow
