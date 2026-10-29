@@ -1,0 +1,44 @@
+/* The site's own frame: the sticky bar, the page width and the footer.
+   Everything inside the page is kit pieces and the kit theme. */
+:root { --wp-site-bar-h: 56px; }
+html { scroll-padding-top: calc(var(--wp-site-bar-h) + 16px); }
+body { margin: 0; background: var(--wp-bg); color: var(--wp-text); font-family: var(--wp-font); }
+
+.wp-site { min-height: 100vh; display: flex; flex-direction: column; }
+.wp-site__bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--wp-space-5);
+  min-height: var(--wp-site-bar-h);
+  padding: var(--wp-space-3) var(--wp-space-6);
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  background: var(--wp-bg-1);
+  border-bottom: 1px solid var(--wp-border);
+}
+.wp-site__brand { display: inline-flex; align-items: center; gap: var(--wp-space-3); color: var(--wp-text); text-decoration: none; }
+.wp-site__name { font-weight: 600; font-size: var(--wp-text-md); }
+.wp-site__version { font: var(--wp-text-xs) / 16px var(--wp-font-mono); color: var(--wp-text-dim); }
+.wp-site__controls { display: flex; align-items: center; gap: var(--wp-space-4); flex-wrap: wrap; }
+.wp-site__control { display: inline-flex; align-items: center; gap: var(--wp-space-3); font-size: var(--wp-text-sm); color: var(--wp-text-muted); }
+.wp-site__control > :last-child { min-width: 120px; }
+.wp-site .wp-page { width: 100%; max-width: 1280px; margin: 0 auto; box-sizing: border-box; flex: 1; }
+.wp-site__foot {
+  padding: var(--wp-space-6);
+  border-top: 1px solid var(--wp-border);
+  color: var(--wp-text-dim);
+  font-size: var(--wp-text-sm);
+  text-align: center;
+}
+.wp-site__foot a { color: var(--wp-accent-text); }
+
+@media (max-width: 640px) {
+  /* The bar wraps on a phone, so it scrolls away instead of covering the page. */
+  :root { --wp-site-bar-h: 0px; }
+  .wp-site__bar { position: static; padding: var(--wp-space-3) var(--wp-space-5); }
+  .wp-site .wp-page { padding-left: 16px; padding-right: 16px; }
+}

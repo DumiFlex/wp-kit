@@ -31,7 +31,7 @@ const GENERAL_STRICT_RULES = {
 };
 
 export default [
-  { ignores: ["node_modules/**", "dist/**", "coverage/**"] },
+  { ignores: ["node_modules/**", "dist/**", "site/dist/**", "coverage/**"] },
   {
     files: ["**/*.ts"],
     languageOptions: { parser: tsParser, parserOptions: { ecmaVersion: "latest", sourceType: "module" } },
