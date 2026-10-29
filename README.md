@@ -2,7 +2,9 @@
 
 The Vue 3 component kit shared by the [Wildcard Pipeline](https://github.com/DumiFlex/ComfyUI-Wildcard-Pipeline) extension (its manager and canvas widgets) and the [Wildcard Pipeline Community](https://github.com/DumiFlex/Wildcard-Pipeline-Community) site.
 
-Buttons, inputs, overlays (Popover, DropdownMenu, ContextMenu, tooltip, ModalShell), tabs, sliders, tag and date pickers, lists, image grid and lightbox, toasts, diff and code views, and the logo. Every piece uses scoped CSS and plain CSS custom properties, so it takes on the colours, corners and type of whichever app it sits in.
+Buttons, inputs, selects, checkboxes and toggles, cards, chips, tables, modals, drawers and confirm dialogs, overlays (Popover, DropdownMenu, ContextMenu, tooltip), tabs, sliders, tag, date, colour and icon pickers, lists, image grid and lightbox, toasts, diff and code views, and the logo. And the theme they wear: the design tokens, six colour palettes and seven looks in `src/theme/`.
+
+Every piece uses CSS custom properties, so it takes on the colours, corners and type of whichever app it sits in.
 
 ## How the apps use it
 
@@ -18,20 +20,20 @@ Pieces are imported one file at a time (`@/kit/WpButton.vue`), so an app's bundl
 
 ## What a host must provide
 
-- **Vue 3.5** (a peer dependency). The kit imports nothing else at runtime.
-- **The CSS tokens** in [`src/tokens.ts`](src/tokens.ts) (`SHARED_TOKENS`), defined on the page or on an ancestor of the pieces. See [docs/tokens.md](docs/tokens.md).
+- **Vue 3.5** and **PrimeIcons 7** (peer dependencies; icons are `pi pi-*` classes). The kit imports nothing else at runtime.
+- **A theme.** A page app loads the kit's own: `theme/tokens.css`, then `theme/palettes.css` and `theme/looks.css`, and `button.css`. It sets `data-wp-palette`, `data-wp-look` and `wp-theme-light` on `<html>` to switch them (see [docs/tokens.md](docs/tokens.md)). A host with its own colour sheet (the ComfyUI canvas) defines the names in `SHARED_TOKENS` ([`src/tokens.ts`](src/tokens.ts)) instead, and uses only the pieces that read nothing else.
 - **`button.css`** loaded once globally if the app uses the `.wp-btn` classes on plain elements. `WpButton` pulls it in on its own.
 
 ## Rules for a piece
 
-- Reads only the listed token names (`src/tokens.test.ts` fails otherwise).
+- Reads only the shared token names, or, for a piece listed in `PAGE_PIECES`, names `src/theme/` defines (`src/tokens.test.ts` fails otherwise).
 - Every class starts with `wp-`.
 - Fixed corners are `min(Npx, var(--wp-radius-cap, 999px))`, pills `var(--wp-radius-cap, 999px)`, so a host's look can square them off.
 - Props use the shared names `size` / `variant` / `tone` / `v-model:open`; heights come from `--wp-control-h-sm|md|lg` (24 / 32 / 40 px).
 - Overlays place themselves through `floating.ts` and handle Escape, Tab and focus return through `useDialogFocus`.
 - No app code: no stores, routers, ComfyUI globals or `@/` imports. A piece only imports `vue` and other kit files.
 
-The longer component standard lives in the extension repo: `docs/component-standard.md`. The live kit page is in the extension's manager at `/wp/kit`.
+The longer component standard lives in the extension repo: `docs/component-standard.md`.
 
 ## Develop
 
