@@ -1,6 +1,6 @@
 {
   "name": "@dumiflex/wp-kit",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "description": "Vue 3 component kit shared by the Wildcard Pipeline manager, canvas and community site.",
   "license": "GPL-3.0-or-later",
