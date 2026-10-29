@@ -420,6 +420,42 @@ export const KIT_ENTRIES: KitEntry[] = [
     id: "logo", name: "Logo", group: "brand", file: "src/Logo.vue", surfaces: ["manager", "canvas"],
     use: "The Wildcard Pipeline mark. Draw it at 16, 20, 28 or 40 px.",
   },
+  // Community pieces: what the community site shows for a post. Kept here so
+  // the extension's Community tab and any later screen draw them the same way.
+  {
+    id: "kind-chip", name: "KindChip", group: "display", file: "src/KindChip.vue", surfaces: ["manager"],
+    use: "The module type of a post or library item: wildcard, fixed_values, combine, constraint, derivation or bundle, in the kind colour the extension uses for that type (bundles are slate).",
+    instead: "A span with its own per-type colours.",
+  },
+  {
+    id: "rating-badge", name: "RatingBadge", group: "display", file: "src/RatingBadge.vue", surfaces: ["manager"],
+    use: "The NSFW and Featured badges on a post. Renders nothing for a safe, unfeatured post.",
+  },
+  {
+    id: "bundle-meta", name: "BundleMeta", group: "display", file: "src/BundleMeta.vue", surfaces: ["manager"],
+    use: "One line under a bundle's name: how many modules it holds and their names.",
+  },
+  {
+    id: "tokenized-value", name: "TokenizedValue", group: "display", file: "src/TokenizedValue.vue", surfaces: ["manager"],
+    use: "A wildcard-grammar string, read-only, with $var chips (green, red for .neg), @{ref} chips (magenta, red when unresolved, with the filter on hover) and the {a|b} / {N$$…} scaffolding dimmed. Pass uuidToName to show ref names. Built on rich-tokenize.ts, the extension's lexer.",
+    instead: "Printing the raw string, or v-html from a hand-made highlighter.",
+  },
+  {
+    id: "constraint-matrix-preview", name: "ConstraintMatrixPreview", group: "pieces", file: "src/ConstraintMatrixPreview.vue", surfaces: ["manager"],
+    use: "A constraint's source × target matrix, read-only: boost, reduce, exclude and only cells, axis bands from the tag groups, the reach selector and the exception rows. The editor's matrix is the extension's ConstraintMatrix; this is its viewer.",
+  },
+  {
+    id: "post-card", name: "PostCard", group: "pieces", file: "src/PostCard.vue", surfaces: ["manager"],
+    use: "A community post in a grid: type stripe and chip, badges, version, slug, bundle contents, description, tags, stars, downloads and when it changed. The whole card is a link; pass the app's router link as `as`.",
+  },
+  {
+    id: "star-button", name: "StarButton", group: "pieces", file: "src/StarButton.vue", surfaces: ["manager"],
+    use: "Star a post: a toggle button with the count. The app sends the request and passes the new state back.",
+  },
+  {
+    id: "bookmark-button", name: "BookmarkButton", group: "pieces", file: "src/BookmarkButton.vue", surfaces: ["manager"],
+    use: "Bookmark a post: a toggle button. The app sends the request and passes the new state back.",
+  },
 ];
 
 
@@ -433,6 +469,14 @@ export const KIT_EXEMPT: Record<string, string> = {
 };
 
 export const KIT_EXAMPLES: Record<string, string> = {
+  "kind-chip": `<KindChip kind="module" subtype="wildcard" />`,
+  "rating-badge": `<RatingBadge rating="nsfw" featured />`,
+  "bundle-meta": `<BundleMeta :count="3" :names="['palette', 'mood', 'style']" />`,
+  "tokenized-value": `<TokenizedValue value="a {calm|fierce} $mood @{1a2b3c4d}" :uuid-to-name="names" />`,
+  "constraint-matrix-preview": `<ConstraintMatrixPreview :rows :cols :matrix :source-groups :target-groups :exceptions source-name="species" target-name="temperament" target-select="next 2" :ref-map="names" />`,
+  "post-card": `<PostCard :as="RouterLink" :to="\`/p/\${post.slug}\`" :post="card" />`,
+  "star-button": `<StarButton :starred="starred" :count="12" @toggle="star" />`,
+  "bookmark-button": `<BookmarkButton :bookmarked="saved" @toggle="bookmark" />`,
   "button": `<Button variant="primary" icon="pi-plus" @click="add">New module</Button>`,
   "btn-css": `<button class="wp-btn wp-btn--primary wp-btn--sm">Run</button>`,
   "input": `<Input v-model="name" prefix="$" aria-label="Variable name" />`,
