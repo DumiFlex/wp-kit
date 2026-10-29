@@ -10,6 +10,7 @@ export const PALETTES = [
   { value: "nebula", label: "Nebula" },
   { value: "tide", label: "Tide" },
   { value: "ember", label: "Ember" },
+  { value: "community", label: "Community" },
   { value: "contrast", label: "Contrast" },
 ] as const;
 
