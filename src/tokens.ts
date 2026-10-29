@@ -49,6 +49,7 @@ export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-t", "--wp-select-line-h"] 
 
 /** Pieces that need a page with src/theme/ loaded (not the canvas). */
 export const PAGE_PIECES = [
+  "axis-color.ts", "matrix-axis.ts", "BundleMeta.vue", "ConstraintMatrixPreview.vue", "KindChip.vue", "PostCard.vue", "RatingBadge.vue", "TokenizedValue.vue",
   "Button.vue", "Card.vue", "Checkbox.vue", "Chip.vue", "ChoiceCards.vue", "ColorPicker.vue", "ConfirmModal.vue",
   "DataTable.vue", "Drawer.vue", "EmptyState.vue", "Field.vue", "Icon.vue", "IconPicker.vue", "Input.vue",
   "ListFilter.vue", "Modal.vue", "RelativeDate.vue", "Select.vue", "Textarea.vue", "ToastHost.vue", "Toggle.vue",
