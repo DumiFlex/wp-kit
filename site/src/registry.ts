@@ -410,6 +410,11 @@ export const KIT_ENTRIES: KitEntry[] = [
     id: "icon-picker", name: "IconPicker", group: "pieces", file: "src/IconPicker.vue", surfaces: ["manager"],
     use: "Pick an icon for a category or bundle from the curated set. The closed picker names the icon (or says Choose icon); compact drops the name for a table cell. The panel is a kit Popover.",
   },
+  {
+    id: "support-links", name: "SupportLinks", group: "pieces", file: "src/SupportLinks.vue", surfaces: ["manager"],
+    use: "The ways-to-donate cards on an About page: icon, label, a line of detail, and a mark saying it opens outside. The app passes its own list of links.",
+    instead: "A hand-made list of donate links styled per app.",
+  },
   // Brand
   {
     id: "logo", name: "Logo", group: "brand", file: "src/Logo.vue", surfaces: ["manager", "canvas"],
@@ -460,6 +465,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "chip": `<Chip tone="warn" icon="pi-exclamation-triangle">2 conflicts</Chip>  <Chip :color="cat.color" :icon="cat.icon">{{ cat.name }}</Chip>`,
   "kbd": `<Kbd keys="Mod+K" />`,
   "icon": `<Icon name="pi-bolt" :size="ICON_MD" />`,
+  "support-links": `<SupportLinks :links="SUPPORT_LINKS" />`,
   "empty-state": `<EmptyState icon="pi-inbox" headline="No bundles yet" body="…"><template #cta>…</template></EmptyState>`,
   "toast": `useToast().push({ severity: "success", summary: "Saved", action: { label: "Undo", run: undo } })`,
   "toast-card": `<ToastCard tone="success" summary="Saved Hair colour" action-label="Undo" @action="undo" @dismiss="close" />`,

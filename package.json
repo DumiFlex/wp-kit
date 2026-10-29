@@ -24,7 +24,7 @@
   },
   "peerDependencies": {
     "vue": "^3.5.0",
-    "primeicons": "^7.0.0"
+    "primeicons": "^7.0.0 || ^8.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
