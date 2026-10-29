@@ -64,6 +64,14 @@ describe("PostCard", () => {
     expect(w.find("a").attributes("data-to")).toBe("/p/x");
   });
 
+  it("works as a button with a click handler", async () => {
+    let clicks = 0;
+    const w = mount(PostCard, { props: { post, as: "button" }, attrs: { type: "button", onClick: () => clicks++ } });
+    expect(w.element.tagName).toBe("BUTTON");
+    await w.trigger("click");
+    expect(clicks).toBe(1);
+  });
+
   it("shows four tags and a +N chip, the slug parts and the counts", () => {
     const w = mount(PostCard, { props: { post } });
     const tags = w.findAll(".wp-post-card__tags .wp-chip");
