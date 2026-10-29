@@ -9,13 +9,13 @@ export interface SupportLink {
   /** Stable id: the card's `data-kind`. */
   id: string;
   label: string;
-  detail?: string;
+  detail?: string | undefined;
   /** PrimeIcons class, `pi-heart`. */
   icon: string;
   href: string;
 }
 
-withDefaults(defineProps<{ links: readonly SupportLink[]; label?: string }>(), {
+withDefaults(defineProps<{ links: readonly SupportLink[]; label?: string | undefined }>(), {
   label: "Ways to support the project",
 });
 </script>
