@@ -1,0 +1,48 @@
+{
+  "name": "@dumiflex/wp-kit",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Vue 3 component kit shared by the Wildcard Pipeline manager, canvas and community site.",
+  "license": "GPL-3.0-or-later",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DumiFlex/wp-kit.git"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "site:dev": "vite --config site/vite.config.ts",
+    "site:build": "vite build --config site/vite.config.ts",
+    "site:preview": "vite preview --config site/vite.config.ts"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0",
+    "primeicons": "^7.0.0 || ^8.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@typescript-eslint/eslint-plugin": "8.59.0",
+    "@typescript-eslint/parser": "8.59.0",
+    "@vitejs/plugin-vue": "5.2.4",
+    "@vue/test-utils": "2.4.8",
+    "@vue/tsconfig": "0.5.1",
+    "eslint": "9.39.4",
+    "eslint-plugin-vue": "9.33.0",
+    "eslint-plugin-vuejs-accessibility": "^2.5.0",
+    "jsdom": "29.0.2",
+    "primeicons": "7.0.0",
+    "typescript": "5.9.3",
+    "vite": "5.4.21",
+    "vitest": "2.1.9",
+    "vue": "3.5.44",
+    "vue-eslint-parser": "10.4.0",
+    "vue-tsc": "2.2.12"
+  }
+}
