@@ -1,6 +1,20 @@
-# Tokens a host defines
+# Tokens and the theme
 
-Kit pieces style themselves only through CSS custom properties. A host page defines every name in `SHARED_TOKENS` (`src/tokens.ts`); the kit never sets them, so the same piece looks right on the ComfyUI canvas, in the manager and on the community site.
+Kit pieces style themselves only through CSS custom properties.
+
+## A page app: load the kit's theme
+
+`src/theme/tokens.css` defines every token (dark on `:root`, light on `.wp-theme-light`) and the base classes the page pieces use. On top of it:
+
+- `src/theme/palettes.css`: colour palettes on `<html data-wp-palette="native|nebula|tide|ember|contrast">` (Orbit is tokens.css itself).
+- `src/theme/looks.css`: looks on `<html data-wp-look="crisp|soft|terminal|editorial|compact|tui">` (Orbit is the default). A look sets corners, type, borders and selection; it never sets a colour.
+- Light or dark: the `wp-theme-light` class on `<html>`. Many rules also key on `html.wp-manager`, so a page app sets that class too.
+
+Load order: `tokens.css`, `palettes.css`, `looks.css`, then `button.css`.
+
+## A host with its own colours (the canvas)
+
+The ComfyUI canvas keeps its own colour sheet. It defines every name in `SHARED_TOKENS` (`src/tokens.ts`), and the canvas only uses pieces that read nothing else (everything not in `PAGE_PIECES`). These are the shared names:
 
 | Group | Names |
 |---|---|
@@ -16,4 +30,4 @@ Kit pieces style themselves only through CSS custom properties. A host page defi
 
 Two more names are optional (`OPTIONAL_TOKENS`): `--wp-bg-deep` (read with a fallback) and `--wp-bg2` (an older alias of `--wp-bg-2` that `_skeleton.css` still reads).
 
-To add a name: define it in every host first (the extension's `components/shared/theme.css` and `manager/styles/tokens.css`, the community's tokens), then add it to `SHARED_TOKENS` here.
+To add a shared name: define it in `src/theme/tokens.css` and in the canvas sheet (the extension's `components/shared/theme.css`) first, then add it to `SHARED_TOKENS` here.

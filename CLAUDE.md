@@ -8,9 +8,10 @@ The Vue 3 component kit shared by the Wildcard Pipeline extension (DumiFlex/Comf
 
 ## Rules
 
-- `src/` is flat: one file per piece plus its helpers (`floating.ts`, `slider-math.ts` …). Tests sit next to the file or in `src/__tests__/`. Nothing outside `src/` is copied into the apps.
+- `src/` is flat: one file per piece plus its helpers (`floating.ts`, `slider-math.ts` …). Tests sit next to the file or in `src/__tests__/`. The one folder is `src/theme/`: `tokens.css` (every token, dark + light, plus the base classes such as `.wp-card`, `.wp-input`, `.wp-table`, `.wp-modal` the page pieces use), `palettes.css` (`data-wp-palette`), `looks.css` (`data-wp-look`) and their fonts. Nothing outside `src/` is copied into the apps.
+- Everything shared lives here: a piece that takes props and emits events goes in the kit even when one app uses it today. A piece that calls an app's API, store or router stays in that app, built from kit pieces.
 - A piece imports only `vue` and other kit files, by relative path. No `@/` alias, stores, routers, ComfyUI globals or app CSS.
-- CSS: scoped, every class `wp-*`, colours and sizes only from the names in `src/tokens.ts` (`tokens.test.ts`). No new raw hex colours; the few fixed ones (logo, colour picker, text on the accent) stay where they are.
+- CSS: scoped, every class `wp-*`. A piece that runs on the ComfyUI canvas reads only `SHARED_TOKENS` (`src/tokens.ts`); a page-only piece is listed in `PAGE_PIECES` and may read anything `src/theme/` defines (`tokens.test.ts`). No new raw hex colours; the few fixed ones (logo, colour picker, text on the accent) stay where they are.
 - Corners `min(Npx, var(--wp-radius-cap, 999px))`, pills `var(--wp-radius-cap, 999px)`, circles inside controls `min(50%, var(--wp-radius-cap, 999px))`.
 - Props: `size` / `variant` / `tone` / `v-model:open`; heights from `--wp-control-h-*`. Keyboard + Escape + focus return for anything interactive.
 - No `as any`, `@ts-ignore`, `@ts-expect-error`. No `v-html`.
