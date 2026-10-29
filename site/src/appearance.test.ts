@@ -1,4 +1,5 @@
-import { applyAppearance, loadAppearance, saveAppearance } from "./appearance";
+import { readFileSync } from "node:fs";
+import { applyAppearance, loadAppearance, PALETTES, saveAppearance } from "./appearance";
 
 describe("site appearance", () => {
   beforeEach(() => localStorage.clear());
@@ -26,5 +27,13 @@ describe("site appearance", () => {
     expect(root.hasAttribute("data-wp-look")).toBe(false);
     expect(root.classList.contains("wp-theme-light")).toBe(true);
     expect(root.classList.contains("wp-manager")).toBe(true);
+  });
+
+  it("has a palettes.css block for every palette but Orbit", () => {
+    const css = readFileSync("src/theme/palettes.css", "utf8");
+    for (const { value } of PALETTES) {
+      if (value === "orbit") continue;
+      expect(css, value).toContain(`[data-wp-palette="${value}"]`);
+    }
   });
 });

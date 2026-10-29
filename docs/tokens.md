@@ -6,7 +6,7 @@ Kit pieces style themselves only through CSS custom properties.
 
 `src/theme/tokens.css` defines every token (dark on `:root`, light on `.wp-theme-light`) and the base classes the page pieces use. On top of it:
 
-- `src/theme/palettes.css`: colour palettes on `<html data-wp-palette="native|nebula|tide|ember|contrast">` (Orbit is tokens.css itself).
+- `src/theme/palettes.css`: colour palettes on `<html data-wp-palette="native|nebula|tide|ember|community|contrast">` (Orbit is tokens.css itself; Community is the community site's default, rust on Orbit's night with a warm cream light).
 - `src/theme/looks.css`: looks on `<html data-wp-look="crisp|soft|terminal|editorial|compact|tui">` (Orbit is the default). A look sets corners, type, borders and selection; it never sets a colour.
 - Light or dark: the `wp-theme-light` class on `<html>`. Many rules also key on `html.wp-manager`, so a page app sets that class too.
 
