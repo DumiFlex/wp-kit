@@ -22,7 +22,7 @@ export interface PostCardData {
   /** `owner/name`. */
   slug: string;
   kind: "module" | "bundle";
-  subtype?: KindChipSubtype | null | undefined;
+  subtype?: KindChipSubtype | "bundle" | null | undefined;
   description?: string | undefined;
   tags?: string[] | undefined;
   stars: number;

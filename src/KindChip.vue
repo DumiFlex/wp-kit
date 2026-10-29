@@ -15,7 +15,8 @@ export type KindChipSubtype = "fixed_values" | "combine" | "wildcard" | "constra
 
 const props = defineProps<{
   kind: "module" | "bundle";
-  subtype?: KindChipSubtype | null | undefined;
+  /** A `"bundle"` subtype reads as a bundle too (some APIs report it so). */
+  subtype?: KindChipSubtype | "bundle" | null | undefined;
 }>();
 
 const type = computed(() => (props.kind === "bundle" ? "bundle" : (props.subtype ?? "fixed_values")));
