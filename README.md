@@ -1,5 +1,12 @@
 # wp-kit
 
+[![npm](https://img.shields.io/npm/v/@dumiflex/wp-kit?logo=npm&label=npm)](https://www.npmjs.com/package/@dumiflex/wp-kit)
+[![CI](https://github.com/DumiFlex/wp-kit/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/DumiFlex/wp-kit/actions/workflows/ci.yml)
+[![Site](https://github.com/DumiFlex/wp-kit/actions/workflows/site.yml/badge.svg)](https://dumiflex.github.io/wp-kit/)
+[![Vue 3](https://img.shields.io/badge/Vue-3-42b883?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: GPL-3.0-or-later](https://img.shields.io/npm/l/@dumiflex/wp-kit)](LICENSE)
+
 The Vue 3 component kit shared by the [Wildcard Pipeline](https://github.com/DumiFlex/ComfyUI-Wildcard-Pipeline) extension (its manager and canvas widgets) and the [Wildcard Pipeline Community](https://github.com/DumiFlex/Wildcard-Pipeline-Community) site.
 
 Buttons, inputs, selects, checkboxes and toggles, cards, chips, tables, modals, drawers and confirm dialogs, overlays (Popover, DropdownMenu, ContextMenu, tooltip), tabs, sliders, tag, date, colour and icon pickers, lists, image grid and lightbox, toasts, diff and code views, and the logo. And the theme they wear: the design tokens, six colour palettes and seven looks in `src/theme/`.
