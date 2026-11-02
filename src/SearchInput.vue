@@ -81,8 +81,8 @@ defineExpose({
 
 <template>
   <label
-    class="wp-search"
-    :class="[`wp-search--${size}`, { 'wp-search--on': hasQuery, 'is-disabled': disabled }]"
+    class="wp-search wp-field-box"
+    :class="[`wp-search--${size}`, `wp-field-box--${size}`, { 'wp-search--on': hasQuery, 'is-disabled': disabled }]"
     v-bind="rootAttrs"
   >
     <i class="pi pi-search wp-search__icon" aria-hidden="true" />
@@ -125,29 +125,22 @@ defineExpose({
   </label>
 </template>
 
+<style scoped src="./field.css"></style>
+
 <style scoped>
 .wp-search {
   display: flex;
   align-items: center;
   gap: var(--wp-space-2);
   min-width: 0;
-  height: var(--wp-control-h-md);
+  height: var(--wp-field-h);
   padding: 0 var(--wp-space-2) 0 var(--wp-space-3);
-  background: var(--wp-bg-2);
-  border: 1px solid var(--wp-border);
-  border-radius: var(--wp-radius-sm);
-  color: var(--wp-text);
   font-family: var(--wp-font-sans);
-  font-size: var(--wp-text-sm);
   cursor: text;
-  transition: border-color var(--wp-motion-quick), box-shadow var(--wp-motion-quick);
 }
-.wp-search--sm { height: var(--wp-control-h-sm); font-size: var(--wp-text-xs); gap: var(--wp-space-1); padding-left: var(--wp-space-2); }
-.wp-search--lg { height: var(--wp-control-h-lg); font-size: var(--wp-text-base); padding-left: var(--wp-space-4); }
-.wp-search:hover { border-color: var(--wp-border-strong); }
-.wp-search:focus-within { border-color: var(--wp-border-focus); box-shadow: var(--wp-focus-ring); }
+.wp-search--sm { gap: var(--wp-space-1); padding-left: var(--wp-space-2); }
+.wp-search--lg { padding-left: var(--wp-space-4); }
 .wp-search--on { border-color: var(--wp-accent-500); }
-.wp-search.is-disabled { opacity: 0.45; cursor: not-allowed; }
 
 .wp-search__icon { flex-shrink: 0; font-size: 12px; line-height: 1; color: var(--wp-text-dim); }
 .wp-search--sm .wp-search__icon { font-size: 10px; }

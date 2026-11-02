@@ -102,8 +102,8 @@ function bump(dir: 1 | -1): void {
 
 <template>
   <span
-    class="wp-cnum"
-    :class="[`wp-cnum--${size}`, { 'is-disabled': disabled, 'is-invalid': invalid }]"
+    class="wp-cnum wp-field-box"
+    :class="[`wp-cnum--${size}`, `wp-field-box--${size}`, { 'is-disabled': disabled, 'is-invalid': invalid }]"
     v-bind="rootAttrs"
   >
     <input
@@ -139,21 +139,16 @@ function bump(dir: 1 | -1): void {
   </span>
 </template>
 
+<style scoped src="./field.css"></style>
+
 <style scoped>
 .wp-cnum {
   --cnum-spin: 16px;
-  display: inline-flex; align-items: stretch; height: var(--wp-control-h-sm); min-width: 0; overflow: hidden;
-  box-sizing: border-box;
-  background: var(--wp-bg-2); border: 1px solid var(--wp-border); border-radius: var(--wp-radius-sm);
-  font: 11px var(--wp-font-mono);
-  transition: border-color var(--wp-motion-quick), box-shadow var(--wp-motion-quick);
+  display: inline-flex; align-items: stretch; height: var(--wp-field-h); min-width: 0; overflow: hidden;
+  font-family: var(--wp-font-mono);
 }
-.wp-cnum--md { --cnum-spin: 20px; height: var(--wp-control-h-md); font-size: 12.5px; }
-.wp-cnum--lg { --cnum-spin: 22px; height: var(--wp-control-h-lg); font-size: 13.5px; }
-.wp-cnum:hover { border-color: var(--wp-border-strong); }
-.wp-cnum:focus-within { border-color: var(--wp-border-focus); box-shadow: var(--wp-focus-ring); }
-.wp-cnum.is-invalid { border-color: var(--wp-error-border); }
-.wp-cnum.is-disabled { opacity: .45; cursor: not-allowed; }
+.wp-cnum--md { --cnum-spin: 20px; }
+.wp-cnum--lg { --cnum-spin: 22px; }
 .wp-cnum__field {
   flex: 1; min-width: 0; padding: 0 6px 0 8px; background: transparent; border: 0;
   color: var(--wp-text); font: inherit; text-align: right;

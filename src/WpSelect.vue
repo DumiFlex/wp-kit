@@ -10,8 +10,10 @@
  * `options` values may be strings or numbers; the chosen option's own
  * value is emitted (not the DOM's string). `placeholder` adds a disabled
  * first entry shown while nothing is chosen (`modelValue` null or ""), for
- * "pick to add" menus. Size it from the parent with a class on the root
- * (height, width, font-size).
+ * "pick to add" menus. `size` (sm 24px default, md 32px) sets its height
+ * and font on the control scale; the box is the kit's field box
+ * (`field.css`), the same as every other field. A parent can still size it
+ * with a class on the root (height, width, font-size).
  * `dataTest` lands on the <select>.
  */
 import { nextTick } from "vue";
@@ -25,6 +27,7 @@ const props = defineProps<{
   disabled?: boolean | undefined;
   /** Lands on the <select>, for a `<label for>`. */
   id?: string | undefined;
+  size?: "sm" | "md" | undefined;
 }>();
 
 const emit = defineEmits<{ "update:modelValue": [value: T] }>();
@@ -48,10 +51,11 @@ function selected(o: { value: T }): boolean {
 </script>
 
 <template>
-  <span class="wp-cselect" :class="{ 'is-disabled': disabled }">
+  <span class="wp-cselect" :class="[`wp-cselect--${size ?? 'sm'}`, { 'is-disabled': disabled }]">
     <select
       :id="id"
-      class="wp-cselect__field"
+      class="wp-cselect__field wp-field-box"
+      :class="`wp-field-box--${size ?? 'sm'}`"
       :disabled="disabled"
       :aria-label="ariaLabel"
       :data-test="dataTest"
@@ -71,19 +75,19 @@ function selected(o: { value: T }): boolean {
   </span>
 </template>
 
+<style scoped src="./field.css"></style>
+
 <style scoped>
-.wp-cselect { position: relative; display: inline-flex; align-items: stretch; height: 24px; min-width: 0; font-size: 11px; }
+.wp-cselect { position: relative; display: inline-flex; align-items: stretch; height: var(--wp-control-h-sm); min-width: 0; font-size: 12px; }
+.wp-cselect--md { height: var(--wp-control-h-md); font-size: 12.5px; }
+/* After field.css: the root's height and font (or a parent's class on the
+   root) size the box. */
 .wp-cselect__field {
-  flex: 1; min-width: 0; height: 100%; padding: 0 20px 0 7px; margin: 0;
-  background: var(--wp-bg-deep, var(--wp-bg)); color: var(--wp-text);
-  border: 1px solid var(--wp-border); border-radius: min(3px, var(--wp-radius-cap, 999px));
+  flex: 1; min-width: 0; height: 100%; min-height: 0; padding: 0 20px 0 8px; margin: 0;
   font: inherit; cursor: pointer;
   appearance: none; -webkit-appearance: none; text-overflow: ellipsis;
 }
-.wp-cselect__field:hover:not(:disabled) { border-color: var(--wp-border-strong, var(--wp-text-dim)); }
-.wp-cselect__field:focus { outline: none; border-color: var(--wp-accent); }
 .wp-cselect__field option { background: var(--wp-bg2, var(--wp-bg)); color: var(--wp-text); }
 .wp-cselect__chev { position: absolute; right: 7px; top: 50%; transform: translateY(-50%); color: var(--wp-text-dim, #7a7d88); pointer-events: none; }
-.wp-cselect.is-disabled { opacity: .5; }
-.wp-cselect.is-disabled .wp-cselect__field { cursor: default; }
+.wp-cselect.is-disabled .wp-cselect__field { cursor: not-allowed; }
 </style>
