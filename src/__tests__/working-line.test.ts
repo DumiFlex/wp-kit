@@ -30,7 +30,13 @@ describe("WorkingLine", () => {
     expect(w.get(".wp-wl").attributes("style")).toContain("#da7550");
   });
 
-  it("moves only registered custom properties, never transform or opacity", () => {
+  it("stays the still SVG in a test DOM, where there is no canvas", () => {
+    const w = mount(WorkingLine, { props: { word: "x", variant: "orbit" } });
+    expect(w.find("canvas").exists()).toBe(false);
+    expect(w.findAll("svg circle")).toHaveLength(4);
+  });
+
+  it("keys no CSS animation on transform or opacity", () => {
     /** The body of every @keyframes block, found by matching braces. */
     const frames = (css: string): string[] => {
       const out: string[] = [];
