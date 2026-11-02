@@ -10,6 +10,7 @@
  *
  *   <PostCard :as="RouterLink" :to="`/p/${post.slug}`" :post="card(post)" />
  *   <PostCard href="/p/dumi/warm" :post="…" />
+ *   <PostCard as="button" type="button" :post="…" @click="open" />
  */
 import { computed, type Component } from "vue";
 import BundleMeta from "./BundleMeta.vue";
@@ -113,7 +114,10 @@ const tags = computed(() => props.post.tags ?? []);
   padding: 20px 20px 18px;
   overflow: hidden;
   break-inside: avoid;
+  margin: 0;
+  font: inherit;
   color: inherit;
+  text-align: left;
   text-decoration: none;
   cursor: pointer;
   background: var(--wp-bg-1);
