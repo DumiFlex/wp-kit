@@ -6,6 +6,7 @@ import Icon, { ICON_SM } from "./Icon.vue";
 // (a `.ts` importer only sees the `*.vue` ambient shim). Re-exported here so
 // existing `from "./Select.vue"` imports keep resolving.
 import type { SelectOption } from "./select-types";
+import { useFloatingChild } from "./floating-layer";
 export type { SelectOption };
 
 interface Props {
@@ -40,6 +41,8 @@ const active = ref(0);
 const query = ref("");
 /** The teleported menu, so the outside-click guard can exclude it. */
 const menuRef = ref<HTMLElement | null>(null);
+// Inside a Popover, clicks and Escape on the list are the list's own.
+useFloatingChild(() => menuRef.value);
 
 /** Fixed-position coordinates for the teleported menu. */
 const menuStyle = ref<Record<string, string>>({});
