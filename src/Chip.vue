@@ -94,7 +94,7 @@ function onRemove(e: MouseEvent) {
     <span v-if="dot" class="wp-chip__dot" aria-hidden="true" />
     <!-- 10px sub-ICON_SM: the chip font is 10.5px and a 12px icon read
          oversized next to it. Larger chips get a larger icon. -->
-    <Icon v-if="icon" class="wp-chip__icon" :name="icon" :size="size === 'xs' ? 10 : 11" />
+    <Icon v-if="icon" class="wp-chip__icon" :name="icon" :size="size === 'xs' ? 10 : 12" />
     <slot />
     <span v-if="count !== undefined" class="wp-chip__count">{{ count }}</span>
     <button
@@ -113,7 +113,10 @@ function onRemove(e: MouseEvent) {
 </template>
 
 <style scoped>
-/* xs is the base `.wp-chip` in theme/tokens.css (19px). sm and md sit on the
+/* xs is the base `.wp-chip` in theme/tokens.css, held at 20px here: its
+   content height was 19.2px, which put every icon half a pixel off. */
+.wp-chip--xs { box-sizing: border-box; height: 20px; }
+/* xs is the base `.wp-chip` in theme/tokens.css. sm and md sit on the
    control height scale so a filter row lines up with the fields beside it. */
 .wp-chip--sm, .wp-chip--md {
   height: var(--wp-control-h-sm);

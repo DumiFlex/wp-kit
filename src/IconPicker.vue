@@ -144,7 +144,7 @@ function pick(name: string | null): void {
   line-height: 1;
 }
 .wp-iconpick__none { color: var(--wp-text-dim); line-height: 1; }
-.wp-iconpick__caret { font-size: 9px; color: var(--wp-text-dim); line-height: 1; }
+.wp-iconpick__caret { font-size: 10px; color: var(--wp-text-dim); line-height: 1; }
 </style>
 
 <style>

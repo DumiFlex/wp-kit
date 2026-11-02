@@ -107,7 +107,7 @@ const name = computed(() => props.title ?? props.language ?? "Code");
   margin: 0; padding: 0; border: 0; border-radius: var(--wp-radius-sm);
   background: transparent; color: var(--wp-text-muted); cursor: pointer;
 }
-.wp-code__tool .pi { font-size: 11px; }
+.wp-code__tool .pi { font-size: 12px; }
 .wp-code__tool:hover { background: var(--wp-row-hover); color: var(--wp-text); }
 .wp-code__tool[aria-pressed="true"] { color: var(--wp-accent-text); background: var(--wp-bg-3); }
 .wp-code__tool:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--wp-border-focus); }

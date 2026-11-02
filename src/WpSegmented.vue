@@ -168,7 +168,9 @@ function onKeydown(ev: KeyboardEvent): void {
 .wp-segmented__opt[data-active="true"] .pi { color: var(--wp-accent-text); }
 .wp-segmented__opt:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--wp-border-focus); }
 .wp-segmented__opt:disabled { opacity: 0.45; cursor: not-allowed; }
-.wp-segmented__opt .pi { font-size: 0.95em; }
+/* Even sizes: an icon-only option is a square, and an odd icon sits half a pixel off in it. */
+.wp-segmented__opt .pi { font-size: 12px; }
+.wp-segmented[data-size="lg"] .wp-segmented__opt .pi { font-size: 14px; }
 @media (prefers-reduced-motion: reduce) {
   .wp-segmented__opt { transition: none; }
 }

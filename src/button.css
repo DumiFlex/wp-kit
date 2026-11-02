@@ -21,6 +21,8 @@
  */
 
 .wp-btn {
+  /* A link drawn as a button (<a class="wp-btn">, Button as="a") loses the browser's underline; the link variant adds its own on hover. */
+  text-decoration: none;
   height: var(--wp-control-h-md);
   padding: 0 12px;
   border-radius: min(7px, var(--wp-radius-cap, 999px));
@@ -46,7 +48,8 @@
   outline: none;
   box-shadow: var(--wp-focus-ring);
 }
-.wp-btn .pi, .wp-btn svg { font-size: 13px; }
+/* Even icon sizes in the even control heights: an odd one sits half a pixel off. */
+.wp-btn .pi, .wp-btn svg { font-size: 14px; }
 /* The label box (not on a link, which has no fixed height) is trimmed to
  * the cap height where the browser can, so the
  * flex centring puts the capitals, not the ascender-to-descender box, on the
