@@ -25,3 +25,5 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm site:build
+      # What npm would publish: the files the apps import, nothing repo-only.
+      - run: pnpm check-package
