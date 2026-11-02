@@ -119,43 +119,57 @@ const fill = (colour: string): string => (props.mono ? "currentColor" : colour);
   text-align: center;
 }
 .wp-lm__svg { flex-shrink: 0; overflow: visible; }
+/* Every move animates a registered custom property, never `transform` or
+ * `opacity` itself. A browser hands a `transform` / `opacity` animation to
+ * the compositor, which lifts the path onto its own layer the moment the
+ * animation starts: the layer is rasterised once, at a fixed scale, and
+ * snapped to whole pixels, so the crisp mark turned soft and jumped by up to
+ * half a pixel as it began to move. A custom property animates on the main
+ * thread, so each frame repaints the vector paths in place, as sharp as the
+ * mark at rest. The paths are tiny; the repaint costs nothing. */
 .wp-lm__ring { transform-box: view-box; transform-origin: 512px 512px; }
 .wp-lm__star { transform-box: fill-box; transform-origin: center; }
-.wp-lm__ring--a { animation: wp-lm-split-a var(--wp-lm-t) cubic-bezier(0.65, 0, 0.35, 1) infinite; }
-.wp-lm__ring--b { animation: wp-lm-split-b var(--wp-lm-t) cubic-bezier(0.65, 0, 0.35, 1) infinite; }
-.wp-lm__star--big { animation: wp-lm-dip var(--wp-lm-t) cubic-bezier(0.65, 0, 0.35, 1) infinite; }
-.wp-lm__star--tw { animation: wp-lm-twinkle var(--wp-lm-t) ease-in-out infinite; }
+.wp-lm__ring--a { transform: translate(var(--wp-lm-x), var(--wp-lm-x)); animation: wp-lm-split-a var(--wp-lm-t) cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+.wp-lm__ring--b { transform: translate(var(--wp-lm-x), var(--wp-lm-x)); animation: wp-lm-split-b var(--wp-lm-t) cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+.wp-lm__star--big { transform: rotate(var(--wp-lm-r)) scale(var(--wp-lm-s)); animation: wp-lm-dip var(--wp-lm-t) cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+.wp-lm__star--tw { opacity: var(--wp-lm-o); transform: scale(var(--wp-lm-s)); animation: wp-lm-twinkle var(--wp-lm-t) ease-in-out infinite; }
 .wp-lm__swap {
   transform-box: view-box; transform-origin: 512px 512px;
+  transform: rotate(var(--wp-lm-r));
   animation: wp-lm-swap calc(var(--wp-lm-t) * 2) cubic-bezier(0.65, 0, 0.35, 1) infinite;
 }
 
+@property --wp-lm-x { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --wp-lm-r { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+@property --wp-lm-s { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --wp-lm-o { syntax: "<number>"; inherits: false; initial-value: 1; }
+
 @keyframes wp-lm-split-a {
-  0%, 15%, 85%, 100% { transform: translate(0, 0); }
-  40%, 60% { transform: translate(-70px, -70px); }
+  0%, 15%, 85%, 100% { --wp-lm-x: 0px; }
+  40%, 60% { --wp-lm-x: -70px; }
 }
 @keyframes wp-lm-split-b {
-  0%, 15%, 85%, 100% { transform: translate(0, 0); }
-  40%, 60% { transform: translate(70px, 70px); }
+  0%, 15%, 85%, 100% { --wp-lm-x: 0px; }
+  40%, 60% { --wp-lm-x: 70px; }
 }
 @keyframes wp-lm-dip {
-  0%, 15% { transform: scale(1) rotate(0deg); }
-  32% { transform: scale(0.7) rotate(45deg); }
-  50%, 100% { transform: scale(1) rotate(90deg); }
+  0%, 15% { --wp-lm-s: 1; --wp-lm-r: 0deg; }
+  32% { --wp-lm-s: 0.7; --wp-lm-r: 45deg; }
+  50%, 100% { --wp-lm-s: 1; --wp-lm-r: 90deg; }
 }
 @keyframes wp-lm-swap {
-  0%, 15% { transform: rotate(0deg); }
-  50%, 65% { transform: rotate(180deg); }
-  100% { transform: rotate(360deg); }
+  0%, 15% { --wp-lm-r: 0deg; }
+  50%, 65% { --wp-lm-r: 180deg; }
+  100% { --wp-lm-r: 360deg; }
 }
 @keyframes wp-lm-twinkle {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.35; transform: scale(0.6); }
+  0%, 100% { --wp-lm-o: 1; --wp-lm-s: 1; }
+  50% { --wp-lm-o: 0.35; --wp-lm-s: 0.6; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .wp-lm__svg * { animation: none !important; }
-  .wp-lm__svg { animation: wp-lm-fade 2.4s ease-in-out infinite; }
-  @keyframes wp-lm-fade { 50% { opacity: 0.55; } }
+  .wp-lm__svg { opacity: var(--wp-lm-o); animation: wp-lm-fade 2.4s ease-in-out infinite; }
+  @keyframes wp-lm-fade { 0%, 100% { --wp-lm-o: 1; } 50% { --wp-lm-o: 0.55; } }
 }
 </style>
