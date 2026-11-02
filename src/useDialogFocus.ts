@@ -18,11 +18,18 @@ export interface DialogFocusOptions {
   onEscape: () => void;
   /** Where focus goes on open; defaults to the first control. */
   initial?: (root: HTMLElement, controls: HTMLElement[]) => HTMLElement | null | undefined;
+  /**
+   * Listen for keys on `window` (default). Off for a panel inside ModalShell,
+   * whose key shield stops keys at the overlay: call the returned `onKeydown`
+   * from the shell's `keydown` event instead.
+   */
+  window?: boolean | undefined;
   /** Keep Tab inside the panel (default). Off for a panel beside the page. */
   trap?: () => boolean;
 }
 
-export function useDialogFocus(panel: Ref<HTMLElement | null>, isOpen: () => boolean, opts: DialogFocusOptions): void {
+export function useDialogFocus(panel: Ref<HTMLElement | null>, isOpen: () => boolean, opts: DialogFocusOptions): { onKeydown: (e: KeyboardEvent) => void } {
+  const onWindow = opts.window !== false;
   let returnTo: HTMLElement | null = null;
 
   function onKeydown(e: KeyboardEvent): void {
@@ -57,7 +64,7 @@ export function useDialogFocus(panel: Ref<HTMLElement | null>, isOpen: () => boo
   watch(isOpen, (v, was) => {
     if (typeof window === "undefined") return;
     if (v) {
-      window.addEventListener("keydown", onKeydown);
+      if (onWindow) window.addEventListener("keydown", onKeydown);
       void opened();
     } else {
       window.removeEventListener("keydown", onKeydown);
@@ -70,4 +77,6 @@ export function useDialogFocus(panel: Ref<HTMLElement | null>, isOpen: () => boo
     window.removeEventListener("keydown", onKeydown);
     if (isOpen()) closed();
   });
+
+  return { onKeydown };
 }

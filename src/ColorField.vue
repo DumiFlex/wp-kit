@@ -19,7 +19,7 @@ import { computed, ref, watch } from "vue";
 import HsvPicker from "./HsvPicker.vue";
 import Popover from "./Popover.vue";
 import WpNumber from "./WpNumber.vue";
-import WpButton from "./WpButton.vue";
+import Button from "./Button.vue";
 import { rgbToHex } from "./hsv";
 import { COLOUR_PRESETS } from "./colour-presets";
 
@@ -163,7 +163,7 @@ function pickNone(): void {
           @click="pickPreset(preset)"
         />
       </div>
-      <WpButton
+      <Button
         v-if="allowNone"
         size="sm"
         variant="ghost"
@@ -171,7 +171,7 @@ function pickNone(): void {
         :pressed="isNone"
         :data-test="dataTest ? `${dataTest}-none` : undefined"
         @click="pickNone"
-      >None</WpButton>
+      >None</Button>
     </div>
   </Popover>
 </template>

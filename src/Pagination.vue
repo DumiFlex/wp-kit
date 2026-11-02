@@ -13,7 +13,7 @@
  */
 import { computed } from "vue";
 import { pageItems } from "./pagination";
-import WpButton from "./WpButton.vue";
+import Button from "./Button.vue";
 
 const props = withDefaults(defineProps<{
   /** pages: numbered pages. more: a Load more button. */
@@ -54,7 +54,7 @@ const btnSize = computed(() => (props.size === "sm" ? "sm" : "md"));
     <span class="wp-paging__range" aria-live="polite">{{ from }}–{{ to }} of {{ total }}</span>
     <ul class="wp-paging__list">
       <li>
-        <WpButton variant="ghost" :size="btnSize" icon="pi-chevron-left" aria-label="Previous page" :disabled="disabled || props.page <= 1" @click="go(props.page - 1)" />
+        <Button variant="ghost" :size="btnSize" icon="pi-chevron-left" aria-label="Previous page" :disabled="disabled || props.page <= 1" @click="go(props.page - 1)" />
       </li>
       <li v-for="it in items" :key="it">
         <span v-if="typeof it !== 'number'" class="wp-paging__gap" aria-hidden="true">…</span>
@@ -70,13 +70,13 @@ const btnSize = computed(() => (props.size === "sm" ? "sm" : "md"));
         >{{ it }}</button>
       </li>
       <li>
-        <WpButton variant="ghost" :size="btnSize" icon="pi-chevron-right" aria-label="Next page" :disabled="disabled || props.page >= pages" @click="go(props.page + 1)" />
+        <Button variant="ghost" :size="btnSize" icon="pi-chevron-right" aria-label="Next page" :disabled="disabled || props.page >= pages" @click="go(props.page + 1)" />
       </li>
     </ul>
   </nav>
   <div v-else-if="mode === 'more' && total > 0" class="wp-paging wp-paging--more" :data-size="size">
     <span class="wp-paging__range" aria-live="polite">Showing {{ Math.min(props.shown, total) }} of {{ total }}{{ noun ? ` ${noun}` : "" }}</span>
-    <WpButton v-if="props.shown < total" variant="secondary" :size="btnSize" :loading="loading" :disabled="disabled" @click="emit('more')">Load more</WpButton>
+    <Button v-if="props.shown < total" variant="secondary" :size="btnSize" :loading="loading" :disabled="disabled" @click="emit('more')">Load more</Button>
   </div>
 </template>
 

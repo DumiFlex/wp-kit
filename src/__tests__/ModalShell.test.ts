@@ -30,7 +30,18 @@ describe("ModalShell", () => {
   it("closes on Escape and on the overlay", async () => {
     w = mount(ModalShell, { props: { visible: true }, attachTo: document.body });
     window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
-    (document.body.querySelector(".wp-modal-overlay") as HTMLElement).click();
-    expect(w.emitted("close")).toHaveLength(2);
+    const overlay = must(document.body.querySelector<HTMLElement>(".wp-modal-overlay"), "overlay");
+    overlay.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    overlay.click();
+    expect(w.emitted("close")).toEqual([["escape"], ["backdrop"]]);
+  });
+
+  it("ignores a click inside, and a drag that started inside and ended on the overlay", async () => {
+    w = mount(ModalShell, { props: { visible: true }, slots: { default: '<p class="in">Hi</p>' }, attachTo: document.body });
+    const inner = must(document.body.querySelector<HTMLElement>(".in"), "content");
+    inner.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    inner.click();
+    must(document.body.querySelector<HTMLElement>(".wp-modal-overlay"), "overlay").click();
+    expect(w.emitted("close")).toBeUndefined();
   });
 });

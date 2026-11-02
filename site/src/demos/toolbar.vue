@@ -2,7 +2,6 @@
 import { ref } from "vue";
 import Separator from "@kit/Separator.vue";
 import Toolbar from "@kit/Toolbar.vue";
-import WpButton from "@kit/WpButton.vue";
 import Button from "@kit/Button.vue";
 
 const last = ref("");
@@ -34,9 +33,9 @@ const last = ref("");
     <div class="wp-kit__canvas">
       <p class="wp-kit__caption">Canvas, size sm</p>
       <Toolbar label="Row tools" size="sm">
-        <WpButton variant="ghost" icon="pi-eye" aria-label="Preview" />
-        <WpButton variant="ghost" icon="pi-pencil" aria-label="Edit" />
-        <WpButton variant="ghost" icon="pi-ellipsis-h" aria-label="More" />
+        <Button size="sm" variant="ghost" icon="pi-eye" aria-label="Preview" />
+        <Button size="sm" variant="ghost" icon="pi-pencil" aria-label="Edit" />
+        <Button size="sm" variant="ghost" icon="pi-ellipsis-h" aria-label="More" />
       </Toolbar>
     </div>
   </div>

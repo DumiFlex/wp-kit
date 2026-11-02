@@ -16,7 +16,7 @@
 import { computed, nextTick, ref, watch } from "vue";
 import ModalShell from "./ModalShell.vue";
 import WpImageZoom from "./WpImageZoom.vue";
-import CloseButton from "./CloseButton.vue";
+import Button from "./Button.vue";
 import Skeleton from "./Skeleton.vue";
 import { focusablesIn } from "./useDialogFocus";
 
@@ -104,7 +104,7 @@ watch(() => props.open, async (v, was) => {
     >
       <div class="wp-lightbox__bar">
         <span v-if="count > 1" class="wp-lightbox__count" aria-hidden="true">{{ at + 1 }} / {{ count }}</span>
-        <CloseButton class="wp-lightbox__close" kbd="Esc" @click="close" />
+        <Button variant="ghost" icon="times" aria-label="Close" class="wp-lightbox__close" kbd="Esc" @click="close" />
       </div>
       <figure v-if="image" class="wp-lightbox__figure" :data-zoom="zoom || undefined">
         <!-- An image with no src yet (still rendering): its shape, not an empty frame. -->

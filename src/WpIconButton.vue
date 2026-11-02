@@ -2,7 +2,7 @@
 /**
  * WpIconButton: the 20 px square icon button inside a canvas row (module,
  * injector, bundle and model rows, the Context toolbar). Rows are too tight
- * for the 24 px `WpButton size="sm"`, so this is the one smaller control on
+ * for the 24 px `Button size="sm"`, so this is the one smaller control on
  * the canvas, still at the 20 px hit-target floor.
  *
  *   <WpIconButton icon="pi-trash" label="Remove module" tone="danger" @click="remove" />
