@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/DumiFlex/wp-kit/compare/v0.2.0...v0.2.1) (2026-11-02)
+
+
+### Bug Fixes
+
+* pass the extension's lint in the new pieces' tests and ContextMenu ([#22](https://github.com/DumiFlex/wp-kit/issues/22)) ([5da1520](https://github.com/DumiFlex/wp-kit/commit/5da15209ab77db4e70975a7cd380ba4359ac9aeb))
+* **site:** let the page scroll and give it room ([#23](https://github.com/DumiFlex/wp-kit/issues/23)) ([66e9313](https://github.com/DumiFlex/wp-kit/commit/66e9313849658015cf347922e136c89758e0908e))
+
 ## [0.2.0](https://github.com/DumiFlex/wp-kit/compare/v0.1.0...v0.2.0) (2026-11-02)
 
 
