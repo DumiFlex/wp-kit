@@ -3,12 +3,13 @@ import { ref } from "vue";
 import Button from "@kit/Button.vue";
 import ConfirmModal from "@kit/ConfirmModal.vue";
 
-const ask = ref<"delete" | "restore" | null>(null);
+const ask = ref<"delete" | "restore" | "account" | null>(null);
 </script>
 
 <template>
   <Button variant="danger" icon="pi-trash" @click="ask = 'delete'">Delete Hair colour</Button>
   <Button icon="pi-history" @click="ask = 'restore'">Restore a backup</Button>
+  <Button variant="outline" icon="pi-user-minus" @click="ask = 'account'">Delete an account</Button>
   <ConfirmModal
     :open="ask === 'delete'"
     title="Delete Hair colour?"
@@ -23,6 +24,16 @@ const ask = ref<"delete" | "restore" | null>(null);
     title="Restore this backup?"
     body="Your library goes back to how it was on 27 Oct, 14:02."
     confirm-label="Restore"
+    @confirm="ask = null"
+    @cancel="ask = null"
+  />
+  <ConfirmModal
+    :open="ask === 'account'"
+    title="Delete @mira's account?"
+    body="Their posts, stars and bookmarks go with it. No undo."
+    confirm-label="Delete account"
+    tone="danger"
+    require-type="mira"
     @confirm="ask = null"
     @cancel="ask = null"
   />

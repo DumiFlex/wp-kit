@@ -349,7 +349,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "loading-mark", name: "LoadingMark", group: "feedback", file: "src/LoadingMark.vue", surfaces: ["manager", "canvas"],
-    use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour.",
+    use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour, brand=\"community\" in the community site's colours.",
     instead: "A spinner or plain \"Loading…\" text.",
   },
   // Overlays
@@ -384,7 +384,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "confirm-modal", name: "ConfirmModal", group: "overlays", file: "src/ConfirmModal.vue", surfaces: ["manager"],
-    use: "Ask before something that can't be undone, in the manager. Built on Modal, so Escape, Tab and focus return work like every other dialog. Name the action on the confirm button (Delete, not OK); tone=\"danger\" for deletes and discards.",
+    use: "Ask before something that can't be undone, in the manager. Built on Modal, so Escape, Tab and focus return work like every other dialog. Name the action on the confirm button (Delete, not OK); tone=\"danger\" for deletes and discards, tone=\"warn\" for something that matters but can be undone. requireType makes the user type a word first (deleting an account); confirmDisabled holds Confirm off while a field in the slot is empty.",
     instead: "ConfirmDialog in a manager screen, or window.confirm().",
   },
   {
@@ -418,7 +418,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   // Brand
   {
     id: "logo", name: "Logo", group: "brand", file: "src/Logo.vue", surfaces: ["manager", "canvas"],
-    use: "The Wildcard Pipeline mark. Draw it at 16, 20, 28 or 40 px.",
+    use: "The Wildcard Pipeline mark. Draw it at 16, 20, 28 or 40 px. brand=\"community\" draws the community site's rust counterpart.",
   },
   // Community pieces: what the community site shows for a post. Kept here so
   // the extension's Community tab and any later screen draw them the same way.
