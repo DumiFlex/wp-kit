@@ -44,6 +44,10 @@ describe("kit site coverage", () => {
     const apps = new Set(["extension", "community"]);
     expect(KIT_ENTRIES.filter((e) => e.usedBy.some((a) => !apps.has(a)) || new Set(e.usedBy).size !== e.usedBy.length).map((e) => e.id)).toEqual([]);
   });
+
+  it("lists the community site on every entry (it loads the whole theme, so every piece runs there)", () => {
+    expect(KIT_ENTRIES.filter((e) => !e.surfaces.includes("community")).map((e) => e.id)).toEqual([]);
+  });
 });
 
 describe("kit site", () => {
