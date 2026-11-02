@@ -5,11 +5,14 @@
  */
 import { computed } from "vue";
 import CodeBlock from "@kit/CodeBlock.vue";
+import KIT_API from "virtual:kit-api";
+import KitApi from "./KitApi.vue";
 import { KIT_EXAMPLES, kitEntry } from "./registry";
 
 const props = defineProps<{ id: string }>();
 const entry = computed(() => kitEntry(props.id));
 const example = computed(() => KIT_EXAMPLES[props.id]);
+const api = computed(() => KIT_API[entry.value.file]);
 const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas" } as const;
 </script>
 
@@ -26,6 +29,7 @@ const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas" } as const;
       <slot />
     </div>
     <CodeBlock v-if="example" class="wp-kit-entry__code" :code="example" language="Vue" size="sm" default-wrap />
+    <KitApi v-if="api" :api="api" />
   </article>
 </template>
 

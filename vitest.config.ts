@@ -1,9 +1,10 @@
 import { fileURLToPath } from "node:url";
 import vue from "@vitejs/plugin-vue";
+import { kitApi } from "./site/kit-api";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), kitApi()],
   resolve: { alias: { "@kit": fileURLToPath(new URL("./src", import.meta.url)) } },
   define: { __KIT_VERSION__: JSON.stringify("0.0.0-test") },
   test: {

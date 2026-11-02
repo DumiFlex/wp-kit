@@ -28,6 +28,15 @@ export interface KitEntry {
   instead?: string;
 }
 
+/** The API tables under each piece (`KitApi.vue`). */
+export const KIT_API_TEXT = {
+  label: "API",
+  prop: "prop", props: "props", event: "event", events: "events", slot: "slot", slots: "slots", method: "exposed", methods: "exposed",
+  propsTitle: "Props", eventsTitle: "Events", slotsTitle: "Slots", exposedTitle: "Exposed (ref.value…)",
+  name: "Name", type: "Type", default: "Default", description: "Description", payload: "Payload", slotProps: "Slot props",
+  required: "required", requiredTitle: "Must be passed",
+} as const;
+
 export const KIT_GROUPS: { id: KitGroup; label: string; blurb: string }[] = [
   { id: "actions", label: "Actions", blurb: "Things you press." },
   { id: "inputs", label: "Inputs", blurb: "Things you type into or pick from a list." },

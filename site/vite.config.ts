@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import vue from "@vitejs/plugin-vue";
+import { kitApi } from "./kit-api";
 import { defineConfig } from "vite";
 
 // The showcase site (GitHub Pages). It imports the kit from ../src through
@@ -11,7 +12,7 @@ export default defineConfig({
   root: fileURLToPath(new URL(".", import.meta.url)),
   // Pages serves the site under /wp-kit/; a relative base works there and locally.
   base: "./",
-  plugins: [vue()],
+  plugins: [vue(), kitApi()],
   define: { __KIT_VERSION__: JSON.stringify(pkg.version) },
   resolve: {
     alias: { "@kit": fileURLToPath(new URL("../src", import.meta.url)) },

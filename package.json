@@ -53,8 +53,8 @@
     "npm-readme": "node scripts/npm-readme.mjs"
   },
   "peerDependencies": {
-    "vue": "^3.5.0",
-    "primeicons": "^7.0.0 || ^8.0.0"
+    "primeicons": "^7.0.0 || ^8.0.0",
+    "vue": "^3.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -72,6 +72,7 @@
     "vite": "5.4.21",
     "vitest": "2.1.9",
     "vue": "3.5.44",
+    "vue-component-meta": "2.2.12",
     "vue-eslint-parser": "10.4.0",
     "vue-tsc": "2.2.12"
   }

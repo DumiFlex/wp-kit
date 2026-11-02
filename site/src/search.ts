@@ -7,7 +7,15 @@
  * it, then anywhere in it), then its id, file and group, then the text that
  * says when to use it. Results keep page order when they tie.
  */
+import KIT_API from "virtual:kit-api";
 import { KIT_ENTRIES, KIT_GROUPS } from "./registry";
+
+/** A piece's prop, event, slot and exposed names, so searching "clearable" finds the pieces that take it. */
+function apiWords(file: string): string {
+  const a = KIT_API[file];
+  if (!a) return "";
+  return [...a.props, ...a.events, ...a.slots, ...a.exposed].map((x) => x.name).join(" ");
+}
 
 export interface SearchItem {
   /** The element id it jumps to (without `#`). */
@@ -53,7 +61,7 @@ export function searchItems(): SearchItem[] {
     for (const e of KIT_ENTRIES.filter((x) => x.group === g.id)) {
       items.push({
         target: `kit-${e.id}`, kind: "piece", name: e.name, where: g.label,
-        keys: `${e.id} ${e.file} ${g.label} ${e.surfaces.join(" ")}`,
+        keys: `${e.id} ${e.file} ${g.label} ${e.surfaces.join(" ")} ${apiWords(e.file)}`,
         body: e.instead ? `${e.use} Instead of: ${e.instead}` : e.use,
       });
     }
