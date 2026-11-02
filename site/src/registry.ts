@@ -199,7 +199,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "radio-group", name: "RadioGroup", group: "choice", file: "src/RadioGroup.vue", surfaces: ["manager", "canvas"],
-    use: "One of a few options that each need a line of explanation (prompt style, install mode). One Tab stop, the arrows move and choose; cards draws each option as a bordered card, and the label slot adds a badge after an option's name (the AI provider list). For two to five short words on one row use Segmented.",
+    use: "One of a few options that each need a line of explanation (prompt style, install mode). One Tab stop, the arrows move and choose; cards draws each option as a bordered card, and the label slot adds a badge after an option's name (the AI provider list). For two to five short words on one row use Segmented. variant=\"swatch\" draws each option as a round colour swatch named by its label (an accent or frame colour).",
     instead: "A column of .wp-radio inputs with their own labels and hint text.",
   },
   {
@@ -370,7 +370,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "dropdown-menu", name: "DropdownMenu", group: "overlays", file: "src/DropdownMenu.vue", surfaces: ["canvas", "manager"],
-    use: "A list of actions behind a button (the ⋯ menu, More, Add…). Arrows, Home/End and Enter work. Takes the same items as ContextMenu, so a row's right-click and ⋯ menus can share one list.",
+    use: "A list of actions behind a button (the ⋯ menu, More, Add…). Arrows, Home/End and Enter work. Takes the same items as ContextMenu, so a row's right-click and ⋯ menus can share one list. An item with checked is a checkbox item (a tick when on); keepOpen leaves the menu open so several can be ticked in a row.",
     instead: "A hand-built menu of buttons under a ⋯ button.",
   },
   {
