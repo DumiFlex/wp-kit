@@ -1,0 +1,5 @@
+# Check every text file out with LF, also on Windows: the published package
+# (src/) and the apps that copy it should never get CRLF files.
+* text=auto eol=lf
+*.woff2 binary
+*.png binary
