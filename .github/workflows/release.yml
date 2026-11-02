@@ -130,6 +130,10 @@ jobs:
       # The same gate as CI, on the exact commit that ships.
       - if: steps.version.outputs.publish == 'true'
         run: pnpm lint && pnpm typecheck && pnpm test
+      # npm shows README.md: swap in the one written for people installing the
+      # kit (docs/npm-readme.md); the repository README is for working on it.
+      - if: steps.version.outputs.publish == 'true'
+        run: pnpm npm-readme
       - if: steps.version.outputs.publish == 'true'
         run: pnpm check-package
       - name: Stage @dumiflex/wp-kit@${{ steps.version.outputs.version }} for approval
