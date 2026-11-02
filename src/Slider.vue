@@ -172,7 +172,7 @@ function onTyped(v: number | null): void {
   transition: transform var(--wp-motion-quick), box-shadow var(--wp-motion-quick);
 }
 .wp-slider__track:hover .wp-slider__thumb, .wp-slider[data-dragging] .wp-slider__thumb { transform: scale(1.12); }
-.wp-slider__thumb:focus-visible { box-shadow: 0 0 0 3px var(--wp-focus-ring); }
+.wp-slider__thumb:focus-visible { box-shadow: var(--wp-focus-ring); }
 .wp-slider__mark {
   position: absolute; top: 50%; width: 2px; height: 8px; margin: -4px 0 0 -1px; border-radius: min(1px, var(--wp-radius-cap, 999px));
   background: var(--wp-border-strong); pointer-events: none;

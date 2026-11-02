@@ -277,7 +277,7 @@ function setOpen(v: boolean): void {
 .wp-combo[data-size="sm"] { --_h: var(--wp-control-h-sm); padding: 2px 24px 2px var(--wp-space-2); border-radius: var(--wp-radius-sm); font-size: var(--wp-text-xs); gap: 3px; }
 .wp-combo[data-size="lg"] { --_h: var(--wp-control-h-lg); padding: 5px 32px 5px var(--wp-space-4); }
 .wp-combo:hover { border-color: var(--wp-border-strong); }
-.wp-combo:focus-within { border-color: var(--wp-border-focus); box-shadow: 0 0 0 3px var(--wp-focus-ring); }
+.wp-combo:focus-within { border-color: var(--wp-border-focus); box-shadow: var(--wp-focus-ring); }
 .wp-combo[data-invalid] { border-color: var(--wp-error-border); }
 .wp-combo[data-disabled] { opacity: 0.45; cursor: not-allowed; }
 .wp-combo__chip {

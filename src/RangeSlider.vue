@@ -172,7 +172,7 @@ function onTyped(end: 0 | 1, v: number | null): void {
   transition: transform var(--wp-motion-quick), box-shadow var(--wp-motion-quick);
 }
 .wp-range-slider__thumb[data-active], .wp-range-slider__thumb:hover { transform: scale(1.12); }
-.wp-range-slider__thumb:focus-visible { box-shadow: 0 0 0 3px var(--wp-focus-ring); z-index: 1; }
+.wp-range-slider__thumb:focus-visible { box-shadow: var(--wp-focus-ring); z-index: 1; }
 .wp-range-slider__value { flex: none; color: var(--wp-text); font: 500 var(--wp-text-sm)/1 var(--wp-font-sans); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .wp-range-slider[data-size="sm"] .wp-range-slider__value { font-size: var(--wp-text-xs); }
 .wp-range-slider__input { flex: none; width: 76px; }

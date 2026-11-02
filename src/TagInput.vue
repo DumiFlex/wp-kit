@@ -256,7 +256,7 @@ function setOpen(v: boolean): void {
 .wp-tag-input[data-size="sm"] { --_h: var(--wp-control-h-sm); padding: 2px var(--wp-space-2); border-radius: var(--wp-radius-sm); font-size: var(--wp-text-xs); gap: 3px; }
 .wp-tag-input[data-size="lg"] { --_h: var(--wp-control-h-lg); padding: 5px var(--wp-space-4); }
 .wp-tag-input:hover { border-color: var(--wp-border-strong); }
-.wp-tag-input:focus-within { border-color: var(--wp-border-focus); box-shadow: 0 0 0 3px var(--wp-focus-ring); }
+.wp-tag-input:focus-within { border-color: var(--wp-border-focus); box-shadow: var(--wp-focus-ring); }
 .wp-tag-input[data-invalid] { border-color: var(--wp-error-border); }
 .wp-tag-input[data-disabled] { opacity: 0.45; cursor: not-allowed; }
 .wp-tag-input__chip {
