@@ -1,5 +1,5 @@
 /**
- * Number helpers for sliders (Slider now, the two-thumb range later): clamp
+ * Number helpers for Slider (one thumb or a pair): clamp
  * to the ends, snap to the step counted from `min`, and turn a pointer
  * position into a value. Steps like 0.1 snap without float fuzz.
  */
