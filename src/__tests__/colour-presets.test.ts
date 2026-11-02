@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mount } from "@vue/test-utils";
 import { COLOUR_PRESETS, DEFAULT_COLOUR } from "../colour-presets";
-import ColorPicker from "../ColorPicker.vue";
+import ColorField from "../ColorField.vue";
 
 describe("colour presets", () => {
   it("are twelve hex colours and include the default", () => {
@@ -10,8 +10,11 @@ describe("colour presets", () => {
     expect(COLOUR_PRESETS).toContain(DEFAULT_COLOUR);
   });
 
-  it("are what ColorPicker offers by default", () => {
-    const w = mount(ColorPicker, { props: { modelValue: DEFAULT_COLOUR } });
-    expect((w.props("presets") as string[])).toEqual([...COLOUR_PRESETS]);
+  it("are what ColorField offers with presets on", async () => {
+    const w = mount(ColorField, { props: { modelValue: DEFAULT_COLOUR, presets: true, dataTest: "cf" }, attachTo: document.body });
+    await w.get('[data-test="cf"]').trigger("click");
+    const shown = [...document.querySelectorAll<HTMLElement>('[data-test="cf-preset"]')].map((b) => b.title);
+    expect(shown).toEqual([...COLOUR_PRESETS]);
+    w.unmount();
   });
 });

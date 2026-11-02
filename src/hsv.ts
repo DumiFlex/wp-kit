@@ -5,7 +5,7 @@
  * lowercase. Functions are tolerant of out-of-range input — they clamp
  * rather than throw, which keeps the picker UI robust under fast drags.
  *
- * Lives in shared/ so both the manager-side ColorPicker / TweaksPanel
+ * Lives in shared/ so both the ColorField / TweaksPanel
  * AND the canvas-side bundle modal can drive the same HsvPicker
  * without a cross-package import.
  */
