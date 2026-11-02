@@ -137,13 +137,9 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "dragover and drop handlers on a div, with a hidden file input and its own highlight.",
   },
   {
-    id: "color-picker", name: "ColorPicker", group: "inputs", file: "src/ColorPicker.vue", surfaces: ["manager"],
-    use: "Pick a colour from presets, the HSV square or a typed hex, as categories do. The closed picker shows the swatch, the hex and a chevron (`compact`: swatch and chevron only, for a name row); the panel is a kit Popover.",
-  },
-  {
     id: "color-field", name: "ColorField", group: "inputs", file: "src/ColorField.vue", surfaces: ["canvas", "manager"],
-    use: "A small swatch with its hex that opens the colour square, a hex box and, with alpha, an opacity number; allow-none adds None. For a colour setting on a canvas widget (label text, a band behind it, a background). Writes #rrggbb, #rrggbbaa once see-through, or none.",
-    instead: "A text box for a hex code, or a native <input type=\"color\">, which has no opacity and looks different in every browser.",
+    use: "The one colour picker: a swatch with its hex that opens the colour square, a hex box and, with alpha, an opacity number; allow-none adds None, presets a row of preset swatches (true for the kit's twelve, or your own list) that take a colour in one click. size sm on the canvas, md in a manager form (a 20px swatch); compact shows the swatch alone, for a name row. Writes #rrggbb, #rrggbbaa once see-through, or none.",
+    instead: "ColorPicker (merged in: presets), a text box for a hex code, or a native <input type=\"color\">, which has no opacity and looks different in every browser.",
   },
   {
     id: "hsv-picker", name: "HsvPicker", group: "inputs", file: "src/HsvPicker.vue", surfaces: ["canvas", "manager"],
@@ -166,26 +162,14 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   // Choice
   {
-    id: "checkbox", name: "Checkbox", group: "choice", file: "src/Checkbox.vue", surfaces: ["manager"],
-    use: "Tick one item, or one row in a list. Supports a mixed state for \"some selected\". Disabled turns grey with a dimmed label. `field` draws it as an input-height box for a yes/no filter beside dropdowns (Favorites only).",
-    instead: "<input type=\"checkbox\"> drawn by the browser.",
-  },
-  {
-    id: "wp-check", name: "WpCheck", group: "choice", file: "src/WpCheck.vue", surfaces: ["canvas", "manager"],
-    use: "The checkbox for canvas widgets.",
-  },
-  {
-    id: "toggle", name: "Toggle", group: "choice", file: "src/Toggle.vue", surfaces: ["manager"],
-    use: "A setting that takes effect at once (on or off). Use a Checkbox when the choice is saved later with a button. It is WpSwitch at the manager size.",
+    id: "checkbox", name: "Checkbox", group: "choice", file: "src/Checkbox.vue", surfaces: ["canvas", "manager"],
+    use: "The one checkbox, on the canvas and in the manager: tick one item, or one row in a list. A label (prop or slot) toggles on click; without one the box alone is the piece, so give it an aria-label. size sm is the 12px box of a canvas row, md 14px. indeterminate draws the mixed state for \"some selected\"; --check-on tints the checked fill (a bundle colour). Disabled turns grey with a dimmed label. field draws it as an input-height box for a yes/no filter beside dropdowns (Favorites only).",
+    instead: "WpCheck (merged in: size=\"sm\", --check-on), the global .wp-check class on a hand-made span, or <input type=\"checkbox\"> drawn by the browser.",
   },
   {
     id: "wp-switch", name: "WpSwitch", group: "choice", file: "src/WpSwitch.vue", surfaces: ["canvas", "manager"],
     use: "On or off, taking effect at once, on the canvas or in the manager (one component, so one stylesheet). The track look is a sliding knob; the chip look is a labelled chip that lights up, for a row of runtime switches (Hide from prompt, Lock pick). mixed draws a bulk switch where only some children are on.",
-    instead: "A button with role=\"switch\" and its own toggle--on class.",
-  },
-  {
-    id: "radio", name: "Radio (.wp-radio)", group: "choice", file: "src/theme/tokens.css", surfaces: ["manager"],
-    use: "One of a few options that all need to be visible. A real radio input with the class wp-radio, so arrow keys work. Disabled turns grey.",
+    instead: "Toggle (merged in: use size=\"md\" in the manager, invalid for the old error), or a button with role=\"switch\" and its own toggle--on class.",
   },
   {
     id: "tabs", name: "Tabs", group: "choice", file: "src/WpTabs.vue", surfaces: ["manager", "canvas"],
@@ -200,7 +184,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   {
     id: "radio-group", name: "RadioGroup", group: "choice", file: "src/RadioGroup.vue", surfaces: ["manager", "canvas"],
     use: "One of a few options that each need a line of explanation (prompt style, install mode). One Tab stop, the arrows move and choose; cards draws each option as a bordered card, and the label slot adds a badge after an option's name (the AI provider list). For two to five short words on one row use Segmented. variant=\"swatch\" draws each option as a round colour swatch named by its label (an accent or frame colour).",
-    instead: "A column of .wp-radio inputs with their own labels and hint text.",
+    instead: "A column of native radio inputs (the old .wp-radio class) with their own labels and hint text.",
   },
   {
     id: "choice-cards", name: "ChoiceCards", group: "choice", file: "src/ChoiceCards.vue", surfaces: ["manager"],
@@ -488,14 +472,10 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "wp-number": `<WpNumber v-model="count" :min="1" :max="64" aria-label="Count" />`,
   "search-input": `<SearchInput v-model="query" placeholder="Search modules" :visible="shown.length" :total="rows.length" />`,
   "list-filter": `<ListFilter v-model="query" :total="rows.length" :visible="shown.length" noun="rules" test-prefix="rules" />`,
-  "color-picker": `<ColorPicker v-model="color" aria-label="Category colour" />`,
-  "color-field": `<ColorField v-model="band" alpha allow-none size="sm" aria-label="Label band" />`,
+  "color-field": `<ColorField v-model="band" alpha allow-none size="sm" aria-label="Label band" />  <ColorField v-model="color" presets size="md" aria-label="Category colour" />`,
   "hsv-picker": `<HsvPicker v-model="color" aria-label="Colour" />`,
-  "checkbox": `<Checkbox v-model="picked" label="Include in bundle" />`,
-  "wp-check": `<WpCheck v-model="on" aria-label="Hold" />`,
-  "toggle": `<Toggle v-model="enabled" label="Show tooltips" />`,
+  "checkbox": `<Checkbox v-model="picked" label="Include in bundle" />  <Checkbox v-model="on" size="sm" aria-label="Enabled" />`,
   "wp-switch": `<WpSwitch v-model="held" variant="chip" icon="pi-link" label="Hold across run" />`,
-  "radio": `<label><input v-model="mode" type="radio" class="wp-radio" value="a"> Tags</label>`,
   "tabs": `<WpTabs v-model="tab" :tabs="[{ id: 'options', label: 'Options', count: 12 }, { id: 'rules', label: 'Rules' }]" aria-label="Editor sections" />`,
   "image-zoom": `<WpImageZoom v-model:zoom="zoom" :src="url" alt="Frame 3" hint="Drag to move · scroll to zoom" minimap autohide />`,
   "segmented": `<WpSegmented v-model="theme" :options="[{ value: 'dark', label: 'Dark', icon: 'pi-moon' }, { value: 'light', label: 'Light', icon: 'pi-sun' }]" aria-label="Theme" />`,

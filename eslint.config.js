@@ -7,9 +7,9 @@ import vueParser from "vue-eslint-parser";
 // The same rules the Wildcard Pipeline extension lints these files with, so a
 // piece that passes here passes in every app that pulls it in.
 
-// A label may wrap its control or point at it with `for=`. WpCheck renders a
+// A label may wrap its control or point at it with `for=`. Checkbox renders a
 // <button role="checkbox">, which a wrapping <label> activates like an input.
-const LABEL_HAS_FOR = { required: { some: ["nesting", "id"] }, controlComponents: ["WpCheck", "WpSelect", "WpNumber"] };
+const LABEL_HAS_FOR = { required: { some: ["nesting", "id"] }, controlComponents: ["Checkbox", "WpSelect", "WpNumber"] };
 
 // typescript-eslint "strict" rules that need no type information.
 const STRICTER_TS_RULES = {
