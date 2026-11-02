@@ -39,6 +39,11 @@ describe("kit site coverage", () => {
     expect(KIT_ENTRIES.filter((e) => !groups.has(e.group)).map((e) => e.id)).toEqual([]);
     expect(Object.keys(KIT_EXAMPLES).filter((k) => !ids.has(k))).toEqual([]);
   });
+
+  it("names each entry's apps at most once, from the known two", () => {
+    const apps = new Set(["extension", "community"]);
+    expect(KIT_ENTRIES.filter((e) => e.usedBy.some((a) => !apps.has(a)) || new Set(e.usedBy).size !== e.usedBy.length).map((e) => e.id)).toEqual([]);
+  });
 });
 
 describe("kit site", () => {
@@ -47,6 +52,14 @@ describe("kit site", () => {
     for (const e of KIT_ENTRIES) {
       expect(wrapper.find(`[data-kit-entry="${e.id}"]`).exists(), e.id).toBe(true);
     }
+    wrapper.unmount();
+  });
+
+  it("says who uses each entry, or that no app does yet", () => {
+    const wrapper = mount(App, { attachTo: document.body });
+    const used = (id: string) => wrapper.find(`[data-kit-entry="${id}"] [data-test="kit-used-by"]`).text();
+    expect(used("button")).toBe("Used by the extension and the community site.");
+    expect(used("date-picker")).toBe("Not used by an app yet.");
     wrapper.unmount();
   });
 

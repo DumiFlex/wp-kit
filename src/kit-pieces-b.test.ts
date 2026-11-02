@@ -280,6 +280,26 @@ describe("Slider", () => {
     await box.trigger("change");
     expect(w.props("modelValue")).toBe(20);
   });
+
+  it("a pair keeps the ends apart by min-gap from the keys", async () => {
+    const w = bound(Slider, { modelValue: [20, 30], min: 0, max: 100, minGap: 5, ariaLabel: "Range" });
+    const [lo, hi] = w.findAll("[role=slider]");
+    expect(lo.attributes("aria-valuemax")).toBe("25");
+    expect(hi.attributes("aria-valuemin")).toBe("25");
+    await lo.trigger("keydown", { key: "End" });
+    expect(w.props("modelValue")).toEqual([25, 30]);
+    await lo.trigger("keydown", { key: "ArrowRight" });
+    expect(w.props("modelValue")).toEqual([25, 30]);
+    await hi.trigger("keydown", { key: "Home" });
+    expect(w.props("modelValue")).toEqual([25, 30]);
+    await hi.trigger("keydown", { key: "ArrowRight" });
+    expect(w.props("modelValue")).toEqual([25, 31]);
+  });
+
+  it("a pair with-input has a number box per end", () => {
+    const w = bound(Slider, { modelValue: [1, 2], min: 0, max: 5, withInput: true, ariaLabel: "Weight" });
+    expect(w.findAll("input").map((i: { attributes: (n: string) => string }) => i.attributes("aria-label"))).toEqual(["Weight, low end", "Weight, high end"]);
+  });
 });
 
 describe("ResizeHandle and SplitPane", () => {

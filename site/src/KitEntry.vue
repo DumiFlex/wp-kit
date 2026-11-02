@@ -5,11 +5,14 @@
  */
 import { computed } from "vue";
 import CodeBlock from "@kit/CodeBlock.vue";
-import { KIT_EXAMPLES, kitEntry } from "./registry";
+import { KIT_APP_LABEL, KIT_EXAMPLES, KIT_UNUSED, KIT_USED_BY, kitEntry } from "./registry";
 
 const props = defineProps<{ id: string }>();
 const entry = computed(() => kitEntry(props.id));
 const example = computed(() => KIT_EXAMPLES[props.id]);
+const usedBy = computed(() => entry.value.usedBy.length
+  ? `${KIT_USED_BY} ${entry.value.usedBy.map((a) => KIT_APP_LABEL[a]).join(" and ")}.`
+  : `${KIT_UNUSED}.`);
 const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas" } as const;
 </script>
 
@@ -22,6 +25,7 @@ const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas" } as const;
     </header>
     <p class="wp-kit-entry__use">{{ entry.use }}</p>
     <p v-if="entry.instead" class="wp-kit-entry__instead">Instead of: {{ entry.instead }}</p>
+    <p class="wp-kit-entry__used" :data-unused="entry.usedBy.length ? undefined : 'true'" data-test="kit-used-by">{{ usedBy }}</p>
     <div class="wp-kit-entry__demo">
       <slot />
     </div>
@@ -51,6 +55,8 @@ const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas" } as const;
 }
 .wp-kit-entry__use { margin: 0; color: var(--wp-text-muted); font-size: var(--wp-text-base); line-height: 20px; max-width: 76ch; }
 .wp-kit-entry__instead { margin: 0; color: var(--wp-text-dim); font-size: var(--wp-text-sm); }
+.wp-kit-entry__used { margin: 0; color: var(--wp-text-dim); font-size: var(--wp-text-sm); }
+.wp-kit-entry__used[data-unused] { font-style: italic; }
 .wp-kit-entry__demo {
   display: flex;
   flex-wrap: wrap;

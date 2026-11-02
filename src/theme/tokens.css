@@ -548,17 +548,7 @@ input, textarea, select { font: inherit; }
 /* Active-row gradient strip lives in AppSidebar.vue scoped CSS (presence selector). */
 .wp-nav__icon { width: 16px; flex: 0 0 16px; display: grid; place-items: center; color: inherit; }
 .wp-nav__label { flex: 1; white-space: nowrap; }
-.wp-nav__badge {
-  font-size: 9.5px;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  padding: 1.5px 6px;
-  border-radius: var(--wp-radius-cap, 999px);
-  background: var(--wp-bg-3);
-  color: var(--wp-text-dim);
-  border: 1px solid var(--wp-border);
-  font-weight: 600;
-}
+
 .wp-nav__ext { color: var(--wp-text-dim); width: 12px; }
 
 /* ---------- Content area ---------- */
@@ -903,7 +893,6 @@ input, textarea, select { font: inherit; }
 .wp-chip__close:hover { opacity: 1; background: none; }
 .wp-chip__close:focus-visible { outline: 2px solid var(--wp-accent-500); outline-offset: 1px; border-radius: min(2px, var(--wp-radius-cap, 999px)); opacity: 1; }
 
-
 /* ---------- DataTable ---------- */
 .wp-table-wrap {
   background: var(--wp-bg-1);
@@ -1031,25 +1020,9 @@ input, textarea, select { font: inherit; }
 }
 
 /* ---------- List-row chrome (used by all 6 list screens) ---------- */
-.wp-tag-chip {
-  font-size: 10px;
-  padding: 2px 8px;
-  background: var(--wp-bg-3);
-  color: var(--wp-text-muted);
-  border-radius: var(--wp-radius-cap, 999px);
-  letter-spacing: 0.02em;
-  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
-}
-.wp-tag-chip:hover { background: var(--wp-bg-4); color: var(--wp-text); }
+
 /* Active state defined globally so scoped view files can use color-mix and this
    serves as the rgba fallback when color-mix is unsupported (old Chromium). */
-.wp-tag-chip[data-active="true"] {
-  background: rgba(99, 102, 241, 0.22);
-  background: color-mix(in oklab, var(--wp-accent-500) 22%, transparent);
-  border-color: rgba(99, 102, 241, 0.45);
-  border-color: color-mix(in oklab, var(--wp-accent-500) 45%, transparent);
-  color: var(--wp-accent-text);
-}
 
 .wp-id {
   font-family: var(--wp-font-mono);
@@ -1059,11 +1032,6 @@ input, textarea, select { font: inherit; }
   user-select: all;
 }
 .wp-id:hover { color: var(--wp-text-muted); }
-
-.wp-fav-toggle {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--wp-text); cursor: pointer;
-}
 
 .wp-row-name {
   display: flex; flex-direction: column; gap: 1px;
@@ -1147,40 +1115,6 @@ input, textarea, select { font: inherit; }
   border-color: color-mix(in oklab, var(--wp-kind-derivation) 32%, transparent);
 }
 
-/* Syntax-color tint for filter-panel toggle chips. Lets the
- * Wildcards filter pills (Uses nested refs / Has inline / Referenced
- * by others) match the colored pills in the body's Syntax column —
- * users learn one color set for both surfaces. Same hue tokens as
- * `.wp-syntax-pill--*` above; tint depth tuned for the chip shape
- * (border-only at rest, full fill when active). */
-.wp-chip--toggle.wp-chip--syntax-ref {
-  border-color: color-mix(in oklab, var(--wp-kind-ref) 35%, transparent);
-  color: var(--wp-kind-ref);
-}
-.wp-chip--toggle.wp-chip--syntax-ref[data-active] {
-  background: color-mix(in oklab, var(--wp-kind-ref) 22%, transparent);
-  border-color: color-mix(in oklab, var(--wp-kind-ref) 45%, transparent);
-  color: var(--wp-kind-ref);
-}
-.wp-chip--toggle.wp-chip--syntax-in {
-  border-color: color-mix(in oklab, var(--wp-accent-500) 35%, transparent);
-  color: var(--wp-accent-text);
-}
-.wp-chip--toggle.wp-chip--syntax-in[data-active] {
-  background: color-mix(in oklab, var(--wp-accent-500) 22%, transparent);
-  border-color: color-mix(in oklab, var(--wp-accent-500) 45%, transparent);
-  color: var(--wp-accent-text);
-}
-.wp-chip--toggle.wp-chip--syntax-dp {
-  border-color: color-mix(in oklab, var(--wp-kind-derivation) 35%, transparent);
-  color: var(--wp-kind-derivation);
-}
-.wp-chip--toggle.wp-chip--syntax-dp[data-active] {
-  background: color-mix(in oklab, var(--wp-kind-derivation) 22%, transparent);
-  border-color: color-mix(in oklab, var(--wp-kind-derivation) 45%, transparent);
-  color: var(--wp-kind-derivation);
-}
-
 /* Light-mode pill overrides — token cascade handles color; adjust tint depth for near-white surface */
 .wp-theme-light .wp-syntax-pill--ref {
   /* --wp-kind-ref → fuchsia-800 (#86198f) in light; --wp-kind-ref-bg → 13% tint */
@@ -1200,9 +1134,7 @@ input, textarea, select { font: inherit; }
   border-color: color-mix(in oklab, var(--wp-kind-derivation) 45%, transparent);
 }
 
-/* ── Light-mode overrides: buttons, chips, tags, links ── */
-/* Danger button hover: white text fails on light tint; swap to dark-red label */
-
+/* ── Light-mode overrides: chips ── */
 /* Tone chips: swap light text for dark text, slightly stronger tint.
  * Colors route through status tokens which flip to -700/-800 shades in light mode. */
 .wp-theme-light .wp-chip--accent {
@@ -1214,69 +1146,6 @@ input, textarea, select { font: inherit; }
 .wp-theme-light .wp-chip--warn    { color: var(--wp-warn);    background: color-mix(in oklab, var(--wp-warn)    14%, transparent); border-color: color-mix(in oklab, var(--wp-warn)    42%, transparent); }
 .wp-theme-light .wp-chip--danger  { color: var(--wp-danger);  background: color-mix(in oklab, var(--wp-danger)  14%, transparent); border-color: color-mix(in oklab, var(--wp-danger)  42%, transparent); }
 .wp-theme-light .wp-chip--info    { color: var(--wp-info);    background: color-mix(in oklab, var(--wp-info)    14%, transparent); border-color: color-mix(in oklab, var(--wp-info)    42%, transparent); }
-/* Tag chip active: color auto-adapts (--wp-accent-text → dark purple in light mode) */
-.wp-theme-light .wp-tag-chip[data-active="true"] {
-  background: rgba(99, 102, 241, 0.16);
-  border-color: rgba(99, 102, 241, 0.42);
-}
-/* Missing wildcard ref link: --wp-danger flips to red-700 in light */
-.wp-theme-light .wp-syntax-link--missing,
-.wp-theme-light .wp-syntax-link--missing:hover {
-  color: var(--wp-danger);
-  border-color: color-mix(in oklab, var(--wp-danger) 42%, transparent);
-  background: color-mix(in oklab, var(--wp-danger) 12%, transparent);
-}
-
-/* Reference graph block inside row-expand */
-.wp-syntax-graph {
-  margin-top: 12px;
-  padding-top: 10px;
-  border-top: 1px dashed var(--wp-border);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 12px;
-}
-.wp-syntax-graph__row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px;
-}
-.wp-syntax-graph__row .pi { font-size: 11px; opacity: 0.7; }
-.wp-syntax-link {
-  appearance: none;
-  background: var(--wp-bg-3);
-  border: 1px solid var(--wp-border);
-  color: var(--wp-text-dim);
-  font: inherit;
-  padding: 1px 8px;
-  border-radius: var(--wp-radius-cap, 999px);
-  cursor: pointer;
-  transition: color 120ms, background 120ms, border-color 120ms;
-}
-.wp-syntax-link:hover {
-  color: var(--wp-accent-text);
-  border-color: rgba(99, 102, 241, 0.45);
-  border-color: color-mix(in oklab, var(--wp-accent-500) 45%, transparent);
-  background: rgba(99, 102, 241, 0.12);
-  background: color-mix(in oklab, var(--wp-accent-500) 12%, var(--wp-bg-3));
-}
-.wp-syntax-link--missing {
-  /* audit-exempt: red-400 (#f87171) is lighter than --wp-danger for dark-bg legibility;
-   * light-mode override above uses var(--wp-danger) which flips to red-700. */
-  color: #f87171;
-  border-color: color-mix(in oklab, #f87171 38%, transparent);
-  background: color-mix(in oklab, #f87171 14%, transparent);
-  font-family: var(--wp-font-mono);
-  cursor: default;
-}
-.wp-syntax-link--missing:hover {
-  color: #f87171; /* audit-exempt: see above */
-  border-color: color-mix(in oklab, #f87171 38%, transparent);
-  background: color-mix(in oklab, #f87171 14%, transparent);
-}
-
 .wp-id {
   font-family: var(--wp-font-mono);
   font-size: 10.5px;
@@ -1285,11 +1154,7 @@ input, textarea, select { font: inherit; }
 }
 
 /* ---------- Toolbar ---------- */
-.wp-toolbar {
-  display: flex; align-items: center; gap: 8px;
-  flex-wrap: wrap;
-}
-.wp-toolbar__search { flex: 1; min-width: 220px; max-width: 320px; }
+
 .wp-toolbar__count { font-size: 11.5px; color: var(--wp-text-dim); margin-left: auto; }
 
 /* ---------- Pagination ---------- */
@@ -1314,119 +1179,6 @@ input, textarea, select { font: inherit; }
   font-variant-numeric: tabular-nums;
   min-width: 80px;
   text-align: center;
-}
-
-/* ---------- Rule card (Derivation editor) ---------- */
-.wp-rule {
-  background: var(--wp-bg-2);
-  border: 1px solid var(--wp-border);
-  border-radius: var(--wp-radius-md);
-  padding: 10px 12px;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.wp-rule__head {
-  display: flex; align-items: center; gap: 8px;
-}
-.wp-rule__num {
-  font-family: var(--wp-font-mono);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  padding: 2px 8px;
-  border-radius: min(4px, var(--wp-radius-cap, 999px));
-  background: color-mix(in oklab, var(--wp-accent-500) 18%, transparent);
-  color: var(--wp-accent-text);
-}
-.wp-rule__index { font-size: 11px; color: var(--wp-text-dim); font-variant-numeric: tabular-nums; }
-.wp-rule__row {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 10px;
-  align-items: center;
-}
-.wp-rule__label {
-  font-size: 11.5px;
-  color: var(--wp-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-weight: 500;
-}
-.wp-rule__cond {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  align-items: center;
-}
-.wp-rule--else {
-  margin-top: 12px;
-  border-style: dashed;
-  background: transparent;
-}
-.wp-rule--else[data-active="true"] {
-  background: var(--wp-bg-2);
-  border-style: solid;
-}
-.wp-rule--else .wp-rule__num {
-  background: color-mix(in oklab, var(--wp-warn) 18%, transparent);
-  color: var(--wp-warn);
-}
-
-/* Group rule (independent rule with its own IF/ELIF/ELSE branches) */
-.wp-rule--group {
-  border: 1px solid var(--wp-border-strong);
-  background: var(--wp-bg-1);
-  padding: 12px;
-}
-.wp-rule--group .wp-rule__num {
-  background: color-mix(in oklab, var(--wp-accent-500) 24%, transparent);
-}
-.wp-rule__branches {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 4px;
-  padding-left: 10px;
-  border-left: 2px solid color-mix(in oklab, var(--wp-accent-500) 30%, transparent);
-}
-.wp-branch {
-  background: var(--wp-bg-2);
-  border: 1px solid var(--wp-border);
-  border-radius: min(8px, var(--wp-radius-cap, 999px));
-  padding: 10px 12px;
-  display: flex; flex-direction: column; gap: 8px;
-}
-.wp-branch__head {
-  display: flex; align-items: center; gap: 8px;
-}
-.wp-branch__tag {
-  font-family: var(--wp-font-mono);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  padding: 2px 7px;
-  border-radius: min(4px, var(--wp-radius-cap, 999px));
-  text-transform: uppercase;
-}
-.wp-branch__tag[data-kind="if"] {
-  background: color-mix(in oklab, var(--wp-accent-500) 22%, transparent);
-  color: var(--wp-accent-text);
-}
-.wp-branch__tag[data-kind="elif"] {
-  background: color-mix(in oklab, var(--wp-info, #60a5fa) 22%, transparent);
-  color: var(--wp-info, #60a5fa);
-}
-.wp-branch__tag[data-kind="else"] {
-  background: color-mix(in oklab, var(--wp-warn) 22%, transparent);
-  color: var(--wp-warn);
-}
-.wp-branch--else {
-  border-style: dashed;
-}
-.wp-rule__addbar {
-  display: flex;
-  gap: 6px;
-  margin-top: 8px;
-  padding-left: 12px;
 }
 
 /* ---------- Hero ----------
@@ -1501,29 +1253,6 @@ input, textarea, select { font: inherit; }
 }
 .wp-list__row:hover { background: var(--wp-bg-3); }
 .wp-list__row + .wp-list__row { border-top: 1px solid var(--wp-border); border-radius: 0; }
-
-/* ---------- Empty state ---------- */
-.wp-empty {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  text-align: center;
-  padding: 48px 24px;
-  color: var(--wp-text-muted);
-  gap: 10px;
-}
-.wp-empty__icon {
-  width: 56px; height: 56px;
-  border-radius: min(14px, var(--wp-radius-cap, 999px));
-  background: var(--wp-bg-2);
-  border: 1px solid var(--wp-border);
-  display: grid; place-items: center;
-  color: var(--wp-text-dim);
-  font-size: 22px;
-}
-
-/* `.wp-empty--card` (full-width dashed empty state) lived alongside the
-   community sub-screens. It moved to the feat/community-tab branch with
-   them; main has no remaining consumer. Re-introduce here when another
-   surface needs it. */
 
 /* Compact dashed-card empty placeholder used inside editor cards
    (DerivationEditor rules list, ConstraintEditor matrix/exceptions,
@@ -1738,19 +1467,6 @@ label:has(> .wp-radio:disabled) { cursor: not-allowed; color: var(--wp-text-dim)
 
 /* ---------- Tabs ---------- */
 .wp-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--wp-border); }
-.wp-tab {
-  padding: 8px 12px;
-  background: none; border: none;
-  color: var(--wp-text-muted);
-  font-size: 12.5px;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  display: inline-flex; align-items: center; gap: 6px;
-  font-weight: 500;
-}
-.wp-tab:hover { color: var(--wp-text); }
-.wp-tab[data-active="true"] { color: var(--wp-text); border-bottom-color: var(--wp-accent-400); }
 
 /* ---------- Code-ish snippet display ---------- */
 .wp-snippet {
@@ -1785,51 +1501,6 @@ label:has(> .wp-radio:disabled) { cursor: not-allowed; color: var(--wp-text-dim)
 .wp-mono { font-family: var(--wp-font-mono); }
 .wp-muted { color: var(--wp-text-muted); }
 .wp-dim { color: var(--wp-text-dim); }
-.wp-divider { height: 1px; background: var(--wp-border); margin: 4px 0; }
-
-/* ---------- Token autocomplete popup ---------- */
-.wp-autocomplete {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0; right: 0;
-  z-index: 50;
-  background: var(--wp-bg-2);
-  border: 1px solid var(--wp-border-strong);
-  border-radius: min(8px, var(--wp-radius-cap, 999px));
-  box-shadow: var(--wp-shadow-md);
-  overflow: hidden;
-  max-height: 280px;
-  display: flex; flex-direction: column;
-  animation: wp-fade-in .1s ease-out;
-}
-.wp-autocomplete[data-flip] {
-  top: auto;
-  bottom: calc(100% + 4px);
-}
-.wp-autocomplete__head {
-  display: flex; align-items: center;
-  padding: 6px 10px;
-  font-size: 11px;
-  border-bottom: 1px solid var(--wp-border);
-  background: var(--wp-bg-3);
-  color: var(--wp-text-dim);
-}
-.wp-autocomplete__item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 7px 10px;
-  background: transparent;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  color: var(--wp-text);
-  font-size: 12.5px;
-  font-family: var(--wp-font-mono);
-}
-.wp-autocomplete__item[data-active="true"] {
-  background: color-mix(in oklab, var(--wp-accent-600) 22%, transparent);
-}
-.wp-autocomplete__label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.wp-autocomplete__hint { font-size: 11px; color: var(--wp-text-dim); font-family: var(--wp-font); }
 
 /* ---------- Custom select popup ---------- */
 .wp-select-wrap { position: relative; display: inline-block; width: 100%; }
@@ -1929,103 +1600,6 @@ label:has(> .wp-radio:disabled) { cursor: not-allowed; color: var(--wp-text-dim)
 .wp-color-picker__chip:hover { transform: scale(1.08); }
 .wp-color-picker__chip[data-active="true"] {
   box-shadow: 0 0 0 2px var(--wp-bg-1), 0 0 0 4px var(--wp-accent-500);
-}
-
-/* ---------- Constraint rule matrix ---------- */
-.wp-matrix {
-  border-collapse: separate; border-spacing: 4px;
-  font-size: 12px;
-}
-.wp-matrix__corner {
-  padding: 0 8px; text-align: left;
-  color: var(--wp-text-dim);
-  font-weight: 500; font-size: 10.5px;
-  text-transform: uppercase; letter-spacing: .05em;
-  display: flex; flex-direction: column; gap: 2px;
-}
-.wp-matrix__col-h {
-  padding: 0 8px; color: var(--wp-text-muted);
-  font-weight: 500; white-space: nowrap;
-}
-.wp-matrix__row-h {
-  padding: 0 8px; color: var(--wp-text-muted);
-  white-space: nowrap; text-align: left;
-}
-.wp-matrix-cell {
-  display: inline-flex; align-items: center; justify-content: center; gap: 3px;
-  min-width: 56px; height: 30px; padding: 0 8px;
-  border-radius: min(6px, var(--wp-radius-cap, 999px)); cursor: pointer;
-  border: 1px solid var(--wp-border);
-  font-family: var(--wp-font);
-  transition: background .12s, border-color .12s, transform .04s;
-}
-.wp-matrix-cell:hover { transform: translateY(-1px); }
-.wp-matrix-cell[data-mode="allow"] { min-width: 36px; padding: 0 6px; }
-.wp-matrix-cell[data-mode="exclude"] { min-width: 36px; padding: 0 6px; }
-.wp-matrix-cell__icon { font-size: 14px; font-weight: 600; line-height: 1; }
-.wp-matrix-cell__factor {
-  font-family: var(--wp-font-mono);
-  font-size: 10.5px; font-weight: 500;
-  opacity: 0.85;
-}
-.wp-matrix-cell__tune {
-  position: absolute; top: -6px; right: -6px;
-  width: 18px; height: 18px;
-  border-radius: min(50%, var(--wp-radius-cap, 999px));
-  display: grid; place-items: center;
-  background: var(--wp-bg-1);
-  border: 1px solid var(--wp-border-strong);
-  color: var(--wp-text-muted);
-  cursor: pointer; padding: 0;
-  font-size: 9px;
-  box-shadow: var(--wp-shadow-sm);
-  transition: color .12s, border-color .12s, background .12s;
-}
-.wp-matrix-cell__tune:hover {
-  color: var(--wp-accent-text);
-  border-color: var(--wp-accent-500);
-  background: var(--wp-bg-2);
-}
-
-/* ---------- Tune popover (matrix factor fine-tune) ---------- */
-.wp-tune-pop {
-  z-index: 200;
-  background: var(--wp-bg-1);
-  border: 1px solid var(--wp-border-strong);
-  border-radius: min(10px, var(--wp-radius-cap, 999px));
-  padding: 10px 12px;
-  box-shadow: var(--wp-shadow-md, 0 12px 28px rgba(0,0,0,.35));
-  display: flex; flex-direction: column; gap: 8px;
-}
-.wp-matrix-cell-wrap {
-  position: relative;
-  display: inline-block;
-}
-.wp-tune-pop__head {
-  display: flex; justify-content: space-between; align-items: center;
-}
-.wp-tune-pop__row {
-  display: grid; grid-template-columns: 80px 1fr; gap: 8px; align-items: center;
-}
-.wp-tune-pop__presets {
-  display: flex; gap: 4px; flex-wrap: wrap; justify-content: flex-end;
-}
-.wp-chip-btn {
-  padding: 3px 7px;
-  border-radius: var(--wp-radius-cap, 999px);
-  border: 1px solid var(--wp-border);
-  background: var(--wp-bg-2);
-  color: var(--wp-text-muted);
-  font-size: 10.5px;
-  font-family: var(--wp-font-mono);
-  cursor: pointer;
-  transition: background .12s, color .12s, border-color .12s;
-}
-.wp-chip-btn:hover { background: var(--wp-bg-3); color: var(--wp-text); }
-.wp-chip-btn[data-active="true"] {
-  background: color-mix(in oklab, var(--wp-accent-500) 18%, transparent);
-  color: var(--wp-accent-text-strong);
-  border-color: color-mix(in oklab, var(--wp-accent-500) 40%, transparent);
 }
 
 /* native range styled to match */
@@ -2199,364 +1773,6 @@ label:has(> .wp-radio:disabled) { cursor: not-allowed; color: var(--wp-text-dim)
   font-size: 12px;
 }
 
-/* Token properties popover (for $var chips) */
-.wp-tokenprops {
-  position: fixed;
-  z-index: 200;
-  width: 320px;
-  background: var(--wp-bg-1);
-  border: 1px solid var(--wp-border-strong);
-  border-radius: min(10px, var(--wp-radius-cap, 999px));
-  box-shadow: var(--wp-shadow-md, 0 12px 28px rgba(0,0,0,.4));
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.wp-tokenprops__head {
-  display: flex; align-items: center; gap: 6px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--wp-border);
-}
-.wp-tokenprops__name {
-  font-family: var(--wp-font-mono);
-  font-size: 13px;
-  color: var(--wp-accent-text);
-  font-weight: 500;
-}
-.wp-tokenprops__type {
-  margin-left: auto;
-  font-size: 10.5px;
-  color: var(--wp-text-dim);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.wp-tokenprops__row {
-  display: grid;
-  grid-template-columns: 86px 1fr;
-  gap: 8px;
-  align-items: center;
-}
-.wp-tokenprops__label {
-  font-size: 11.5px;
-  color: var(--wp-text-muted);
-}
-.wp-tokenprops__output {
-  font-family: var(--wp-font-mono);
-  font-size: 11.5px;
-  background: var(--wp-bg-2);
-  border: 1px solid var(--wp-border);
-  border-radius: min(6px, var(--wp-radius-cap, 999px));
-  padding: 6px 8px;
-  color: var(--wp-text);
-  word-break: break-all;
-  line-height: 1.5;
-}
-.wp-tokenprops__legend {
-  font-size: 10.5px;
-  color: var(--wp-text-dim);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-
-/* ===================== PIPELINES ===================== */
-
-/* Stack of step rows in the pipeline editor */
-.wp-pl-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-/* `.wp-pl-empty` removed: PipelineSteps now uses the canonical
-   `.wp-empty-card` class for its empty placeholder. */
-
-/* ---------- Step row ---------- */
-.wp-pl-row {
-  display: grid;
-  grid-template-columns: 22px 22px 32px 1fr auto;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  background: var(--wp-bg2);
-  border: 1px solid var(--wp-border);
-  border-left: 3px solid var(--step-color, var(--wp-accent-500));
-  border-radius: var(--wp-radius-md);
-  transition: border-color 120ms ease, background 120ms ease, transform 120ms ease, opacity 120ms ease;
-}
-.wp-pl-row:hover {
-  border-color: var(--wp-border-strong);
-  background: var(--wp-bg3);
-}
-.wp-pl-row[data-drag-over] {
-  border-top-color: var(--wp-accent-500);
-  box-shadow: 0 -2px 0 var(--wp-accent-500);
-}
-.wp-pl-row[data-disabled] { opacity: 0.5; }
-.wp-pl-row[data-disabled] .wp-pl-row__name select { text-decoration: line-through; }
-
-/* drag handle */
-.wp-pl-row__handle {
-  display: flex; align-items: center; justify-content: center;
-  width: 22px; height: 22px;
-  color: var(--wp-text-dim);
-  cursor: grab;
-  border-radius: min(4px, var(--wp-radius-cap, 999px));
-  user-select: none;
-}
-.wp-pl-row__handle:hover { color: var(--wp-text); background: var(--wp-bg-hover); }
-.wp-pl-row__handle:active { cursor: grabbing; }
-
-/* enable/disable toggle */
-.wp-pl-row__toggle {
-  width: 22px; height: 22px;
-  display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--wp-border);
-  background: var(--wp-bg);
-  border-radius: min(4px, var(--wp-radius-cap, 999px));
-  color: var(--wp-text-muted);
-  cursor: pointer;
-  padding: 0;
-  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
-}
-.wp-pl-row__toggle:hover { background: var(--wp-bg-hover); color: var(--wp-text); border-color: var(--wp-border-strong); }
-
-/* kind icon (color tinted by --step-color) */
-.wp-pl-row__icon {
-  width: 32px; height: 32px;
-  border-radius: var(--wp-radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  background: color-mix(in oklab, var(--step-color, var(--wp-accent-500)) 16%, var(--wp-bg3));
-  color: var(--step-color, var(--wp-accent-300));
-  flex-shrink: 0;
-}
-
-/* main column */
-.wp-pl-row__main {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.wp-pl-row__top {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--wp-text-muted);
-  font-weight: 500;
-}
-.wp-pl-row__kind { color: var(--step-color, var(--wp-text-muted)); }
-.wp-pl-row__index {
-  margin-left: auto;
-  font-family: var(--wp-font-mono);
-  font-size: 10.5px;
-  letter-spacing: 0;
-  padding: 1px 5px;
-  border-radius: min(3px, var(--wp-radius-cap, 999px));
-  background: var(--wp-bg);
-  border: 1px solid var(--wp-border);
-  color: var(--wp-text-dim);
-}
-.wp-pl-row__name {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-}
-.wp-pl-row__sub {
-  font-size: 11.5px;
-  color: var(--wp-text-muted);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
-/* `.wp-pl-row__refselect` styles intentionally removed.
-   Earlier the pipeline ref-select was a native <select> styled here
-   to look like inline text. We now route through the shared `Select`
-   component (see `components/ui/Select.vue`), which already brings
-   its own height (`--wp-input-h-sm`, 24px at Comfortable) + chevron + focus ring.
-   The leftover `height: 26px; overflow: hidden` rule was clipping the
-   new trigger by ~2px at the bottom, which read as a "cut" border on
-   the pipeline row. The scoped block in PipelineSteps.vue keeps the
-   only two rules still needed (`flex: 1; min-width: 0`). */
-
-/* row actions */
-.wp-pl-row__actions {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
-.wp-pl-row__act {
-  width: 26px; height: 26px;
-  display: flex; align-items: center; justify-content: center;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: min(4px, var(--wp-radius-cap, 999px));
-  color: var(--wp-text-muted);
-  cursor: pointer;
-  font-size: 12px;
-  padding: 0;
-  transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
-}
-.wp-pl-row__act:hover {
-  background: var(--wp-bg-hover);
-  color: var(--wp-text);
-  border-color: var(--wp-border);
-}
-.wp-pl-row__act--danger:hover {
-  background: color-mix(in oklab, var(--wp-danger) 16%, transparent);
-  color: var(--wp-danger-text);
-  border-color: color-mix(in oklab, var(--wp-danger) 30%, transparent);
-}
-
-/* add-step button */
-.wp-pl-add {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px;
-  width: 100%;
-  border: 1px dashed var(--wp-border-strong);
-  border-radius: var(--wp-radius-md);
-  background: transparent;
-  color: var(--wp-text-muted);
-  font-size: 12.5px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  cursor: pointer;
-  margin-top: 4px;
-  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
-}
-.wp-pl-add:hover {
-  border-style: solid;
-  border-color: var(--wp-accent-500);
-  color: var(--wp-accent-text);
-  background: color-mix(in oklab, var(--wp-accent-500) 7%, transparent);
-}
-.wp-pl-add .pi { font-size: 11px; }
-
-/* ---------- Module picker tabs ---------- */
-.wp-pl-tab {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 10px;
-  background: var(--wp-bg2);
-  border: 1px solid var(--wp-border);
-  border-radius: var(--wp-radius-sm);
-  color: var(--wp-text-muted);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
-}
-.wp-pl-tab:hover {
-  background: var(--wp-bg3);
-  color: var(--wp-text);
-  border-color: var(--wp-border-strong);
-}
-.wp-pl-tab[data-active] {
-  background: color-mix(in oklab, var(--tab-color, var(--wp-accent-500)) 14%, var(--wp-bg2));
-  border-color: color-mix(in oklab, var(--tab-color, var(--wp-accent-500)) 50%, transparent);
-  color: var(--tab-color, var(--wp-accent-text));
-}
-.wp-pl-tab__count {
-  font-family: var(--wp-font-mono);
-  font-size: 10.5px;
-  padding: 0 5px;
-  border-radius: var(--wp-radius-cap, 999px);
-  background: var(--wp-bg);
-  border: 1px solid var(--wp-border);
-  color: var(--wp-text-dim);
-  min-width: 18px;
-  text-align: center;
-}
-
-/* picker rows */
-.wp-pl-pickrow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  background: var(--wp-bg2);
-  border: none;
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
-  font-size: 13px;
-  color: var(--wp-text);
-  transition: background 120ms ease;
-}
-.wp-pl-pickrow:hover {
-  background: var(--wp-bg3);
-}
-.wp-pl-pickrow__icon {
-  width: 28px; height: 28px;
-  border-radius: var(--wp-radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-
-/* ---------- Resolution preview flow ---------- */
-.wp-pl-flow {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.wp-pl-flow__step {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 10px 12px;
-  background: var(--wp-bg);
-  border: 1px solid var(--wp-border);
-  border-left: 3px solid var(--step-color, var(--wp-accent-500));
-  border-radius: var(--wp-radius-md);
-  position: relative;
-}
-.wp-pl-flow__step + .wp-pl-flow__step::before {
-  content: "";
-  position: absolute;
-  top: -5px;
-  left: 18px;
-  width: 1px;
-  height: 6px;
-  background: var(--wp-border-strong);
-}
-.wp-pl-flow__head {
-  display: flex; align-items: center; gap: 8px;
-  color: var(--wp-text);
-}
-.wp-pl-flow__idx {
-  font-family: var(--wp-font-mono);
-  font-size: 10.5px;
-  padding: 1px 5px;
-  border-radius: min(3px, var(--wp-radius-cap, 999px));
-  background: var(--wp-bg2);
-  border: 1px solid var(--wp-border);
-  color: var(--wp-text-dim);
-}
-.wp-pl-flow__adds {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding-left: 30px;
-}
-.wp-pl-flow__binding {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  font-size: 12px;
-  line-height: 1.4;
-}
-.wp-pl-flow__binding > span:last-child {
-  color: var(--wp-text);
-  word-break: break-word;
-}
-
 /* ---------- Modal (simple, used by picker) ---------- */
 .wp-modal__backdrop,
 .wp-modal-backdrop {
@@ -2618,7 +1834,6 @@ label:has(> .wp-radio:disabled) { cursor: not-allowed; color: var(--wp-text-dim)
   background: var(--wp-bg);
 }
 
-
 /* ---------- Picker modal sizing & layout ---------- */
 .wp-modal--picker {
   width: 560px;
@@ -2626,91 +1841,6 @@ label:has(> .wp-radio:disabled) { cursor: not-allowed; color: var(--wp-text-dim)
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-}
-
-.wp-pl-picker__body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-height: 0;
-}
-
-/* tabs row — wraps on narrow widths instead of forcing horizontal scroll */
-.wp-pl-picker__tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.wp-pl-tab {
-  flex: 0 1 auto;
-  min-width: 0;
-}
-.wp-pl-tab__label {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-/* picker list */
-.wp-pl-picker__list {
-  overflow-y: auto;
-  overflow-x: hidden;
-  border: 1px solid var(--wp-border);
-  border-radius: min(8px, var(--wp-radius-cap, 999px));
-  background: var(--wp-bg);
-  flex: 1;
-  min-height: 200px;
-  display: flex;
-  flex-direction: column;
-}
-.wp-pl-pickrow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 12px;
-  background: var(--wp-bg2);
-  border: none;
-  border-bottom: 1px solid var(--wp-border);
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
-  font-size: 13px;
-  color: var(--wp-text);
-  transition: background 120ms ease;
-  min-width: 0;
-}
-.wp-pl-pickrow:last-child { border-bottom: none; }
-.wp-pl-pickrow:hover { background: var(--wp-bg3); }
-.wp-pl-pickrow__icon {
-  width: 28px; height: 28px;
-  border-radius: var(--wp-radius-sm);
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0;
-}
-.wp-pl-pickrow__main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  overflow: hidden;
-}
-.wp-pl-pickrow__name {
-  font-weight: 500;
-  font-size: 13px;
-  color: var(--wp-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.wp-pl-pickrow__id {
-  font-size: 11px;
-  font-family: var(--wp-font-mono);
-  color: var(--wp-text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 /* shrink modal padding on narrow viewports */
@@ -2721,15 +1851,6 @@ label:has(> .wp-radio:disabled) { cursor: not-allowed; color: var(--wp-text-dim)
     padding-right: 12px;
   }
 }
-
-
-/* In picker modal, give the search bar a bit more breathing room. */
-.wp-pl-picker__body .wp-input-group {
-  flex-shrink: 0;
-  height: 38px;
-  min-height: 38px;
-}
-.wp-pl-picker__body .wp-pl-picker__tabs { flex-shrink: 0; }
 
 /* ---------- Module-kind palette (icon + bg pairs) ----------
    Source: docs/design-handoff/wildcard-pipeline/project/data.jsx KIND_META.
