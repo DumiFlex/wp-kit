@@ -1,0 +1,73 @@
+/*
+ * Entrances and nudges for things that appear while you watch: a streamed
+ * reply's new words, a reaction, a chip by the selection, a question that
+ * needs an answer. Add the class to the element as it mounts.
+ *
+ *   .wp-enter-fade    fades in (150 ms): each new run of streamed text.
+ *   .wp-enter-pop     pops in with a small overshoot (320 ms): a reaction.
+ *   .wp-enter-rise    rises 4 px into place (140 ms): a chip above a
+ *                     selection; add data-from="below" when it sits under it.
+ *   .wp-enter-drop    drops 6 px into place (500 ms): a panel that asks for
+ *                     something.
+ *   .wp-attention     a soft accent ring that pulses three times (after
+ *                     .wp-enter-drop when both are set).
+ *
+ * The moving element keeps its own position: set --wp-enter-x for an extra
+ * horizontal shift (a chip centred with -50%), and it goes into the same
+ * transform.
+ *
+ * Every entrance animates registered custom properties, never `opacity` or
+ * `transform` themselves: those go to the compositor, which lifts the element
+ * onto its own layer while it moves and drops it after, so text went soft
+ * during the motion and snapped half a pixel at its end.
+ */
+@property --wp-enter-o { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --wp-enter-s { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --wp-enter-y { syntax: "<length>"; inherits: false; initial-value: 0px; }
+
+@layer wp-extension {
+  .wp-enter-fade {
+    opacity: var(--wp-enter-o);
+    animation: wp-enter-fade 150ms ease-out;
+  }
+  .wp-enter-pop {
+    opacity: var(--wp-enter-o);
+    transform: translateX(var(--wp-enter-x, 0px)) scale(var(--wp-enter-s));
+    animation: wp-enter-pop 0.32s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  }
+  .wp-enter-rise {
+    opacity: var(--wp-enter-o);
+    transform: translate(var(--wp-enter-x, 0px), var(--wp-enter-y));
+    animation: wp-enter-rise 0.14s ease-out both;
+  }
+  .wp-enter-rise[data-from="below"] { animation-name: wp-enter-rise-below; }
+  .wp-enter-drop {
+    opacity: var(--wp-enter-o);
+    transform: translate(var(--wp-enter-x, 0px), var(--wp-enter-y));
+    animation: wp-enter-drop 0.5s ease-out;
+  }
+  .wp-attention { animation: wp-attention 2.4s ease-in-out 3; }
+  .wp-enter-drop.wp-attention {
+    animation: wp-enter-drop 0.5s ease-out, wp-attention 2.4s ease-in-out 0.5s 3;
+  }
+
+  @keyframes wp-enter-fade { from { --wp-enter-o: 0; } to { --wp-enter-o: 1; } }
+  @keyframes wp-enter-pop {
+    from { --wp-enter-s: 0.3; --wp-enter-o: 0; }
+    to { --wp-enter-s: 1; --wp-enter-o: 1; }
+  }
+  @keyframes wp-enter-rise {
+    from { --wp-enter-o: 0; --wp-enter-y: 4px; }
+    to { --wp-enter-o: 1; --wp-enter-y: 0px; }
+  }
+  @keyframes wp-enter-rise-below {
+    from { --wp-enter-o: 0; --wp-enter-y: -4px; }
+    to { --wp-enter-o: 1; --wp-enter-y: 0px; }
+  }
+  @keyframes wp-enter-drop { from { --wp-enter-o: 0; --wp-enter-y: -6px; } }
+  @keyframes wp-attention { 50% { box-shadow: 0 0 0 6px var(--wp-accent-glow); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wp-enter-fade, .wp-enter-pop, .wp-enter-rise, .wp-enter-drop, .wp-attention { animation: none; }
+  }
+}
