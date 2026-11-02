@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import { mount } from "@vue/test-utils";
@@ -62,6 +64,13 @@ describe("PostCard", () => {
     });
     const w = mount(PostCard, { props: { post, as: Link }, attrs: { to: "/p/x" } });
     expect(w.find("a").attributes("data-to")).toBe("/p/x");
+  });
+
+  it("leaves its outer margin to the page", () => {
+    const css = readFileSync(resolve(__dirname, "../PostCard.vue"), "utf8");
+    const root = css.match(/\n\.wp-post-card \{([^}]*)\}/)?.[1] ?? "";
+    expect(root).toContain("display: flex");
+    expect(root).not.toMatch(/(^|\s)margin(-[a-z]+)?\s*:/);
   });
 
   it("works as a button with a click handler", async () => {

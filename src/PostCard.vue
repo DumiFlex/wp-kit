@@ -114,7 +114,8 @@ const tags = computed(() => props.post.tags ?? []);
   padding: 20px 20px 18px;
   overflow: hidden;
   break-inside: avoid;
-  margin: 0;
+  /* The page spaces its cards (a grid gap or margins); one set here would
+     beat the page's rule, since scoped styles win ties. */
   font: inherit;
   color: inherit;
   text-align: left;
