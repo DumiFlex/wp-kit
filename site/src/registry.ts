@@ -253,7 +253,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "disclosure", name: "Disclosure", group: "display", file: "src/Disclosure.vue", surfaces: ["manager", "canvas"],
-    use: "A section that folds open under its heading (advanced options, details, a long list). The chevron turns and the body grows; boxed draws it as a card. Controls that must not fold it (an on/off switch, a select-all box) go in #actions (right) or #lead (left), outside the heading button.",
+    use: "A section that folds open under its heading (advanced options, details, a long list). The chevron turns and the body grows; boxed draws it as a card; flush makes the heading a full-width band with no body indent, for a section of a table that fills its card (a group of options, a rule). Controls that must not fold it (an on/off switch, a select-all box) go in #actions (right) or #lead (left), outside the heading button.",
     instead: "A button with its own aria-expanded, chevron and v-if.",
   },
   {
@@ -433,6 +433,11 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "A <button class=\"wp-chip\"> with its own active state.",
   },
   {
+    id: "list-row", name: "ListRow", group: "navigation", file: "src/ListRow.vue", surfaces: ["manager", "canvas"],
+    use: "One row of a list you click through: a facet with its count, a child in a bundle's list, a category in a tree, a dependency that opens its page. The whole row is the target. selected marks it (aria-current, or aria-pressed with toggle for a filter), muted dims a row that stays clickable, depth indents a simple tree, arrow says it opens a page, and #start takes anything before the label (a KindChip). ArrowUp/ArrowDown move between rows inside the nearest data-wp-rows. For a pill filter use ChipToggle; for a heading that folds a section, Disclosure.",
+    instead: "A <button> styled as a row, with its own hover, active bar and count.",
+  },
+  {
     id: "rating-badge", name: "RatingBadge", group: "display", file: "src/RatingBadge.vue", surfaces: ["manager"],
     use: "The NSFW and Featured badges on a post. Renders nothing for a safe, unfeatured post.",
   },
@@ -476,6 +481,7 @@ export const KIT_EXEMPT: Record<string, string> = {
 export const KIT_EXAMPLES: Record<string, string> = {
   "kind-chip": `<KindChip kind="module" subtype="wildcard" />`,
   "chip-toggle": `<ChipToggle :pressed="kind === 'wildcard'" color="var(--wp-kind-wildcard)" icon="pi-sparkles" @click="kind = 'wildcard'">Wildcard</ChipToggle>`,
+  "list-row": `<ListRow :selected="tag === t" toggle icon="tag" :count="12" @click="pick(t)">portrait</ListRow>`,
   "rating-badge": `<RatingBadge rating="nsfw" featured />`,
   "bundle-meta": `<BundleMeta :count="3" :names="['palette', 'mood', 'style']" />`,
   "tokenized-value": `<TokenizedValue value="a {calm|fierce} $mood @{1a2b3c4d}" :uuid-to-name="names" />`,

@@ -15,6 +15,15 @@ const open = ref(true);
       <template #actions><Button size="sm" variant="ghost" icon="pi-plus">Add rule</Button></template>
       <p class="wp-kit__muted">A boxed disclosure reads as a card that folds.</p>
     </Disclosure>
+    <div style="border: 1px solid var(--wp-border); border-radius: var(--wp-radius-md); overflow: hidden">
+      <Disclosure flush default-open :count="2">
+        <template #summary>casual <span class="wp-kit__muted" style="margin-left: auto; font-weight: 400">2 of 4 · 50%</span></template>
+        <p class="wp-kit__muted" style="margin: 0; padding: 8px 16px">jeans and a tee · hoodie</p>
+      </Disclosure>
+      <Disclosure flush label="formal" :count="2">
+        <p class="wp-kit__muted" style="margin: 0; padding: 8px 16px">suit · gown</p>
+      </Disclosure>
+    </div>
     <Disclosure label="Disabled" disabled>
       <p class="wp-kit__muted">Never shown.</p>
     </Disclosure>
