@@ -36,6 +36,24 @@ html, body, #app { height: auto; min-height: 100%; overflow: visible; }
   padding: var(--wp-space-8) var(--wp-space-7) 64px;
   gap: var(--wp-space-7);
 }
+/* Where the search (or a nav link) landed: a ring that fades out. The
+   search focuses the target so the keyboard carries on from there; the
+   ring stands in for a focus outline on the whole card. */
+.wp-site [data-kit-entry]:target,
+.wp-site .wp-kit__group:target,
+.wp-site [data-kit-section]:target { animation: wp-site-found 1.6s ease-out; }
+.wp-site [data-kit-entry]:focus,
+.wp-site .wp-kit__group:focus,
+.wp-site [data-kit-section]:focus { outline: none; }
+@keyframes wp-site-found {
+  0%, 30% { box-shadow: 0 0 0 3px var(--wp-accent-500); }
+  100% { box-shadow: 0 0 0 3px transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wp-site [data-kit-entry]:target,
+  .wp-site .wp-kit__group:target,
+  .wp-site [data-kit-section]:target { animation: none; box-shadow: 0 0 0 2px var(--wp-accent-500); }
+}
 .wp-site__foot {
   padding: var(--wp-space-6);
   border-top: 1px solid var(--wp-border);
