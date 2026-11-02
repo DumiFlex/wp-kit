@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watch, nextTick } from "vue";
 import { placeFloating, viewportSize, type Placement } from "./floating";
+import { useFloatingChild } from "./floating-layer";
 
 export interface ContextMenuItem {
   label: string;
@@ -71,6 +72,8 @@ const emit = defineEmits<{ (e: "close"): void }>();
 
 const activeIndex = ref(-1);
 const menuEl = ref<HTMLElement | null>(null);
+// Inside a Popover, clicks and Escape on the menu are the menu's own.
+useFloatingChild(() => menuEl.value);
 /** Where the menu sits: x/y (or the anchor), moved to stay on screen. */
 const pos = ref({ x: 0, y: 0 });
 
