@@ -40,7 +40,8 @@ describe("Select.vue", () => {
     (trigger.element as HTMLElement).getBoundingClientRect = () =>
       ({ top, bottom: top + 32, left: 20, right: 220, width: 200, height: 32, x: 20, y: top, toJSON: () => ({}) });
     await trigger.trigger("click");
-    const menu = () => document.querySelector<HTMLElement>(".wp-select__menu");
+    // The list floats in the menu Popover; the panel is what is placed.
+    const menu = () => document.querySelector<HTMLElement>(".wp-select__menu")?.closest<HTMLElement>(".wp-popover") ?? null;
     expect(menu()?.style.top).toBe("136px");
     top = 60;
     window.dispatchEvent(new Event("scroll"));
@@ -259,14 +260,14 @@ describe("Select.vue", () => {
     await wrap.get("[data-test='select-trigger']").trigger("click");
     const menu = document.querySelector(".wp-select__menu") as HTMLElement;
     expect(menu).not.toBeNull();
-    document.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    document.body.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, composed: true }));
     await nextTick();
     // Sanity: a press with no relation to the component still closes it.
     expect(document.querySelector(".wp-select__menu")).toBeNull();
 
     await wrap.get("[data-test='select-trigger']").trigger("click");
     const menu2 = document.querySelector(".wp-select__menu") as HTMLElement;
-    menu2.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    menu2.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, composed: true }));
     await nextTick();
     expect(document.querySelector(".wp-select__menu")).not.toBeNull();
     wrap.unmount();
