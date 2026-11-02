@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.6.0](https://github.com/DumiFlex/wp-kit/compare/v0.5.0...v0.6.0) (2026-11-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* WpButton, CloseButton and ConfirmDialog are removed. Use Button (size="sm" on the canvas; variant="ghost" icon="times" aria-label="Close" for a close button) and ConfirmModal (visible -> open, variant="danger" -> tone="danger"). Button shows its aria-label as a kit tooltip instead of a title attribute. Modal's panel classes are scoped; a ModalShell backdrop close needs mousedown and click on the backdrop.
+* RangeSlider is removed (use Slider with a [low, high] v-model); _skeleton.css and .wp-skel-bar are removed (use Skeleton); unused global classes are removed from theme/tokens.css.
+* WpCheck is removed; use Checkbox (same v-model, size, disabled and --check-on). Toggle is removed; use <WpSwitch size="md"> (error becomes invalid). ColorPicker is removed; use <ColorField presets size="md"> (test hooks are <dataTest>, <dataTest>-preset, <dataTest>-hex). The global .wp-check, .wp-checkbox* and .wp-radio classes are removed.
+
+### Features
+
+* **site:** API tables under every piece, read from the components' own types ([#58](https://github.com/DumiFlex/wp-kit/issues/58)) ([e23973a](https://github.com/DumiFlex/wp-kit/commit/e23973acf57f158068594dc0d63f8172084ab945))
+* **site:** search bar that finds pieces and sections ([#52](https://github.com/DumiFlex/wp-kit/issues/52)) ([8989669](https://github.com/DumiFlex/wp-kit/commit/8989669c43bc8f1511266525ee6a8b9007ee2891))
+* Slider snap settles the thumb on its marks (all the time, or within a distance) ([#60](https://github.com/DumiFlex/wp-kit/issues/60)) ([9b1b5ac](https://github.com/DumiFlex/wp-kit/commit/9b1b5acf1f0d604814b300d7158691fbab007ee0))
+* WorkingLine and entrance classes; AI animations on the kit site ([#56](https://github.com/DumiFlex/wp-kit/issues/56)) ([430df62](https://github.com/DumiFlex/wp-kit/commit/430df624e27e9181d174a7572f70369c7a7b428c))
+
+
+### Bug Fixes
+
+* centre icons on whole pixels; no link underline on a link drawn as a button ([#59](https://github.com/DumiFlex/wp-kit/issues/59)) ([9de9468](https://github.com/DumiFlex/wp-kit/commit/9de94684688879cdd396f948b54650c43918a9fc))
+* chip text clipped in Firefox, refresh icon wobbling as it spins ([#53](https://github.com/DumiFlex/wp-kit/issues/53)) ([02e0c84](https://github.com/DumiFlex/wp-kit/commit/02e0c8405293e39206ea8c810822b00029ee2f44))
+* circles follow the look's corner cap (square in Terminal and TUI) ([#61](https://github.com/DumiFlex/wp-kit/issues/61)) ([7ae84ba](https://github.com/DumiFlex/wp-kit/commit/7ae84baae4024e20b4e67f7b5fb4ec314d3a55b4))
+* tooltip and popover outlines survive a host's CSS reset ([#63](https://github.com/DumiFlex/wp-kit/issues/63)) ([fd8a334](https://github.com/DumiFlex/wp-kit/commit/fd8a334ac86cca52f83f9e0ac7b3bc3ed3b92a98))
+
+
+### Refactoring
+
+* fold RangeSlider into Slider, drop dead global CSS; write the one-piece rule ([#57](https://github.com/DumiFlex/wp-kit/issues/57)) ([2e5d024](https://github.com/DumiFlex/wp-kit/commit/2e5d0240bbb78b467940f19ee50f4de0623ef69d))
+* one Button and one Modal (WpButton, CloseButton and ConfirmDialog folded in) ([#62](https://github.com/DumiFlex/wp-kit/issues/62)) ([591546d](https://github.com/DumiFlex/wp-kit/commit/591546db46a1d6f3fa6ccef10c484bbe40689e94))
+* one Checkbox, one switch, one colour field ([#54](https://github.com/DumiFlex/wp-kit/issues/54)) ([06dba67](https://github.com/DumiFlex/wp-kit/commit/06dba67d9495773bcb1088c09763b30654972bff))
+* one menu (menu.css, Popover variant="menu", Select on Popover) ([#55](https://github.com/DumiFlex/wp-kit/issues/55)) ([e39dc1f](https://github.com/DumiFlex/wp-kit/commit/e39dc1f27f8d0d1efec5bae609b0bf19543d015b))
+
 ## [0.5.0](https://github.com/DumiFlex/wp-kit/compare/v0.4.0...v0.5.0) (2026-11-02)
 
 
