@@ -3,6 +3,12 @@ import { defineComponent, h } from "vue";
 import { mount } from "@vue/test-utils";
 import ListRow from "../ListRow.vue";
 
+/** The element, or a failed test that names what was missing. */
+function must<T>(v: T | null | undefined, what: string): T {
+  if (v == null) throw new Error(`missing ${what}`);
+  return v;
+}
+
 describe("ListRow", () => {
   it("is a button that marks the shown row as current", () => {
     const w = mount(ListRow, { props: { selected: true, icon: "folder", count: 3 }, slots: { default: "People" } });
@@ -55,14 +61,14 @@ describe("ListRow", () => {
     });
     const w = mount(Host, { attachTo: document.body });
     const rows = w.findAll(".wp-list-row");
-    (rows[0]!.element as HTMLElement).focus();
-    await rows[0]!.trigger("keydown", { key: "ArrowDown" });
+    (must(rows[0], "row 0").element as HTMLElement).focus();
+    await must(rows[0], "row 0").trigger("keydown", { key: "ArrowDown" });
     expect(document.activeElement?.textContent).toBe("b");
-    await rows[1]!.trigger("keydown", { key: "ArrowDown" });
+    await must(rows[1], "row 1").trigger("keydown", { key: "ArrowDown" });
     expect(document.activeElement?.textContent).toBe("d");
-    await rows[3]!.trigger("keydown", { key: "Home" });
+    await must(rows[3], "row 3").trigger("keydown", { key: "Home" });
     expect(document.activeElement?.textContent).toBe("a");
-    await rows[0]!.trigger("keydown", { key: "End" });
+    await must(rows[0], "row 0").trigger("keydown", { key: "End" });
     expect(document.activeElement?.textContent).toBe("d");
     w.unmount();
   });

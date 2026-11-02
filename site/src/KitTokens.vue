@@ -132,10 +132,10 @@ onBeforeUnmount(() => observer?.disconnect());
 .wp-kit-tokens__note { margin: 0; color: var(--wp-text-muted); font-size: var(--wp-text-sm); }
 .wp-kit-tokens__swatches {
   list-style: none; margin: 0; padding: 0;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--wp-space-4);
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--wp-space-6) var(--wp-space-4);
 }
-.wp-kit-swatch { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.wp-kit-swatch__chip { height: 40px; border-radius: var(--wp-radius-md); border: 1px solid var(--wp-border); }
+.wp-kit-swatch { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.wp-kit-swatch__chip { height: 40px; margin-bottom: var(--wp-space-2); border-radius: var(--wp-radius-md); border: 1px solid var(--wp-border); }
 .wp-kit-swatch__label { font-size: var(--wp-text-sm); color: var(--wp-text); font-weight: 500; }
 .wp-kit-swatch__token, .wp-kit-swatch__value {
   font: var(--wp-text-xs) / 16px var(--wp-font-mono); color: var(--wp-text-dim); overflow-wrap: anywhere;
