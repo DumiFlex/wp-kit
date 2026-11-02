@@ -6,11 +6,14 @@
 import { computed } from "vue";
 import Chip from "@kit/Chip.vue";
 import CodeBlock from "@kit/CodeBlock.vue";
+import KIT_API from "virtual:kit-api";
+import KitApi from "./KitApi.vue";
 import { KIT_APP_LABEL, KIT_EXAMPLES, KIT_UNUSED, KIT_UNUSED_CHIP, KIT_USED_BY, kitEntry } from "./registry";
 
 const props = defineProps<{ id: string }>();
 const entry = computed(() => kitEntry(props.id));
 const example = computed(() => KIT_EXAMPLES[props.id]);
+const api = computed(() => KIT_API[entry.value.file]);
 const usedBy = computed(() => entry.value.usedBy.length
   ? `${KIT_USED_BY} ${entry.value.usedBy.map((a) => KIT_APP_LABEL[a]).join(" and ")}.`
   : `${KIT_UNUSED}.`);
@@ -32,6 +35,7 @@ const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas", community: "Commun
       <slot />
     </div>
     <CodeBlock v-if="example" class="wp-kit-entry__code" :code="example" language="Vue" size="sm" default-wrap />
+    <KitApi v-if="api" :api="api" />
   </article>
 </template>
 
