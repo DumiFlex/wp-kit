@@ -29,6 +29,17 @@ describe("KindChip", () => {
   });
 });
 
+describe("KindChip and RatingBadge are Chips", () => {
+  it("draws a Chip, so they share its height and type", () => {
+    expect(mount(KindChip, { props: { kind: "module", subtype: "wildcard" } }).classes()).toContain("wp-chip");
+    const both = mount(RatingBadge, { props: { rating: "nsfw", featured: true } });
+    expect(both.findAll(".wp-chip").map((c) => c.classes())).toEqual([
+      expect.arrayContaining(["wp-chip", "wp-chip--danger"]),
+      expect.arrayContaining(["wp-chip", "wp-chip--warn"]),
+    ]);
+  });
+});
+
 describe("RatingBadge", () => {
   it("shows NSFW and Featured only when they apply", () => {
     expect(mount(RatingBadge, { props: { rating: "sfw" } }).text()).toBe("");
