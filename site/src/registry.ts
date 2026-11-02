@@ -433,6 +433,11 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "A <button class=\"wp-chip\"> with its own active state.",
   },
   {
+    id: "drag-handle", name: "DragHandle", group: "layout", file: "src/DragHandle.vue", surfaces: ["manager", "canvas"],
+    use: "The six-dot grip on a row you drag to reorder when the row owns the drag (HTML drag-and-drop on a module row, a bundle child). It only shows where to grab and is hidden from screen readers; give keyboard users their own way to move the row. For a list the kit reorders itself, with keyboard moves, use SortableList.",
+    instead: "An inline six-circle <svg> in each row.",
+  },
+  {
     id: "list-row", name: "ListRow", group: "navigation", file: "src/ListRow.vue", surfaces: ["manager", "canvas"],
     use: "One row of a list you click through: a facet with its count, a child in a bundle's list, a category in a tree, a dependency that opens its page. The whole row is the target. selected marks it (aria-current, or aria-pressed with toggle for a filter), muted dims a row that stays clickable, depth indents a simple tree, arrow says it opens a page, and #start takes anything before the label (a KindChip). ArrowUp/ArrowDown move between rows inside the nearest data-wp-rows. For a pill filter use ChipToggle; for a heading that folds a section, Disclosure.",
     instead: "A <button> styled as a row, with its own hover, active bar and count.",
@@ -481,6 +486,7 @@ export const KIT_EXEMPT: Record<string, string> = {
 export const KIT_EXAMPLES: Record<string, string> = {
   "kind-chip": `<KindChip kind="module" subtype="wildcard" />`,
   "chip-toggle": `<ChipToggle :pressed="kind === 'wildcard'" color="var(--wp-kind-wildcard)" icon="pi-sparkles" @click="kind = 'wildcard'">Wildcard</ChipToggle>`,
+  "drag-handle": `<DragHandle />`,
   "list-row": `<ListRow :selected="tag === t" toggle icon="tag" :count="12" @click="pick(t)">portrait</ListRow>`,
   "rating-badge": `<RatingBadge rating="nsfw" featured />`,
   "bundle-meta": `<BundleMeta :count="3" :names="['palette', 'mood', 'style']" />`,

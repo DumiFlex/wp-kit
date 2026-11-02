@@ -19,7 +19,7 @@ export const SHARED_TOKENS = [
   // Accent and states
   "--wp-accent", "--wp-accent-glow", "--wp-accent-text", "--wp-accent-text-strong",
   "--wp-accent-300", "--wp-accent-400", "--wp-accent-500", "--wp-accent-600", "--wp-accent-700", "--wp-accent-800",
-  "--wp-focus-ring",
+  "--wp-focus-ring", "--wp-on-accent", "--wp-on-media", "--wp-scrim",
   "--wp-success", "--wp-warn", "--wp-danger", "--wp-info", "--wp-danger-text",
   "--wp-error-border", "--wp-error-text",
   "--wp-red", "--wp-red-bg", "--wp-green", "--wp-green-bg", "--wp-amber", "--wp-amber-bg",
