@@ -1,0 +1,51 @@
+/* Menu panel: the one look of every floating list in the kit (Select's list,
+ * ContextMenu / DropdownMenu and Combobox's list). Pulled in scoped by
+ * Popover (whose `variant="menu"` panel is the menu), ContextMenu, Select and
+ * Combobox. It reads only the SHARED_TOKENS names, so a menu wears the
+ * manager colours on a page and the canvas colours in a node.
+ *
+ *   <div class="wp-menu">                       the panel
+ *     <li class="wp-menu__item" data-active="true" aria-selected="true">
+ *
+ * Item states: hover and `[data-active="true"]` (the keyboard's row) share one
+ * tint; `[aria-selected="true"]` is a lighter one; `[aria-disabled="true"]` is
+ * dim and takes no hover. A piece keeps its own row layout (icons, meta,
+ * subtitles, ticks); the sheet sets everything you see around it.
+ */
+
+.wp-menu {
+  z-index: 10020; /* above every modal overlay (they run up to 10010) */
+  box-sizing: border-box;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--wp-bg-2);
+  color: var(--wp-text);
+  border: 1px solid var(--wp-border-strong);
+  border-radius: min(8px, var(--wp-radius-cap, 999px));
+  box-shadow: var(--wp-shadow-md);
+  font-family: var(--wp-font-sans, sans-serif);
+  font-size: 12px;
+}
+
+.wp-menu__item {
+  padding: 6px 8px;
+  border-radius: min(6px, var(--wp-radius-cap, 999px));
+  color: var(--wp-text);
+  font-size: 12px;
+  cursor: pointer;
+  user-select: none;
+}
+.wp-menu__item[aria-selected="true"] {
+  background: color-mix(in oklab, var(--wp-accent) 12%, transparent);
+}
+.wp-menu__item:hover,
+.wp-menu__item[data-active="true"] {
+  background: var(--wp-accent-glow);
+  color: var(--wp-text);
+}
+.wp-menu__item[aria-disabled="true"] {
+  color: var(--wp-text-dim);
+  background: transparent;
+  cursor: not-allowed;
+}

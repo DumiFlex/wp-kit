@@ -53,6 +53,11 @@ function room(side: Side, a: Rect, view: Size, gap: number, margin: number): num
   }
 }
 
+/** Space on one side of the anchor for a panel, after the gap and margin. */
+export function roomOn(side: Side, anchor: Rect, view: Size, opts: Pick<PlaceOptions, "gap" | "margin"> = {}): number {
+  return room(side, anchor, view, opts.gap ?? 6, opts.margin ?? 8);
+}
+
 function clamp(v: number, min: number, max: number): number {
   return max < min ? min : Math.min(Math.max(v, min), max);
 }
