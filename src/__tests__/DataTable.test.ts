@@ -49,7 +49,7 @@ describe("DataTable", () => {
 
   it("draws loading rows, then the empty row", async () => {
     const w = mount(DataTable<Row>, { props: { columns: COLS, rows: [], rowKey: "id", loading: true, loadingRows: 2 } });
-    expect(w.findAll("tbody tr.wp-row-skel")).toHaveLength(2);
+    expect(w.findAll("tbody tr.wp-data-table__loading")).toHaveLength(2);
     expect(w.find("table").attributes("aria-busy")).toBe("true");
     await w.setProps({ loading: false, emptyText: "No tags yet." });
     expect(w.find("tbody").text()).toBe("No tags yet.");

@@ -234,7 +234,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "code-block", name: "CodeBlock", group: "display", file: "src/CodeBlock.vue", surfaces: ["manager", "canvas"],
-    use: "Text that must stay as written (JSON, a prompt as sent, a log): mono font, a copy button and a wrap switch, scrolling past max-height. line-numbers for logs; bare drops the head.",
+    use: "Text that must stay as written (JSON, a prompt as sent, a log, a snippet): mono font, syntax colours, a copy button and a wrap switch, scrolling past max-height. language (JSON, TS, Vue/HTML, CSS, Shell) tags the head and picks the colours; syntax picks them without a tag (syntax=\"prompt\" colours $vars, @{refs}, {a|b} and weights). line-numbers for logs; bare drops the head.",
     instead: "A <pre> with its own copy button, or none.",
   },
   {
@@ -330,7 +330,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "skeleton", name: "Skeleton", group: "feedback", file: "src/Skeleton.vue", surfaces: ["manager", "canvas"],
-    use: "Grey shapes where content is about to land (rows, lines, a card), so nothing jumps. label says Loading… to screen readers. A whole page or panel uses LoadingMark block instead.",
+    use: "Grey shapes where content is about to land, so nothing jumps: shape row (icon circle, or square for an item icon), line, block (a card or a picture), circle, chip (a tag or filter row). label says Loading… to screen readers. A whole page or panel whose shape isn't known uses LoadingMark block instead.",
     instead: "The wp-skel classes from _skeleton.css, or a Loading… flash.",
   },
   {
@@ -349,7 +349,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "loading-mark", name: "LoadingMark", group: "feedback", file: "src/LoadingMark.vue", surfaces: ["manager", "canvas"],
-    use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour, brand=\"community\" in the community site's colours.",
+    use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour, brand=\"community\" in the community site's colours. The motion is drawn on a canvas, so it stays sharp and glides in every browser; with reduced motion the still mark only breathes. Hosts can slow or pause it with data-wp-motion-speed / data-wp-motion-paused on an ancestor.",
     instead: "A spinner or plain \"Loading…\" text.",
   },
   // Overlays
@@ -533,7 +533,8 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "drop-zone": `<DropZone accept=".txt,.yaml,.yml,.zip" multiple hint="Wildcard files or a zip" @files="load" @reject="explain" />`,
   "badge": `<Badge :count="3" tone="danger" label="3 problems"><Button variant="ghost" icon="pi-bell" aria-label="Problems" /></Badge>  <Badge dot tone="success" text="Running" pulse />`,
   "description-list": `<DescriptionList :items="[{ label: 'Family', value: 'SDXL' }, { label: 'ID', value: id, mono: true, copy: true }]" />`,
-  "code-block": `<CodeBlock :code="json" language="JSON" max-height="240px" />`,
+  "code-block": `<CodeBlock :code="json" language="JSON" max-height="240px" />
+<CodeBlock :code="template" title="Template" syntax="prompt" />`,
   "stepper": `<Stepper v-model="step" :steps="[{ id: 'describe', label: 'Describe' }, { id: 'plan', label: 'Plan' }, { id: 'build', label: 'Build' }]" clickable linear />`,
   "pagination": `<Pagination v-model:page="page" :total="rows.length" :page-size="50" />`,
   "separator": `<Separator label="or" />`,

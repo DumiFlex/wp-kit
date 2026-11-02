@@ -17,6 +17,7 @@ import { computed, nextTick, ref, watch } from "vue";
 import ModalShell from "./ModalShell.vue";
 import WpImageZoom from "./WpImageZoom.vue";
 import CloseButton from "./CloseButton.vue";
+import Skeleton from "./Skeleton.vue";
 import { focusablesIn } from "./useDialogFocus";
 
 export interface LightboxImage { src: string; alt: string; caption?: string | undefined }
@@ -106,7 +107,9 @@ watch(() => props.open, async (v, was) => {
         <CloseButton class="wp-lightbox__close" kbd="Esc" @click="close" />
       </div>
       <figure v-if="image" class="wp-lightbox__figure" :data-zoom="zoom || undefined">
-        <WpImageZoom v-if="zoom" v-model:zoom="level" class="wp-lightbox__zoom" :src="image.src" :alt="image.alt" size="md" minimap />
+        <!-- An image with no src yet (still rendering): its shape, not an empty frame. -->
+        <Skeleton v-if="!image.src" class="wp-lightbox__loading" shape="block" width="min(70vw, 640px)" height="min(60vh, 480px)" label="Still loading" />
+        <WpImageZoom v-else-if="zoom" v-model:zoom="level" class="wp-lightbox__zoom" :src="image.src" :alt="image.alt" size="md" minimap />
         <img v-else class="wp-lightbox__img" :src="image.src" :alt="image.alt">
         <figcaption v-if="image.caption" class="wp-lightbox__caption">{{ image.caption }}</figcaption>
       </figure>

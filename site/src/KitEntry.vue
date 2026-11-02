@@ -4,6 +4,7 @@
  * default slot) and how to write it. Text comes from `registry.ts`.
  */
 import { computed } from "vue";
+import CodeBlock from "@kit/CodeBlock.vue";
 import { KIT_EXAMPLES, kitEntry } from "./registry";
 
 const props = defineProps<{ id: string }>();
@@ -24,7 +25,7 @@ const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas" } as const;
     <div class="wp-kit-entry__demo">
       <slot />
     </div>
-    <pre v-if="example" class="wp-kit-entry__code"><code>{{ example }}</code></pre>
+    <CodeBlock v-if="example" class="wp-kit-entry__code" :code="example" language="Vue" size="sm" default-wrap />
   </article>
 </template>
 

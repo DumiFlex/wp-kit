@@ -15,8 +15,10 @@
 import { computed } from "vue";
 
 const props = withDefaults(defineProps<{
-  /** line: text lines (the last one shorter). block: a box. circle: an avatar or icon. row: an icon, a title and a hint line, like a list row. */
-  shape?: "line" | "block" | "circle" | "row" | undefined;
+  /** line: text lines (the last one shorter). block: a box. circle: an avatar or icon. row: an icon, a title and a hint line, like a list row. chip: a run of pills, like a tag or filter row. */
+  shape?: "line" | "block" | "circle" | "row" | "chip" | undefined;
+  /** The icon a row starts with: an avatar (circle, default) or an icon tile (square). */
+  icon?: "circle" | "square" | undefined;
   /** How many lines or rows. */
   lines?: number | undefined;
   /** CSS width of a line, block or circle. */
@@ -25,9 +27,11 @@ const props = withDefaults(defineProps<{
   height?: string | undefined;
   /** Say "Loading…" to screen readers with this text. */
   label?: string | undefined;
-}>(), { shape: "line", lines: 1, width: undefined, height: undefined, label: undefined });
+}>(), { shape: "line", lines: 1, icon: "circle", width: undefined, height: undefined, label: undefined });
 
 const count = computed(() => Math.max(1, Math.floor(props.lines)));
+/** Pill widths that read as different words. */
+const CHIP_WIDTHS = ["64px", "48px", "80px", "56px", "72px", "40px"];
 /** The last of several lines is shorter, like the end of a paragraph. */
 const lineWidth = (i: number): string | undefined =>
   props.width ?? (count.value > 1 && i === count.value - 1 ? "60%" : undefined);
@@ -41,9 +45,17 @@ const lineWidth = (i: number): string | undefined =>
     </template>
     <span v-else-if="shape === 'block'" class="wp-skeleton__bone wp-skeleton__block" :style="{ width, height }" aria-hidden="true" />
     <span v-else-if="shape === 'circle'" class="wp-skeleton__bone wp-skeleton__circle" :style="{ width: width ?? height, height: height ?? width }" aria-hidden="true" />
+    <span v-else-if="shape === 'chip'" class="wp-skeleton__chips" aria-hidden="true">
+      <span
+        v-for="i in count"
+        :key="i"
+        class="wp-skeleton__bone wp-skeleton__chip"
+        :style="{ width: width ?? CHIP_WIDTHS[(i - 1) % CHIP_WIDTHS.length], height }"
+      />
+    </span>
     <template v-else>
       <span v-for="i in count" :key="i" class="wp-skeleton__row" aria-hidden="true">
-        <span class="wp-skeleton__bone wp-skeleton__circle" />
+        <span class="wp-skeleton__bone" :class="icon === 'square' ? 'wp-skeleton__tile' : 'wp-skeleton__circle'" />
         <span class="wp-skeleton__row-text">
           <span class="wp-skeleton__bone wp-skeleton__line" :style="{ width: i % 2 ? '55%' : '42%' }" />
           <span class="wp-skeleton__bone wp-skeleton__line wp-skeleton__line--hint" :style="{ width: i % 2 ? '80%' : '68%' }" />
@@ -69,6 +81,10 @@ const lineWidth = (i: number): string | undefined =>
 .wp-skeleton__line--hint { height: 0.6em; opacity: 0.7; }
 .wp-skeleton__block { width: 100%; height: 64px; border-radius: var(--wp-radius); }
 .wp-skeleton__circle { flex: none; width: 28px; height: 28px; border-radius: 50%; /* round: stands in for an avatar */ }
+.wp-skeleton__tile { flex: none; width: 28px; height: 28px; border-radius: var(--wp-radius-sm); }
+.wp-skeleton__chips { display: flex; flex-wrap: wrap; gap: var(--wp-space-2); }
+/* A Chip's height (xs, 19px); pass height for a sm (24px) filter row. */
+.wp-skeleton__chip { height: 19px; border-radius: var(--wp-radius-cap, 999px); }
 .wp-skeleton__row { display: flex; align-items: center; gap: var(--wp-space-4); padding: var(--wp-space-2) 0; }
 .wp-skeleton__row-text { display: flex; flex-direction: column; gap: var(--wp-space-2); flex: 1; min-width: 0; }
 .wp-skeleton__sr {

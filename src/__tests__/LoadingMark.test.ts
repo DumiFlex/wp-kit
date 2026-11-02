@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
-import { mount } from "@vue/test-utils";
+import { describe, expect, it, vi } from "vitest";
+import { flushPromises, mount } from "@vue/test-utils";
 import LoadingMark from "../LoadingMark.vue";
 
 describe("LoadingMark", () => {
@@ -54,17 +54,70 @@ describe("LoadingMark", () => {
     expect(html).not.toContain("#a970ff");
   });
 
-  it("keeps every move off the compositor, so the mark stays sharp as it starts", () => {
-    // A keyframed `transform` / `opacity` lifts the path onto its own layer
-    // the moment it moves: it went soft and jumped half a pixel. The keyframes
-    // animate registered custom properties only.
+  it("keeps its only CSS animation (reduced motion) off the compositor", () => {
+    // A keyframed `opacity` lifts the mark onto its own layer: it went soft.
     const css = readFileSync(resolve(__dirname, "../LoadingMark.vue"), "utf8");
-    const frames = [...css.matchAll(/@keyframes [\w-]+ \{([\s\S]*?)\n\s*\}/g)].map((m) => m[1] ?? "");
-    expect(frames.length).toBeGreaterThan(4);
+    const frames = [...css.matchAll(/@keyframes [\w-]+ \{([\s\S]*?)\}\s*\}?/g)].map((m) => m[1] ?? "");
+    expect(frames.length).toBeGreaterThan(0);
     for (const body of frames) {
       const props = [...body.matchAll(/([\w-]+)\s*:/g)].map((m) => m[1]);
       expect(props.filter((p) => !p?.startsWith("--wp-lm-"))).toEqual([]);
     }
-    for (const name of ["x", "r", "s", "o"]) expect(css).toContain(`@property --wp-lm-${name} `);
+    expect(css).toContain("@property --wp-lm-o ");
+  });
+
+  it("stays the still SVG in a test DOM, where there is no canvas", () => {
+    const w = mount(LoadingMark, { props: { block: true } });
+    expect(w.find("canvas").exists()).toBe(false);
+    expect(w.get("[data-test='loading-mark']").classes()).not.toContain("wp-lm--drawn");
+  });
+
+  it("draws on a canvas over the SVG when motion is allowed, and stops on unmount", async () => {
+    const mm = vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
+    vi.stubGlobal("matchMedia", mm);
+    const ctx = fakeContext();
+    const getContext = vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockImplementation(() => ctx as unknown as CanvasRenderingContext2D);
+    const raf = vi.fn(() => 1);
+    const caf = vi.fn();
+    vi.stubGlobal("requestAnimationFrame", raf);
+    vi.stubGlobal("cancelAnimationFrame", caf);
+    vi.stubGlobal("Path2D", function Path2D() { /* no shape needed */ });
+    const ua = vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 Firefox/142.0");
+    try {
+      const w = mount(LoadingMark, { props: { size: 64 }, attachTo: document.body });
+      await flushPromises();
+      const c = w.get("canvas");
+      // 64 px plus room for the rings: 64 × 1188 / 1024.
+      expect(c.attributes("style")).toContain("width: 74.25px");
+      expect(w.get("[data-test='loading-mark']").classes()).toContain("wp-lm--drawn");
+      expect(ctx.fill).toHaveBeenCalled();
+      expect(raf).toHaveBeenCalled();
+      w.unmount();
+      expect(caf).toHaveBeenCalled();
+    } finally {
+      getContext.mockRestore();
+      ua.mockRestore();
+      vi.unstubAllGlobals();
+    }
+  });
+
+  it("keeps the still SVG under reduced motion", async () => {
+    vi.stubGlobal("matchMedia", () => ({ matches: true, addEventListener: vi.fn(), removeEventListener: vi.fn() }));
+    const ua = vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 Firefox/142.0");
+    try {
+      const w = mount(LoadingMark, { props: { block: true } });
+      await flushPromises();
+      expect(w.find("canvas").exists()).toBe(false);
+    } finally {
+      ua.mockRestore();
+      vi.unstubAllGlobals();
+    }
   });
 });
+
+function fakeContext(): Record<string, unknown> {
+  const grad = { addColorStop: vi.fn() };
+  const ctx: Record<string, unknown> = { createLinearGradient: vi.fn(() => grad) };
+  for (const k of ["setTransform", "clearRect", "save", "restore", "translate", "rotate", "scale", "fill"]) ctx[k] = vi.fn();
+  return ctx;
+}

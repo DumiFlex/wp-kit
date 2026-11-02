@@ -8,11 +8,13 @@
  *   <ImageGrid :images="outputs" />
  *   <ImageGrid v-model:selected="keep" :images="frames" selectable :min-size="96" />
  *
- * Tiles are buttons in reading order (one Tab stop each); a tile with no
- * `src` draws a Skeleton-like block while it loads.
+ * Tiles are buttons in reading order (one Tab stop each). A tile with no
+ * `src` yet (a frame still rendering) draws a Skeleton and can't be opened;
+ * the Lightbox steps only through the images that are there.
  */
 import { computed, ref } from "vue";
 import Lightbox from "./Lightbox.vue";
+import Skeleton from "./Skeleton.vue";
 import WpCheck from "./WpCheck.vue";
 
 export interface GridImage { id: string; src: string; alt: string; thumb?: string; caption?: string }
@@ -38,12 +40,15 @@ const emit = defineEmits<{
 
 const open = ref(false);
 const at = ref(0);
-const shots = computed(() => props.images.map((i) => ({ src: i.src, alt: i.alt, caption: i.caption })));
+/** Only the images that are there: a tile still loading has nothing to show. */
+const ready = computed(() => props.images.map((img, i) => ({ img, i })).filter(({ img }) => !!img.src));
+const shots = computed(() => ready.value.map(({ img }) => ({ src: img.src, alt: img.alt, caption: img.caption })));
 
 function show(i: number): void {
+  if (!props.images[i]?.src) return;
   emit("open", i);
   if (!props.lightbox) return;
-  at.value = i;
+  at.value = ready.value.findIndex((r) => r.i === i);
   open.value = true;
 }
 
@@ -69,11 +74,13 @@ function toggle(id: string, on: boolean): void {
       <button
         type="button"
         class="wp-image-grid__open"
-        :aria-label="selectable ? `Open ${img.alt}` : img.alt"
+        :aria-label="!img.src ? `${img.alt}, still loading` : selectable ? `Open ${img.alt}` : img.alt"
+        :aria-disabled="!img.src || undefined"
+        :data-loading="!img.src || undefined"
         @click="show(i)"
       >
         <img v-if="img.thumb || img.src" class="wp-image-grid__img" :src="img.thumb || img.src" alt="" loading="lazy">
-        <span v-else class="wp-image-grid__empty" aria-hidden="true" />
+        <Skeleton v-else class="wp-image-grid__empty" shape="block" width="100%" height="100%" />
       </button>
       <WpCheck
         v-if="selectable"
@@ -107,12 +114,8 @@ function toggle(id: string, on: boolean): void {
 .wp-image-grid__open:focus-visible { outline: none; border-color: var(--wp-border-focus); box-shadow: var(--wp-focus-ring); }
 .wp-image-grid__tile[data-selected] .wp-image-grid__open { border-color: var(--wp-accent); box-shadow: 0 0 0 2px var(--wp-accent-glow); }
 .wp-image-grid__img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.wp-image-grid__empty {
-  display: block; width: 100%; height: 100%;
-  background: linear-gradient(90deg, var(--wp-bg-2) 0%, var(--wp-bg-3) 50%, var(--wp-bg-2) 100%);
-  background-size: 200% 100%; animation: wp-image-grid-shimmer var(--wp-motion-shimmer) infinite;
-}
-@keyframes wp-image-grid-shimmer { to { background-position: -200% 0; } }
+.wp-image-grid__open[data-loading] { cursor: progress; }
+.wp-image-grid__empty { width: 100%; height: 100%; }
 .wp-image-grid__check { position: absolute; top: 6px; left: 6px; }
 .wp-image-grid__caption {
   overflow: hidden; color: var(--wp-text-muted); font: 400 var(--wp-text-xs)/1.3 var(--wp-font-sans);
@@ -120,6 +123,5 @@ function toggle(id: string, on: boolean): void {
 }
 @media (prefers-reduced-motion: reduce) {
   .wp-image-grid__open { transition: none; }
-  .wp-image-grid__empty { animation: none; }
 }
 </style>

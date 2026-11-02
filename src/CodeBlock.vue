@@ -8,17 +8,27 @@
  *   <CodeBlock :code="json" language="JSON" max-height="240px" />
  *   <CodeBlock :code="log" title="Request" line-numbers v-model:wrap="wrap" />
  *
- * No syntax colours (they cost bundle for little gain here). A block that
+ * Syntax colours come from `language` (JSON, TS, Vue/HTML, CSS, shell, the
+ * prompt template grammar; see highlight.ts), or from `syntax` when the head
+ * shows a title instead of a language tag:
+ *
+ *   <CodeBlock :code="template" title="Template" syntax="prompt" />
+ *
+ * Unknown languages stay plain. The colours are shared tokens, so a block
+ * reads right on the canvas, in the manager and in light mode. A block that
  * scrolls can be focused, so the keyboard can scroll it too.
  */
 import { computed, ref, watch } from "vue";
 import CopyButton from "./CopyButton.vue";
 import { vTooltip } from "./tooltip";
+import { highlight, highlightLanguage, highlightLines } from "./highlight";
 
 const props = withDefaults(defineProps<{
   code: string;
-  /** A small tag in the head, e.g. "JSON". */
+  /** A small tag in the head, e.g. "JSON". Also picks the syntax colours. */
   language?: string | undefined;
+  /** Syntax colours without a tag in the head ("prompt", "json", "ts" …). */
+  syntax?: string | undefined;
   /** A name in the head, e.g. "Prompt as sent". */
   title?: string | undefined;
   /** Wrap long lines. Bind with v-model:wrap, or leave it to the button. */
@@ -31,7 +41,7 @@ const props = withDefaults(defineProps<{
   /** Leave out the head (copy and wrap). */
   bare?: boolean | undefined;
   size?: "sm" | "md" | undefined;
-}>(), { language: undefined, title: undefined, wrap: undefined, maxHeight: undefined, size: "md" });
+}>(), { language: undefined, syntax: undefined, title: undefined, wrap: undefined, maxHeight: undefined, size: "md" });
 
 const emit = defineEmits<{ (e: "update:wrap", v: boolean): void }>();
 
@@ -43,7 +53,8 @@ function toggleWrap(): void {
   emit("update:wrap", own.value);
 }
 
-const lines = computed(() => props.code.replace(/\n$/, "").split("\n"));
+const tokens = computed(() => highlight(props.code, highlightLanguage(props.syntax ?? props.language)));
+const lines = computed(() => highlightLines(highlight(props.code.replace(/\n$/, ""), highlightLanguage(props.syntax ?? props.language))));
 const name = computed(() => props.title ?? props.language ?? "Code");
 </script>
 
@@ -69,7 +80,7 @@ const name = computed(() => props.title ?? props.language ?? "Code");
       tabindex="0"
       :aria-label="name"
       :style="{ maxHeight }"
-    ><code v-if="!lineNumbers" class="wp-code__code">{{ code }}</code><code v-else class="wp-code__code wp-code__code--numbered"><span v-for="(l, i) in lines" :key="i" class="wp-code__line"><span class="wp-code__num" aria-hidden="true">{{ i + 1 }}</span><span class="wp-code__text">{{ l || "\u00a0" }}</span></span></code></pre>
+    ><code v-if="!lineNumbers" class="wp-code__code"><template v-for="(t, i) in tokens" :key="i"><span v-if="t.kind !== 'plain'" :class="`wp-code__t--${t.kind}`">{{ t.text }}</span><template v-else>{{ t.text }}</template></template></code><code v-else class="wp-code__code wp-code__code--numbered"><span v-for="(l, i) in lines" :key="i" class="wp-code__line"><span class="wp-code__num" aria-hidden="true">{{ i + 1 }}</span><span class="wp-code__text"><template v-for="(t, j) in l" :key="j"><span v-if="t.kind !== 'plain'" :class="`wp-code__t--${t.kind}`">{{ t.text }}</span><template v-else>{{ t.text }}</template></template><template v-if="!l.length">{{ "\u00a0" }}</template></span></span></code></pre>
   </figure>
 </template>
 
@@ -104,6 +115,8 @@ const name = computed(() => props.title ?? props.language ?? "Code");
   margin: 0; padding: var(--wp-space-4); overflow: auto;
   color: var(--wp-text); font: 400 var(--wp-text-sm)/1.55 var(--wp-font-mono);
   white-space: pre; tab-size: 2;
+  /* Code shows as written: no `===` or `<!--` ligatures. */
+  font-variant-ligatures: none;
 }
 .wp-code[data-size="sm"] .wp-code__pre { padding: var(--wp-space-3); font-size: var(--wp-text-xs); }
 .wp-code[data-wrap] .wp-code__pre { white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -116,4 +129,18 @@ const name = computed(() => props.title ?? props.language ?? "Code");
   color: var(--wp-text-dim); user-select: none; font-variant-numeric: tabular-nums;
 }
 .wp-code__text { display: table-cell; }
+
+/* Syntax colours: shared tokens only, so they hold on the canvas and in light mode. */
+.wp-code__t--keyword { color: var(--wp-violet); }
+.wp-code__t--string { color: var(--wp-green); }
+.wp-code__t--number { color: var(--wp-amber); }
+.wp-code__t--comment { color: var(--wp-text-dim); font-style: italic; }
+.wp-code__t--punct { color: var(--wp-text-muted); }
+.wp-code__t--key, .wp-code__t--attr { color: var(--wp-teal); }
+.wp-code__t--tag { color: var(--wp-rose); }
+.wp-code__t--fn { color: var(--wp-info); }
+.wp-code__t--var { color: var(--wp-accent-text); }
+.wp-code__t--ref { color: var(--wp-teal); }
+.wp-code__t--brace { color: var(--wp-amber); }
+.wp-code__t--escape { color: var(--wp-text-dim); }
 </style>
