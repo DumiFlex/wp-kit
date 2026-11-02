@@ -352,6 +352,16 @@ export const KIT_ENTRIES: KitEntry[] = [
     use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour, brand=\"community\" in the community site's colours. The motion is drawn on a canvas, so it stays sharp and glides in every browser; with reduced motion the still mark only breathes. Hosts can slow or pause it with data-wp-motion-speed / data-wp-motion-paused on an ancestor.",
     instead: "A spinner or plain \"Loading…\" text.",
   },
+  {
+    id: "working-line", name: "WorkingLine", group: "feedback", file: "src/WorkingLine.vue", surfaces: ["manager", "canvas"],
+    use: "The \"model is working\" line, like Claude Code's: a mark drawn from the logo's sparkles (variant typing, shuffle, orbit or burst), a word that crossfades when it changes, and the time so far. It only draws; the app picks the word, time and tempo (slow while the model reads, mid while it thinks, fast while it writes). wordKey keeps a token count ticking up from crossfading every time. inline makes it smaller for a top bar.",
+    instead: "LoadingMark plus a status text when an AI request is running.",
+  },
+  {
+    id: "motion-css", name: "Entrance classes (motion.css)", group: "feedback", file: "src/motion.css", surfaces: ["manager", "canvas"],
+    use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves.",
+    instead: "A keyframe of opacity or transform in each component.",
+  },
   // Overlays
   {
     id: "modal", name: "Modal", group: "overlays", file: "src/Modal.vue", surfaces: ["manager"],
@@ -515,6 +525,8 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "toast": `useToast().push({ severity: "success", summary: "Saved", action: { label: "Undo", run: undo } })`,
   "toast-card": `<ToastCard tone="success" summary="Saved Hair colour" action-label="Undo" @action="undo" @dismiss="close" />`,
   "loading-mark": `<LoadingMark block>Loading bundle…</LoadingMark>`,
+  "working-line": `<WorkingLine :word="word" :word-key="phase" :time="elapsed" tempo="mid" variant="orbit" />`,
+  "motion-css": `import "@dumiflex/wp-kit/motion.css";\n<span class="wp-enter-pop">👍</span>\n<div class="wp-enter-drop wp-attention">Search the web?</div>`,
   "modal": `<Modal v-model:open="open" title="Rename"><template #footer>…</template></Modal>`,
   "modal-shell": `<ModalShell :visible="open" @close="open = false"><div class="my-dialog">…</div></ModalShell>`,
   "confirm-modal": `<ConfirmModal :open="ask" title="Delete Hair colour?" confirm-label="Delete" tone="danger" @confirm="del" @cancel="ask = false" />`,

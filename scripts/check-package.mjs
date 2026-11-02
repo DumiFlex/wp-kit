@@ -17,6 +17,7 @@ export const REQUIRED = [
   "src/theme/palettes.css",
   "src/theme/looks.css",
   "src/button.css",
+  "src/motion.css",
 ];
 
 /** Paths that must never ship. */

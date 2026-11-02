@@ -45,7 +45,12 @@ export const SHARED_TOKENS = [
 export const OPTIONAL_TOKENS = ["--wp-bg-deep", "--wp-bg2"] as const;
 
 /** Set by the piece itself, on its own root, not by the host. */
-export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon", "--wp-chip-c", "--wp-field-h"] as const;
+export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon", "--wp-chip-c", "--wp-field-h",
+  // WorkingLine's marks and word (registered properties it animates).
+  "--wp-wl-t", "--wp-wl-k", "--wp-wl-x", "--wp-wl-f", "--wp-wl-r", "--wp-wl-s", "--wp-wl-o", "--wp-wl-wo", "--wp-wl-wb",
+  "--wp-wl-dx", "--wp-wl-dy", "--wp-wl-big", "--wp-wl-a", "--wp-wl-b",
+  // motion.css entrances.
+  "--wp-enter-o", "--wp-enter-s", "--wp-enter-y", "--wp-enter-x"] as const;
 
 /** Pieces that need a page with src/theme/ loaded (not the canvas). */
 export const PAGE_PIECES = [
