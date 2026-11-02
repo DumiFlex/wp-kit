@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/DumiFlex/wp-kit/compare/v0.2.1...v0.3.0) (2026-11-02)
+
+
+### Features
+
+* publish the kit to npm as @dumiflex/wp-kit ([#25](https://github.com/DumiFlex/wp-kit/issues/25)) ([2ee813c](https://github.com/DumiFlex/wp-kit/commit/2ee813c622ed0c2a66063bf451ad2c2773a126ca))
+
 ## [0.2.1](https://github.com/DumiFlex/wp-kit/compare/v0.2.0...v0.2.1) (2026-11-02)
 
 
