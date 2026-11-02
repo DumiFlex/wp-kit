@@ -15,15 +15,15 @@
 import { computed, type Component } from "vue";
 import BundleMeta from "./BundleMeta.vue";
 import Icon from "./Icon.vue";
-import KindChip, { type KindChipSubtype } from "./KindChip.vue";
-import RatingBadge from "./RatingBadge.vue";
+import Chip from "./Chip.vue";
+import { itemType, kindColour, type ItemType } from "./kind-colour";
 import RelativeDate from "./RelativeDate.vue";
 
 export interface PostCardData {
   /** `owner/name`. */
   slug: string;
   kind: "module" | "bundle";
-  subtype?: KindChipSubtype | "bundle" | null | undefined;
+  subtype?: ItemType | null | undefined;
   description?: string | undefined;
   tags?: string[] | undefined;
   stars: number;
@@ -48,7 +48,7 @@ const props = withDefaults(defineProps<{
   as?: string | Component | undefined;
 }>(), { starred: false, as: "a" });
 
-const type = computed(() => (props.post.kind === "bundle" ? "bundle" : (props.post.subtype ?? "fixed_values")));
+const type = computed(() => itemType(props.post.kind, props.post.subtype));
 const owner = computed(() => props.post.slug.split("/")[0]);
 const name = computed(() => props.post.slug.split("/").slice(1).join("/"));
 const tags = computed(() => props.post.tags ?? []);
@@ -64,11 +64,10 @@ const tags = computed(() => props.post.tags ?? []);
   >
     <div class="wp-post-card__top">
       <div class="wp-post-card__badges">
-        <KindChip :kind="post.kind" :subtype="post.subtype" />
-        <RatingBadge :rating="post.rating" :featured="post.featured" />
-        <span v-if="post.recommended" class="wp-chip wp-chip--success">
-          <span class="wp-chip__dot" />recommended
-        </span>
+        <Chip :color="kindColour(type)">{{ type }}</Chip>
+        <Chip v-if="post.rating === 'nsfw'" tone="danger">NSFW</Chip>
+        <Chip v-if="post.featured" tone="warn" icon="star-fill">Featured</Chip>
+        <Chip v-if="post.recommended" tone="success"><span class="wp-chip__dot" />recommended</Chip>
       </div>
       <span v-if="post.deleted" class="wp-chip wp-chip--danger"><Icon name="trash" :size="10" />deleted</span>
       <span v-else class="wp-chip">v{{ post.version ?? 1 }}</span>
