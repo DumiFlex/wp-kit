@@ -11,6 +11,7 @@ import ToastHost from "@kit/ToastHost.vue";
 import WpSegmented from "@kit/WpSegmented.vue";
 import WpSelect from "@kit/WpSelect.vue";
 import KitEntry from "./KitEntry.vue";
+import KitMotion from "./KitMotion.vue";
 import KitTokens from "./KitTokens.vue";
 import { KIT_ENTRIES, KIT_GROUPS } from "./registry";
 import { LOOKS, PALETTES, applyAppearance, loadAppearance, saveAppearance, type Scheme } from "./appearance";
@@ -91,6 +92,7 @@ const REPO = "https://github.com/DumiFlex/wp-kit";
       <div class="wp-kit__layout">
         <nav class="wp-kit__nav" aria-label="Kit sections">
           <a href="#kit-tokens" class="wp-kit__nav-link">Tokens</a>
+          <a href="#kit-motion" class="wp-kit__nav-link">Animations</a>
           <template v-for="g in groups" :key="g.id">
             <a :href="`#kit-group-${g.id}`" class="wp-kit__nav-link">{{ g.label }}</a>
             <a v-for="e in g.entries" :key="e.id" :href="`#kit-${e.id}`" class="wp-kit__nav-link wp-kit__nav-link--sub">{{ e.name }}</a>
@@ -102,6 +104,15 @@ const REPO = "https://github.com/DumiFlex/wp-kit";
             <h2 class="wp-kit__group-title">Tokens</h2>
             <p class="wp-kit__group-blurb">Colours, type and spacing. Use a token, never a raw colour or size.</p>
             <KitTokens />
+          </section>
+
+          <section id="kit-motion" class="wp-kit__group" data-kit-group="motion">
+            <h2 class="wp-kit__group-title">Animations</h2>
+            <p class="wp-kit__group-blurb">
+              Every animation in the kit side by side. Slow them down or pause them to check that a mark stays sharp and
+              glides, and that nothing jumps as it starts or stops.
+            </p>
+            <KitMotion />
           </section>
 
           <section v-for="g in groups" :id="`kit-group-${g.id}`" :key="g.id" class="wp-kit__group" :data-kit-group="g.id">
