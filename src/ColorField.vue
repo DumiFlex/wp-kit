@@ -91,8 +91,8 @@ function pickNone(): void {
       <button
         v-bind="triggerProps"
         type="button"
-        class="wp-color-field"
-        :class="[`wp-color-field--${size}`, { 'is-none': isNone }]"
+        class="wp-color-field wp-field-box"
+        :class="[`wp-color-field--${size}`, `wp-field-box--${size}`, { 'is-none': isNone }]"
         :disabled="disabled"
         :aria-label="`${ariaLabel}: ${shown}`"
         :data-test="dataTest"
@@ -107,7 +107,7 @@ function pickNone(): void {
       <HsvPicker :model-value="rgb" :aria-label="ariaLabel" @update:model-value="onHsv" />
       <div class="wp-color-field__row">
         <input
-          class="wp-color-field__hex"
+          class="wp-color-field__hex wp-field-box wp-field-box--sm"
           :value="draft"
           :aria-label="`${ariaLabel} hex`"
           spellcheck="false"
@@ -141,25 +141,19 @@ function pickNone(): void {
   </Popover>
 </template>
 
+<style scoped src="./field.css"></style>
+
 <style scoped>
 .wp-color-field {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-width: 0;
-  height: var(--wp-control-h-sm, 24px);
+  height: var(--wp-field-h);
   padding: 0 8px 0 3px;
-  background: var(--wp-bg-2);
-  border: 1px solid var(--wp-border);
-  border-radius: min(4px, var(--wp-radius-cap, 999px));
-  color: var(--wp-text);
-  font: 11px var(--wp-font-mono, monospace);
+  font-family: var(--wp-font-mono, monospace);
   cursor: pointer;
 }
-.wp-color-field--md { height: var(--wp-control-h-md, 32px); font-size: 12px; }
-.wp-color-field:hover:not(:disabled) { border-color: var(--wp-border-strong); }
-.wp-color-field:focus-visible { outline: none; box-shadow: var(--wp-focus-ring); }
-.wp-color-field:disabled { opacity: 0.5; cursor: default; }
 .wp-color-field__chip {
   position: relative;
   flex: none;
@@ -189,18 +183,6 @@ function pickNone(): void {
   padding: 0;
 }
 .wp-color-field__row { display: flex; gap: 6px; align-items: center; }
-.wp-color-field__hex {
-  flex: 1;
-  min-width: 0;
-  height: var(--wp-control-h-sm, 24px);
-  padding: 0 6px;
-  background: var(--wp-bg-1);
-  color: var(--wp-text);
-  border: 1px solid var(--wp-border);
-  border-radius: min(4px, var(--wp-radius-cap, 999px));
-  font: 11px var(--wp-font-mono, monospace);
-  outline: none;
-}
-.wp-color-field__hex:focus { border-color: var(--wp-border-focus); }
+.wp-color-field__hex { flex: 1; min-width: 0; height: var(--wp-field-h); padding: 0 6px; font-family: var(--wp-font-mono, monospace); }
 .wp-color-field__alpha { width: 72px; flex: none; }
 </style>

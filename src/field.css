@@ -1,0 +1,50 @@
+/* Field box: the one look of every text-like field in the kit (Input,
+ * Textarea and Select draw the same box from theme/tokens.css' `.wp-input`;
+ * SearchInput, WpNumber, Combobox, TagInput, ColorField and WpSelect pull this
+ * sheet in scoped). It reads only the SHARED_TOKENS names, so a field wears
+ * the manager colours on a page and the canvas colours in a node.
+ *
+ *   <div class="wp-field-box wp-field-box--sm" …>
+ *
+ * Heights follow the control scale (sm 24 / md 32 / lg 40) as a min-height,
+ * so a field that wraps (Combobox, TagInput chips) can grow; a single-line
+ * field sets `height: var(--wp-field-h)` itself. A piece keeps its own
+ * layout (display, padding, gap) and font family (WpNumber and ColorField
+ * are mono); the box sets everything you see around it.
+ *
+ * States: hover (stronger border), focus-within (accent border + focus
+ * ring), invalid (`.is-invalid`, `[data-invalid]` or `aria-invalid`),
+ * disabled (`.is-disabled`, `[data-disabled]` or `:disabled`: 45%).
+ */
+
+.wp-field-box {
+  --wp-field-h: var(--wp-control-h-md);
+  box-sizing: border-box;
+  min-height: var(--wp-field-h);
+  background: var(--wp-bg-2);
+  color: var(--wp-text);
+  border: 1px solid var(--wp-border);
+  border-radius: var(--wp-radius-sm);
+  font-size: 12.5px;
+  transition: border-color var(--wp-motion-quick), box-shadow var(--wp-motion-quick), background var(--wp-motion-quick);
+}
+.wp-field-box--sm { --wp-field-h: var(--wp-control-h-sm); font-size: 12px; }
+.wp-field-box--lg { --wp-field-h: var(--wp-control-h-lg); font-size: 13.5px; }
+
+.wp-field-box:hover { border-color: var(--wp-border-strong); }
+.wp-field-box:focus-within,
+.wp-field-box:focus-visible {
+  outline: none;
+  border-color: var(--wp-accent-500);
+  box-shadow: var(--wp-focus-ring);
+  background: var(--wp-bg-1);
+}
+.wp-field-box.is-invalid,
+.wp-field-box[data-invalid],
+.wp-field-box[aria-invalid="true"] { border-color: var(--wp-error-border); }
+.wp-field-box.is-disabled,
+.wp-field-box[data-disabled],
+.wp-field-box:disabled { opacity: 0.45; cursor: not-allowed; }
+.wp-field-box.is-disabled:hover,
+.wp-field-box[data-disabled]:hover,
+.wp-field-box:disabled:hover { border-color: var(--wp-border); }

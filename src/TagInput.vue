@@ -185,7 +185,8 @@ function setOpen(v: boolean): void {
       <!-- A click on the box's padding focuses the text field, which has the keys. -->
       <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
       <div
-        class="wp-tag-input"
+        class="wp-tag-input wp-field-box"
+        :class="`wp-field-box--${size}`"
         :data-size="size"
         :data-disabled="disabled || undefined"
         :data-invalid="invalid || undefined"
@@ -243,22 +244,18 @@ function setOpen(v: boolean): void {
   </Popover>
 </template>
 
+<style scoped src="./field.css"></style>
+
 <style scoped>
 .wp-tag-input {
-  --_h: var(--wp-control-h-md);
-  display: flex; flex-wrap: wrap; align-items: center; gap: 4px; box-sizing: border-box;
-  width: 100%; min-height: var(--_h); padding: 3px var(--wp-space-3);
-  border: 1px solid var(--wp-border); border-radius: var(--wp-radius);
-  background: var(--wp-bg-1); color: var(--wp-text); cursor: text;
-  font: 400 var(--wp-text-sm)/1 var(--wp-font-sans);
-  transition: border-color var(--wp-motion-hover), box-shadow var(--wp-motion-hover);
+  --_h: var(--wp-field-h);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
+  width: 100%; padding: 3px var(--wp-space-3);
+  cursor: text;
+  font-family: var(--wp-font-sans); font-weight: 400; line-height: 1;
 }
-.wp-tag-input[data-size="sm"] { --_h: var(--wp-control-h-sm); padding: 2px var(--wp-space-2); border-radius: var(--wp-radius-sm); font-size: var(--wp-text-xs); gap: 3px; }
-.wp-tag-input[data-size="lg"] { --_h: var(--wp-control-h-lg); padding: 5px var(--wp-space-4); }
-.wp-tag-input:hover { border-color: var(--wp-border-strong); }
-.wp-tag-input:focus-within { border-color: var(--wp-border-focus); box-shadow: var(--wp-focus-ring); }
-.wp-tag-input[data-invalid] { border-color: var(--wp-error-border); }
-.wp-tag-input[data-disabled] { opacity: 0.45; cursor: not-allowed; }
+.wp-tag-input[data-size="sm"] { padding: 2px var(--wp-space-2); gap: 3px; }
+.wp-tag-input[data-size="lg"] { padding: 5px var(--wp-space-4); }
 .wp-tag-input__chip {
   display: inline-flex; align-items: center; gap: 2px; max-width: 100%; box-sizing: border-box;
   height: 20px; padding: 0 2px 0 7px;
