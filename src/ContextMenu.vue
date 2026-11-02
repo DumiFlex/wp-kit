@@ -224,6 +224,9 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
         <!-- Item action — same shape as before plus optional subtitle. -->
         <template v-else>
           <li v-if="entry.divider" class="wp-ctxmenu__sep" aria-hidden="true"></li>
+          <!-- The role is menuitem or menuitemcheckbox (bound, so the rule
+               can't see it); keys come from the menu's own keydown. -->
+          <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
           <li
             class="wp-ctxmenu__item"
             :class="{
