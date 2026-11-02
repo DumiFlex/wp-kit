@@ -4,4 +4,5 @@ import Logo from "@kit/Logo.vue";
 
 <template>
   <Logo :size="16" /><Logo :size="20" /><Logo :size="28" /><Logo :size="40" />
+  <Logo :size="28" brand="community" /><Logo :size="40" brand="community" />
 </template>
