@@ -80,7 +80,7 @@ const lineWidth = (i: number): string | undefined =>
 .wp-skeleton__line { width: 100%; height: 0.75em; }
 .wp-skeleton__line--hint { height: 0.6em; opacity: 0.7; }
 .wp-skeleton__block { width: 100%; height: 64px; border-radius: var(--wp-radius); }
-.wp-skeleton__circle { flex: none; width: 28px; height: 28px; border-radius: 50%; /* round: stands in for an avatar */ }
+.wp-skeleton__circle { flex: none; width: 28px; height: 28px; border-radius: min(50%, var(--wp-radius-cap, 999px)); }
 .wp-skeleton__tile { flex: none; width: 28px; height: 28px; border-radius: var(--wp-radius-sm); }
 .wp-skeleton__chips { display: flex; flex-wrap: wrap; gap: var(--wp-space-2); }
 /* A Chip's height (xs, 19px); pass height for a sm (24px) filter row. */
