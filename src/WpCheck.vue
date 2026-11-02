@@ -38,6 +38,8 @@ function toggle(): void {
 </script>
 
 <template>
+  <!-- Focusable: tabindex is bound (-1 while disabled), which the rule can't see. -->
+  <!-- eslint-disable-next-line vuejs-accessibility/interactive-supports-focus -->
   <span
     class="wp-check"
     :class="{ 'wp-check--sm': size === 'sm' }"

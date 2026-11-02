@@ -67,7 +67,7 @@ describe("Select.vue", () => {
     await trigger.trigger("keydown", { key: "Enter" });
     const events = wrap.emitted("update:modelValue");
     expect(events).toBeTruthy();
-    expect(events![0]).toEqual(["b"]);
+    expect(events?.[0]).toEqual(["b"]);
     wrap.unmount();
   });
 
@@ -118,7 +118,7 @@ describe("Select.vue", () => {
     await trigger.trigger("click");
     await trigger.trigger("keydown", { key: "g" }); // → only "Gamma"
     await trigger.trigger("keydown", { key: "Enter" });
-    expect(wrap.emitted("update:modelValue")![0]).toEqual(["c"]);
+    expect(wrap.emitted("update:modelValue")?.[0]).toEqual(["c"]);
     wrap.unmount();
   });
 

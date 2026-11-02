@@ -15,12 +15,24 @@ const LABEL_HAS_FOR = { required: { some: ["nesting", "id"] }, controlComponents
 const STRICTER_TS_RULES = {
   "@typescript-eslint/ban-ts-comment": "error",
   "@typescript-eslint/no-explicit-any": "error",
-  "@typescript-eslint/no-non-null-assertion": "warn",
+  // An error here as in the apps' lint ratchet: the apps install the kit from
+  // npm and no longer lint it, so the kit holds itself to their rules.
+  "@typescript-eslint/no-non-null-assertion": "error",
   "@typescript-eslint/no-empty-object-type": "error",
   "@typescript-eslint/no-unsafe-function-type": "error",
   "@typescript-eslint/no-wrapper-object-types": "error",
   "@typescript-eslint/no-extraneous-class": "error",
   "@typescript-eslint/no-namespace": "error",
+};
+
+// The accessibility rules the extension's lint ratchet holds as errors. A
+// real exception carries an eslint-disable line with its reason.
+const A11Y_ERRORS = {
+  "vuejs-accessibility/click-events-have-key-events": "error",
+  "vuejs-accessibility/no-static-element-interactions": "error",
+  "vuejs-accessibility/label-has-for": ["error", LABEL_HAS_FOR],
+  "vuejs-accessibility/interactive-supports-focus": "error",
+  "vuejs-accessibility/mouse-events-have-key-events": "error",
 };
 
 const GENERAL_STRICT_RULES = {
@@ -55,16 +67,13 @@ export default [
       ...vue.configs["vue3-recommended"].rules,
       "vue/comment-directive": "error",
       ...a11y.configs.recommended.rules,
+      // Errors, as in the extension's lint ratchet (see no-non-null-assertion).
+      ...A11Y_ERRORS,
       ...STRICTER_TS_RULES,
       ...GENERAL_STRICT_RULES,
       // Generic pieces have one-word names (Badge, Popover).
       "vue/multi-word-component-names": "off",
-      "vuejs-accessibility/click-events-have-key-events": "warn",
-      "vuejs-accessibility/no-static-element-interactions": "warn",
       "vuejs-accessibility/anchor-has-content": "error",
-      "vuejs-accessibility/label-has-for": ["warn", LABEL_HAS_FOR],
-      "vuejs-accessibility/interactive-supports-focus": "warn",
-      "vuejs-accessibility/mouse-events-have-key-events": "warn",
     },
   },
 ];
