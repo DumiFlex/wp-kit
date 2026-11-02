@@ -1,10 +1,38 @@
 {
   "name": "@dumiflex/wp-kit",
   "version": "0.2.0",
-  "private": true,
   "description": "Vue 3 component kit shared by the Wildcard Pipeline manager, canvas and community site.",
+  "keywords": [
+    "vue",
+    "vue3",
+    "components",
+    "design-tokens",
+    "comfyui",
+    "wildcard-pipeline"
+  ],
+  "homepage": "https://dumiflex.github.io/wp-kit/",
+  "bugs": {
+    "url": "https://github.com/DumiFlex/wp-kit/issues"
+  },
   "license": "GPL-3.0-or-later",
   "type": "module",
+  "files": [
+    "src",
+    "!src/**/__tests__",
+    "!src/**/*.test.ts",
+    "CHANGELOG.md"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    "./*": "./src/*"
+  },
+  "sideEffects": [
+    "**/*.css",
+    "**/*.vue"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DumiFlex/wp-kit.git"
@@ -20,7 +48,8 @@
     "test:watch": "vitest",
     "site:dev": "vite --config site/vite.config.ts",
     "site:build": "vite build --config site/vite.config.ts",
-    "site:preview": "vite preview --config site/vite.config.ts"
+    "site:preview": "vite preview --config site/vite.config.ts",
+    "check-package": "node scripts/check-package.mjs"
   },
   "peerDependencies": {
     "vue": "^3.5.0",

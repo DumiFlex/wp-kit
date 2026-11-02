@@ -4,7 +4,7 @@ Short, load-bearing notes for anyone (human or Claude) working here.
 
 ## What this repo is
 
-The Vue 3 component kit shared by the Wildcard Pipeline extension (DumiFlex/ComfyUI-Wildcard-Pipeline: manager + canvas) and the community site (DumiFlex/Wildcard-Pipeline-Community). The apps copy `src/` in at a release tag with their own `scripts/kit-pull.mjs`; a CI check in each app fails on hand edits to the copy. So every kit change starts here.
+The Vue 3 component kit shared by the Wildcard Pipeline extension (DumiFlex/ComfyUI-Wildcard-Pipeline: manager + canvas) and the community site (DumiFlex/Wildcard-Pipeline-Community). It is published to npm as `@dumiflex/wp-kit` (source, no build: `files` is `src/` minus tests, `exports` maps `./*` to `./src/*`); the release workflow stages each version with trusted publishing and a maintainer approves it on npmjs.com. Apps not yet on the package copy `src/` in at a release tag with their own `scripts/kit-pull.mjs`, and a CI check there fails on hand edits to the copy. Either way, every kit change starts here.
 
 ## Rules
 
@@ -22,4 +22,5 @@ The Vue 3 component kit shared by the Wildcard Pipeline extension (DumiFlex/Comf
 
 - Branches `feat/x`, `fix/x`, `docs/x`, `refactor/x`, `chore/x`, `test/x` off `dev`; PRs into `dev`, squash-merged. The PR title is the commit release-please reads, so it must be a Conventional Commit.
 - `dev` → `main` by a plain merge ships a release (release-please PR merges itself; tag `vX.Y.Z`; main syncs back into dev).
-- Before pushing: `pnpm lint && pnpm typecheck && pnpm test && pnpm site:build`.
+- Before pushing: `pnpm lint && pnpm typecheck && pnpm test && pnpm site:build && pnpm check-package`.
+- A new top-level folder under `src/`, or a file an app imports that `check-package` doesn't list, is fine as long as `files` still ships it: run `pnpm check-package` and read the list.
