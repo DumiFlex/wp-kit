@@ -25,7 +25,7 @@
  *   <WpImageZoom v-model:zoom="zoom" :src="url" alt="Frame 3" />
  */
 import { computed, onBeforeUnmount, ref, watch } from "vue";
-import WpButton from "./WpButton.vue";
+import Button from "./Button.vue";
 import {
   centreOf, clampView, fitScale, percent, stepScale, viewAround, visibleRect, zoomAt, IDLE_MS, type Size, type View,
 } from "./image-zoom";
@@ -298,13 +298,13 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
       @focusout="chromeLeave"
     >
       <slot name="bar-start" />
-      <WpButton variant="ghost" :size="size" icon="pi-minus" aria-label="Zoom out" kbd="−" data-test="imgzoom-out" @click="zoomOut" />
-      <WpButton :variant="isFit ? 'secondary' : 'ghost'" :size="size" kbd="0" hint="Show the whole picture" :aria-pressed="isFit" data-test="imgzoom-fit" @click="setZoom(null)">Fit</WpButton>
-      <WpButton :variant="at(1) ? 'secondary' : 'ghost'" :size="size" kbd="1" hint="Real size: one image pixel per screen pixel" :aria-pressed="at(1)" data-test="imgzoom-100" @click="setZoom(1)">100%</WpButton>
-      <WpButton :variant="at(2) ? 'secondary' : 'ghost'" :size="size" kbd="2" hint="Twice the real size" :aria-pressed="at(2)" data-test="imgzoom-200" @click="setZoom(2)">200%</WpButton>
-      <WpButton variant="ghost" :size="size" icon="pi-plus" aria-label="Zoom in" kbd="+" data-test="imgzoom-in" @click="zoomIn" />
+      <Button variant="ghost" :size="size" icon="pi-minus" aria-label="Zoom out" kbd="−" data-test="imgzoom-out" @click="zoomOut" />
+      <Button :variant="isFit ? 'secondary' : 'ghost'" :size="size" kbd="0" hint="Show the whole picture" :aria-pressed="isFit" data-test="imgzoom-fit" @click="setZoom(null)">Fit</Button>
+      <Button :variant="at(1) ? 'secondary' : 'ghost'" :size="size" kbd="1" hint="Real size: one image pixel per screen pixel" :aria-pressed="at(1)" data-test="imgzoom-100" @click="setZoom(1)">100%</Button>
+      <Button :variant="at(2) ? 'secondary' : 'ghost'" :size="size" kbd="2" hint="Twice the real size" :aria-pressed="at(2)" data-test="imgzoom-200" @click="setZoom(2)">200%</Button>
+      <Button variant="ghost" :size="size" icon="pi-plus" aria-label="Zoom in" kbd="+" data-test="imgzoom-in" @click="zoomIn" />
       <span class="wp-imgzoom__level" aria-live="polite" data-test="imgzoom-level">{{ level }}</span>
-      <WpButton
+      <Button
         v-if="canFull"
         variant="ghost"
         :size="size"

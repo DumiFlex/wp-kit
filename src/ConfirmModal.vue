@@ -2,22 +2,23 @@
 /**
  * Ask before an action, in the manager's own dialog.
  *
- * A thin wrapper on Modal: the same backdrop, focus trap, Escape and focus
- * return as every other manager dialog, with a Cancel button and a confirm
- * button that names the action. The canvas keeps `ConfirmDialog`, which
- * wears the node colours; this one wears the manager's.
+ * Built on Modal: the same backdrop, focus trap, Escape and focus return as
+ * every other dialog, with a Cancel button and a confirm button that names
+ * the action. One confirm for the manager, the canvas and the community site
+ * (ConfirmDialog was folded in: `visible` → `v-model:open`/`open`,
+ * `variant="danger"` → `tone="danger"`); it wears the colours of its side.
  *
  * Escape, the backdrop, the ✕ and Cancel all emit `cancel`. Enter confirms
  * unless focus is on a button or a text box (which then gets the key itself).
- * The `confirm-*` data-test names match ConfirmDialog's, so a test can drive
- * either.
+ * Data-test names: `confirm-title`, `confirm-body`, `confirm-cancel`,
+ * `confirm-confirm`.
  *
  * `requireType` makes the user type that exact text before Confirm works
  * (deleting an account); `confirmDisabled` holds Confirm off for a gate the
  * page owns (a required reason in the slot). `warn` asks about something
  * that can be undone but matters: an outlined button and an info mark.
  */
-import { computed, onBeforeUnmount, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import Modal from "./Modal.vue";
 import Button from "./Button.vue";
 import Icon from "./Icon.vue";
@@ -70,26 +71,15 @@ function onKeydown(ev: KeyboardEvent): void {
   emit("confirm");
 }
 
-watch(
-  () => props.open,
-  (open) => {
-    if (open) {
-      typed.value = "";
-      window.addEventListener("keydown", onKeydown);
-    }
-    else window.removeEventListener("keydown", onKeydown);
-  },
-  { immediate: true },
-);
-onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown));
+watch(() => props.open, (open) => { if (open) typed.value = ""; }, { immediate: true });
 </script>
 
 <template>
-  <Modal :open="open" size="sm" @update:open="onOpen">
+  <Modal :open="open" size="sm" @update:open="onOpen" @keydown="onKeydown">
     <template #header="{ titleId }">
       <span class="wp-confirm-modal__head" :class="`wp-confirm-modal__head--${tone}`">
         <Icon :name="tone === 'danger' ? 'exclamation-triangle' : 'info-circle'" />
-        <h3 :id="titleId" class="wp-modal__title" data-test="confirm-title">{{ title }}</h3>
+        <h3 :id="titleId" class="wp-confirm-modal__title" data-test="confirm-title">{{ title }}</h3>
       </span>
     </template>
     <div class="wp-confirm-modal__body">
@@ -123,7 +113,7 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown));
 }
 .wp-confirm-modal__head--danger { color: var(--wp-danger); }
 .wp-confirm-modal__head--warn { color: var(--wp-warn); }
-.wp-confirm-modal__head .wp-modal__title { color: var(--wp-text); }
+.wp-confirm-modal__title { margin: 0; font-size: var(--wp-text-md); font-weight: 600; color: var(--wp-text); }
 .wp-confirm-modal__text {
   margin: 0;
   color: var(--wp-text-muted);

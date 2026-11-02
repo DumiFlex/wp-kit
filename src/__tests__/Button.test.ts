@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import Button from "../Button.vue";
 
 describe("Button.vue", () => {
@@ -80,22 +80,62 @@ describe("Button variants × states", () => {
   }
 });
 
-describe("Button — icon-only hover tooltip", () => {
-  it("mirrors aria-label into title when there is no visible text", () => {
-    const wrap = mount(Button, { props: { icon: "pi-pencil", ariaLabel: "Edit" } });
-    expect(wrap.get("button").attributes("title")).toBe("Edit");
+/** Hover the button and return the open tooltip's text (and key chip). */
+function tipOf(el: Element): { text: string | null; kbd: string | null } {
+  el.dispatchEvent(new PointerEvent("pointerenter"));
+  vi.advanceTimersByTime(500);
+  const tip = document.querySelector(".wp-tooltip[data-open]");
+  const kbd = tip?.querySelector(".wp-tooltip__kbd")?.textContent ?? null;
+  const text = tip ? (tip.firstChild?.textContent ?? tip.textContent) : null;
+  el.dispatchEvent(new PointerEvent("pointerleave"));
+  return { text, kbd };
+}
+
+describe("Button — tooltip", () => {
+  afterEach(() => { vi.useRealTimers(); document.body.innerHTML = ""; });
+
+  it("an icon button shows its aria-label, with a key chip from kbd", () => {
+    vi.useFakeTimers();
+    const w = mount(Button, { props: { icon: "times", ariaLabel: "Close", kbd: "Esc" }, attachTo: document.body });
+    expect(tipOf(w.element)).toEqual({ text: "Close", kbd: "Esc" });
+    expect(w.attributes("title")).toBeUndefined();
   });
 
-  it("does NOT set a title when the button has visible text", () => {
-    const wrap = mount(Button, {
-      props: { icon: "pi-pencil", ariaLabel: "Edit" },
-      slots: { default: "Edit" },
-    });
-    expect(wrap.get("button").attributes("title")).toBeUndefined();
+  it("a button with text has no tooltip unless hint asks for one", async () => {
+    vi.useFakeTimers();
+    const w = mount(Button, { props: { ariaLabel: "Edit" }, slots: { default: "Edit" }, attachTo: document.body });
+    expect(tipOf(w.element).text).toBeNull();
+    await w.setProps({ hint: "Edit the module" });
+    expect(tipOf(w.element).text).toBe("Edit the module");
+  });
+});
+
+describe("Button — canvas and link uses (WpButton and CloseButton were folded in)", () => {
+  it("takes the canvas size and a pi- icon name", () => {
+    const w = mount(Button, { props: { size: "sm", icon: "pi-plus" }, slots: { default: "Add" } });
+    expect(w.classes()).toEqual(expect.arrayContaining(["wp-btn", "wp-btn--secondary", "wp-btn--sm"]));
+    expect(w.find("i.pi.pi-plus").exists()).toBe(true);
   });
 
-  it("sets no title when there is no aria-label to mirror", () => {
-    const wrap = mount(Button, { props: { icon: "pi-pencil" } });
-    expect(wrap.get("button").attributes("title")).toBeUndefined();
+  it("a ghost × icon button is the close button", () => {
+    const w = mount(Button, { props: { variant: "ghost", icon: "times", ariaLabel: "Close" } });
+    expect(w.classes()).toEqual(expect.arrayContaining(["wp-btn--ghost", "wp-btn--icon"]));
+    expect(w.find("i.pi-times").exists()).toBe(true);
+  });
+
+  it('as="a" is a link; disabled takes it out of reach and stops the click', async () => {
+    const w = mount(Button, { props: { as: "a", variant: "link" }, attrs: { href: "/docs" }, slots: { default: "Docs" } });
+    expect(w.element.tagName).toBe("A");
+    expect(w.attributes("href")).toBe("/docs");
+    expect(w.attributes("type")).toBeUndefined();
+    await w.trigger("click");
+    expect(w.emitted("click")).toHaveLength(1);
+    await w.setProps({ disabled: true });
+    expect(w.attributes("aria-disabled")).toBe("true");
+    expect(w.attributes("tabindex")).toBe("-1");
+    const ev = new MouseEvent("click", { bubbles: true, cancelable: true });
+    w.element.dispatchEvent(ev);
+    expect(ev.defaultPrevented).toBe(true);
+    expect(w.emitted("click")).toHaveLength(1);
   });
 });

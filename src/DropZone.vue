@@ -15,7 +15,7 @@
  */
 import { computed, ref } from "vue";
 import { dragItemMaybeAccepted, fileAccepted, formatBytes } from "./drop-zone";
-import WpButton from "./WpButton.vue";
+import Button from "./Button.vue";
 
 export interface RejectedFile { file: File; reason: string }
 
@@ -152,7 +152,7 @@ defineExpose({ browse });
       <span class="wp-drop__label">{{ over === "refuse" ? refuseWhy : mainLabel }}</span>
       <span v-if="hint && over !== 'refuse'" class="wp-drop__hint">{{ hint }}{{ maxSize ? ` · up to ${formatBytes(maxSize)}` : "" }}</span>
     </span>
-    <WpButton class="wp-drop__browse" variant="secondary" size="sm" icon="pi-folder-open" :disabled="disabled" @click="browse">{{ browseLabel }}</WpButton>
+    <Button class="wp-drop__browse" variant="secondary" size="sm" icon="pi-folder-open" :disabled="disabled" @click="browse">{{ browseLabel }}</Button>
     <input ref="inputEl" class="wp-drop__input" type="file" :accept="accept" :multiple="multiple" tabindex="-1" aria-hidden="true" @change="onPicked">
   </div>
 </template>

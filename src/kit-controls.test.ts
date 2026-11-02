@@ -2,7 +2,6 @@ import { flushPromises, mount } from "@vue/test-utils";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
 import Banner from "./Banner.vue";
-import CloseButton from "./CloseButton.vue";
 import CopyButton from "./CopyButton.vue";
 import Disclosure from "./Disclosure.vue";
 import WpSegmented from "./WpSegmented.vue";
@@ -139,15 +138,6 @@ describe("Banner", () => {
     expect(w.emitted("dismiss")).toHaveLength(1);
     await w.setProps({ tone: "danger" });
     expect(w.attributes("role")).toBe("alert");
-  });
-});
-
-describe("CloseButton", () => {
-  it("is named Close by default and emits click", async () => {
-    const w = mount(CloseButton);
-    expect(w.attributes("aria-label")).toBe("Close");
-    await w.trigger("click");
-    expect(w.emitted("click")).toHaveLength(1);
   });
 });
 

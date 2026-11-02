@@ -71,33 +71,23 @@ export const KIT_GROUPS: { id: KitGroup; label: string; blurb: string }[] = [
 export const KIT_ENTRIES: KitEntry[] = [
   // Actions
   {
-    id: "button", name: "Button", group: "actions", file: "src/Button.vue", surfaces: ["manager", "community"], usedBy: ["extension", "community"],
-    use: "Every button in the manager. Primary for the one main action on a surface, secondary by default, ghost for quiet toolbar actions, danger for deletes, link for inline actions, add for the dashed \"Add a row\" button at the end of a list (with block for full width). Leave out the text for an icon button and give it an aria-label. pressed makes it a toggle. Sizes sm 24 / md 32 / lg 40; outline is a neutral bordered ghost; loading keeps its colours with the sparkle in the label colour; disabled fades.",
-    instead: "A <button> with its own class and colours.",
+    id: "button", name: "Button", group: "actions", file: "src/Button.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
+    use: "Every button, in the manager, on the canvas (size sm) and on the community site. Primary for the one main action on a surface, secondary by default, ghost for quiet toolbar actions, danger for deletes, link for inline actions, add for the dashed \"Add a row\" button at the end of a list (with block for full width). Leave out the text for an icon button and give it an aria-label, which is also its tooltip; hint sets a tooltip on a labelled button and kbd adds its key chip. The close × is a ghost icon button: icon=\"times\" aria-label=\"Close\". as=\"a\" draws a link that looks like a button. pressed makes it a toggle. Sizes sm 24 / md 32 / lg 40; outline is a neutral bordered ghost; loading keeps its colours with the sparkle in the label colour; disabled fades.",
+    instead: "WpButton and CloseButton (folded in: size=\"sm\" on the canvas; variant=\"ghost\" icon=\"times\" for close), a <button> with its own class and colours, or a hand-made × button.",
   },
   {
     id: "btn-css", name: "Button classes (.wp-btn)", group: "actions", file: "src/button.css", surfaces: ["manager", "community"], usedBy: ["extension", "community"],
-    use: "The same look on a plain element where the Button component can't go, like a router-link that must stay an <a>. On the canvas use WpButton: the canvas never loads these classes globally.",
-  },
-  {
-    id: "wp-button", name: "WpButton", group: "actions", file: "src/WpButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Every button inside a canvas widget or canvas dialog: the canvas twin of Button, with the same variants (add included), sizes and stylesheet (button.css), a PrimeIcons icon and the canvas size sm by default. Leave out the text for an icon button; its aria-label is also its tooltip. hint sets a tooltip on a labelled button and kbd adds its key chip (P, Enter). pressed makes it a toggle (favourites only, filters open). A shared piece that shows on both sides uses it too; manager screens use Button. Inside a row, use WpIconButton.",
-    instead: "A <button> with its own __btn class and colours.",
+    use: "The same look on a plain element where the Button component can't go, like a router-link that must stay an <a>. On the canvas use Button: the canvas never loads these classes globally.",
   },
   {
     id: "wp-icon-button", name: "WpIconButton", group: "actions", file: "src/WpIconButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "The 20 px icon button inside a canvas row (module, injector, bundle and Model Info rows, the Context toolbar, and the Settings live preview of those rows): lock, internal, remove. tone tints the icon on hover and the whole box while pressed; pressed \"mixed\" is a bundle's \"some children\" state; variant bare is the row's fold caret. Rows are too tight for WpButton's 24 px.",
+    use: "The 20 px icon button inside a canvas row (module, injector, bundle and Model Info rows, the Context toolbar, and the Settings live preview of those rows): lock, internal, remove. tone tints the icon on hover and the whole box while pressed; pressed \"mixed\" is a bundle's \"some children\" state; variant bare is the row's fold caret. Rows are too tight for Button's 24 px sm.",
     instead: "A <button class=\"wp-btn--icon-sm\"> or a hand-made caret button.",
   },
   {
     id: "copy-button", name: "CopyButton", group: "actions", file: "src/CopyButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
     use: "Copy text to the clipboard. The icon turns into a check (or a cross when the copy fails) and says so to screen readers, so no toast is needed. Works on plain-http pages too.",
     instead: "A button that calls navigator.clipboard and shows its own message.",
-  },
-  {
-    id: "close-button", name: "CloseButton", group: "actions", file: "src/CloseButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
-    use: "The × that closes a dialog, drawer, panel or banner. Other icon actions in the manager use Button with an icon and no text.",
-    instead: "A hand-made × button (or one that borrows .wp-topbar__icon-btn).",
   },
   {
     id: "toolbar", name: "Toolbar", group: "actions", file: "src/Toolbar.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
@@ -370,9 +360,9 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   // Overlays
   {
-    id: "modal", name: "Modal", group: "overlays", file: "src/Modal.vue", surfaces: ["manager", "community"], usedBy: ["extension", "community"],
-    use: "A dialog in the manager with a title, body and footer buttons.",
-    instead: "A div with role=\"dialog\" and its own backdrop.",
+    id: "modal", name: "Modal", group: "overlays", file: "src/Modal.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
+    use: "The one dialog, in the manager, on the canvas and on the community site: a title, body and footer buttons on ModalShell, so keys pressed in it never reach ComfyUI's shortcuts. Escape, the × and the backdrop close it (close-on-backdrop=\"false\" for a form that would lose work); Tab stays inside and focus goes back on close. size sm / md / lg; a custom #header puts :id=\"titleId\" on its heading; keydown gives every key pressed inside.",
+    instead: "A div with role=\"dialog\" and its own backdrop, or ModalShell plus a hand-made frame.",
   },
   {
     id: "drawer", name: "Drawer", group: "overlays", file: "src/Drawer.vue", surfaces: ["manager", "community"], usedBy: ["extension", "community"],
@@ -396,16 +386,12 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "modal-shell", name: "ModalShell", group: "overlays", file: "src/ModalShell.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "The backdrop, focus trap and Escape handling for a canvas dialog. Put the dialog's own frame inside.",
+    use: "The backdrop, open/close motion, Escape and the key shield (keys pressed in a dialog never reach ComfyUI's shortcuts) under every dialog. Modal is built on it; reach for it alone only for a dialog with its own frame (a full-screen picker). close says why: escape or backdrop.",
   },
   {
-    id: "confirm-modal", name: "ConfirmModal", group: "overlays", file: "src/ConfirmModal.vue", surfaces: ["manager", "community"], usedBy: ["extension", "community"],
-    use: "Ask before something that can't be undone, in the manager. Built on Modal, so Escape, Tab and focus return work like every other dialog. Name the action on the confirm button (Delete, not OK); tone=\"danger\" for deletes and discards, tone=\"warn\" for something that matters but can be undone. requireType makes the user type a word first (deleting an account); confirmDisabled holds Confirm off while a field in the slot is empty.",
-    instead: "ConfirmDialog in a manager screen, or window.confirm().",
-  },
-  {
-    id: "confirm-dialog", name: "ConfirmDialog", group: "overlays", file: "src/ConfirmDialog.vue", surfaces: ["canvas", "community"], usedBy: ["extension"],
-    use: "The same question from a canvas widget, in the node colours (here in the page colours). In the manager use ConfirmModal.",
+    id: "confirm-modal", name: "ConfirmModal", group: "overlays", file: "src/ConfirmModal.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
+    use: "Ask before something that can't be undone, in the manager, on the canvas or on the community site. Built on Modal, so Escape, Tab and focus return work like every other dialog. Name the action on the confirm button (Delete, not OK); tone=\"danger\" for deletes and discards, tone=\"warn\" for something that matters but can be undone. requireType makes the user type a word first (deleting an account); confirmDisabled holds Confirm off while a field in the slot is empty.",
+    instead: "ConfirmDialog (folded in: visible → open, variant=\"danger\" → tone=\"danger\"), or window.confirm().",
   },
   {
     id: "context-menu", name: "ContextMenu", group: "overlays", file: "src/ContextMenu.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
@@ -494,7 +480,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "post-card": `<PostCard :as="RouterLink" :to="\`/p/\${post.slug}\`" :post="card" />`,
   "star-button": `<StarButton :starred="starred" :count="12" @toggle="star" />`,
   "bookmark-button": `<BookmarkButton :bookmarked="saved" @toggle="bookmark" />`,
-  "button": `<Button variant="primary" icon="pi-plus" @click="add">New module</Button>`,
+  "button": `<Button variant="primary" icon="plus" @click="add">New module</Button>\n<Button variant="ghost" icon="times" aria-label="Close" kbd="Esc" @click="close" />\n<Button size="sm" variant="add" icon="plus" block>Add rule</Button>`,
   "btn-css": `<button class="wp-btn wp-btn--primary wp-btn--sm">Run</button>`,
   "input": `<Input v-model="name" prefix="$" aria-label="Variable name" />`,
   "textarea": `<Textarea v-model="notes" :rows="3" auto-resize />`,
@@ -514,9 +500,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "disclosure": `<Disclosure v-model:open="open" label="Advanced" :count="3">…</Disclosure>`,
   "data-table": `<DataTable v-model:sort="sort" v-model:selected="picked" :columns="columns" :rows="rows" row-key="id" selectable aria-label="Tags" />`,
   "banner": `<Banner tone="warn" title="2 modules are out of date" dismissible @dismiss="hide">Update them before you publish.</Banner>`,
-  "wp-button": `<WpButton variant="primary" icon="pi-plus" @click="add">Add module</WpButton>`,
   "copy-button": `<CopyButton :text="prompt" label="Copy prompt" />`,
-  "close-button": `<CloseButton kbd="Esc" @click="close" />`,
   "wp-icon-button": `<WpIconButton icon="pi-lock" tone="warn" :pressed="locked" label="Lock seed" @click="toggle" />`,
   "card": `<Card title="Options" subtitle="12 options">…</Card>`,
   "chip": `<Chip tone="warn" icon="pi-exclamation-triangle">2 conflicts</Chip>  <Chip :color="cat.color" :icon="cat.icon">{{ cat.name }}</Chip>`,
@@ -532,7 +516,6 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "modal": `<Modal v-model:open="open" title="Rename"><template #footer>…</template></Modal>`,
   "modal-shell": `<ModalShell :visible="open" @close="open = false"><div class="my-dialog">…</div></ModalShell>`,
   "confirm-modal": `<ConfirmModal :open="ask" title="Delete Hair colour?" confirm-label="Delete" tone="danger" @confirm="del" @cancel="ask = false" />`,
-  "confirm-dialog": `<ConfirmDialog :visible="ask" title="Delete Hair colour?" confirm-label="Delete" variant="danger" @confirm="del" @cancel="ask = false" />`,
   "context-menu": `<ContextMenu :visible="open" :x="ev.clientX" :y="ev.clientY" :items="items" @close="open = false" />`,
   "drawer": `<Drawer v-model:open="open" title="History" width="380px">…<template #footer>…</template></Drawer>`,
   "popover": `<Popover v-model:open="open" label="Colour"><template #trigger="{ props }"><Button v-bind="props">Colour</Button></template>…</Popover>`,
@@ -540,7 +523,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "tooltip": `<Button v-tooltip="{ text: 'Copy to clipboard', kbd: 'Ctrl C' }" variant="ghost" icon="pi-copy" aria-label="Copy" />`,
   "logo": `<Logo :size="28" />`,
   "relative-date": `<RelativeDate :value="row.updated_at" />`,
-  "toolbar": `<Toolbar label="Text tools" attached><WpButton icon="pi-bold" aria-label="Bold" /><WpButton icon="pi-italic" aria-label="Italic" /></Toolbar>`,
+  "toolbar": `<Toolbar label="Text tools" attached><Button size="sm" icon="bold" aria-label="Bold" /><Button size="sm" icon="italic" aria-label="Italic" /></Toolbar>`,
   "slider": `<Slider v-model="weight" :min="0" :max="2" :step="0.05" aria-label="Weight" with-input />\n<Slider v-model="range" :min="0" :max="200" :min-gap="20" aria-label="Token budget" show-value />\n<Slider v-model="width" :min="512" :max="1536" :marks="widths" snap aria-label="Width" />\n<Slider v-model="cfg" :min="1" :max="15" :step="0.5" :marks="presets" :snap="1" aria-label="CFG" />`,
   "tag-input": `<TagInput v-model="tags" :suggestions="libraryTags" aria-label="Tags" />`,
   "inline-edit": `<InlineEdit v-model="mod.name" label="Wildcard name" :validate="(v) => taken(v) ? 'That name is taken' : null" />`,
