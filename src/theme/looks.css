@@ -47,8 +47,10 @@
 /* --wp-radius-cap: the roundest a corner may get in this look. Fixed radii
    in components are written min(Npx, var(--wp-radius-cap, 999px)) and
    pills var(--wp-radius-cap, 999px), so Orbit draws them as authored and a
-   square look squares them without a rule per component. Circles (50%)
-   stay circles. The theme audit (scripts/theme-audit) fails on a corner
+   square look squares them without a rule per component. Circles are
+   min(50%, var(--wp-radius-cap, 999px)): round in Orbit, softened in Crisp,
+   square in Terminal and TUI (dots, radios, avatars, the timeline).
+   src/__tests__/corners.test.ts fails on a raw radius. The theme audit (scripts/theme-audit) fails on a corner
    rounder than the cap. */
 html[data-wp-look="crisp"] { --wp-radius-cap: 4px; }
 html[data-wp-look="terminal"],
@@ -362,10 +364,8 @@ html[data-wp-look="tui"] .wp-check:is([aria-checked="true"], [data-checked="true
 html[data-wp-look="tui"] .wp-check:is([aria-checked="mixed"], [data-indeterminate="true"]):not([data-checked="true"])::before { content: "[-]"; color: var(--wp-accent-text); }
 html[data-wp-look="tui"] .wp-page__title { font-size: 16px; font-weight: 700; letter-spacing: 0; }
 /* Radios read ( ) / (*) beside the [ ] / [x] checkboxes; the drawn dot
-   hides. RadioGroup marks the picked option on the row (data-checked), the
-   plain .wp-radio is a real input (:checked). */
-html[data-wp-look="tui"] .wp-radio-group__opt .wp-radio-group__dot,
-html[data-wp-look="tui"] .wp-radio {
+   hides. RadioGroup marks the picked option on the row (data-checked). */
+html[data-wp-look="tui"] .wp-radio-group__opt .wp-radio-group__dot {
   width: auto;
   min-width: 3ch;
   height: auto;
@@ -381,19 +381,6 @@ html[data-wp-look="tui"] .wp-radio-group__opt[data-checked] .wp-radio-group__dot
 html[data-wp-look="tui"] .wp-radio-group__dot::before { content: "( )"; }
 html[data-wp-look="tui"] .wp-radio-group__opt[data-checked] .wp-radio-group__dot::before { content: "(*)"; color: var(--wp-accent-text); }
 html[data-wp-look="tui"] .wp-radio-group__opt[aria-disabled="true"][data-checked] .wp-radio-group__dot::before { color: var(--wp-text-dim); }
-html[data-wp-look="tui"] .wp-radio::before,
-html[data-wp-look="tui"] .wp-radio:disabled::before {
-  content: "( )";
-  width: auto;
-  height: auto;
-  border-radius: 0;
-  background: transparent;
-  transform: none;
-}
-html[data-wp-look="tui"] .wp-radio:checked::before { content: "(*)"; color: var(--wp-accent-text); }
-html[data-wp-look="tui"] .wp-radio:disabled:checked::before { content: "(*)"; color: var(--wp-text-dim); }
-html[data-wp-look="tui"] .wp-radio:checked,
-html[data-wp-look="tui"] .wp-radio:disabled:checked { background: transparent; }
 
 /* ================= Canvas previews ignore the look =================
    The canvas keeps ComfyUI's ground in every look (only the accent follows

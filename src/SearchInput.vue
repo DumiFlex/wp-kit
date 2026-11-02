@@ -186,7 +186,7 @@ defineExpose({
   color: var(--wp-text-dim);
   cursor: pointer;
 }
-.wp-search__clear .pi { font-size: 9px; line-height: 1; }
+.wp-search__clear .pi { font-size: 10px; line-height: 1; }
 .wp-search__clear:hover { color: var(--wp-text); background: var(--wp-bg-3); }
 .wp-search__clear:focus-visible { outline: none; box-shadow: var(--wp-focus-ring); }
 </style>

@@ -14,7 +14,7 @@
  * that is part of the page (a docs tip): `role="note"`, never announced.
  */
 import { computed, useSlots } from "vue";
-import CloseButton from "./CloseButton.vue";
+import Button from "./Button.vue";
 
 export type BannerTone = "neutral" | "info" | "success" | "warn" | "danger" | "accent";
 
@@ -60,11 +60,11 @@ const iconClass = computed(() => props.icon ?? TONE_ICON[props.tone]);
       <div v-if="slots.default" class="wp-banner__text"><slot /></div>
     </div>
     <div v-if="slots.actions" class="wp-banner__actions"><slot name="actions" /></div>
-    <CloseButton
-      v-if="dismissible"
+    <Button v-if="dismissible" variant="ghost"
+      icon="times"
       class="wp-banner__close"
       size="sm"
-      :label="dismissLabel"
+      :aria-label="dismissLabel"
       @click="emit('dismiss')"
     />
   </div>

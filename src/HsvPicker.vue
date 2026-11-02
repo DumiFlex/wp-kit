@@ -2,7 +2,7 @@
 /**
  * HsvPicker — saturation/value square + hue slider.
  *
- * Shared between manager ColorPicker / TweaksPanel AND the canvas
+ * Shared between ColorField / TweaksPanel AND the canvas
  * bundle modal. CSS uses `--wp-*` tokens with hardcoded fallbacks so
  * the picker renders inside the extension where the manager spacing
  * tokens (`--wp-space-*`) aren't loaded.
@@ -167,7 +167,7 @@ const hueCursorStyle = computed(() => ({
   position: absolute;
   width: 14px;
   height: 14px;
-  border-radius: 50%; /* round: picker cursor on the colour field */
+  border-radius: min(50%, var(--wp-radius-cap, 999px));
   border: 2px solid #fff;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 1px 2px rgba(0, 0, 0, 0.45);
   transform: translate(-50%, -50%);

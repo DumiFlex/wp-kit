@@ -3,14 +3,21 @@
     <Transition name="wp-modal" appear>
       <!-- The overlay is a click target only; keyboard users close with Escape. -->
       <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
-      <div v-if="visible" ref="overlayEl" class="wp-modal-overlay" @click="$emit('close')">
+      <div
+        v-if="visible"
+        ref="overlayEl"
+        class="wp-modal-overlay"
+        data-test="modal-backdrop"
+        @mousedown="downOnBackdrop = isBackdrop($event)"
+        @click="onBackdropClick"
+      >
         <div
+          ref="wrapperEl"
           class="wp-modal-wrapper"
           role="dialog"
           aria-modal="true"
           :aria-label="label"
           :aria-labelledby="labelledby"
-          @click.stop
         >
           <slot></slot>
         </div>
@@ -31,7 +38,8 @@ const props = defineProps<{
   labelledby?: string | undefined;
 }>();
 const emit = defineEmits<{
-  (e: "close"): void;
+  /** `escape` or `backdrop`, so a dialog can ignore backdrop clicks. */
+  (e: "close", reason: "escape" | "backdrop"): void;
   /** Every keydown inside the modal. Consumers MUST use this instead of a
    *  window listener: the shield stops inside-modal keys at the overlay, so a
    *  window listener would never see them. */
@@ -39,11 +47,24 @@ const emit = defineEmits<{
 }>();
 
 const overlayEl = ref<HTMLElement | null>(null);
+const wrapperEl = ref<HTMLElement | null>(null);
+
+/** The overlay or the wrapper around the panel, never the panel's own content. */
+function isBackdrop(ev: MouseEvent): boolean {
+  return ev.target === overlayEl.value || ev.target === wrapperEl.value;
+}
+/** Only a press that also STARTED on the backdrop closes: a text selection
+ *  dragged out of the dialog ends with a click on the overlay. */
+const downOnBackdrop = ref(false);
+function onBackdropClick(ev: MouseEvent): void {
+  if (downOnBackdrop.value && isBackdrop(ev)) emit("close", "backdrop");
+  downOnBackdrop.value = false;
+}
 
 function closeOnEscape(event: KeyboardEvent): void {
   if (!props.visible || event.key !== "Escape") return;
   event.preventDefault();
-  emit("close");
+  emit("close", "escape");
 }
 
 // Keys pressed INSIDE the modal are handled here and stop at the overlay, so
@@ -104,6 +125,6 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown));
 
 /* `wp-modal` open/close transition lives in
  * src/components/shared/_modal-motion.css (imported globally via
- * ContextWidget) so every modal — ModalShell consumers, ConfirmDialog,
+ * ContextWidget) so every modal — ModalShell consumers (Modal, ConfirmModal),
  * InjectorBindingModal — animates with the same rules. */
 </style>

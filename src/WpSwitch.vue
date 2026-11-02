@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The on/off switch for canvas widgets and the manager (Toggle.vue wraps it).
+ * The one on/off switch, for canvas widgets and the manager (size="md" there).
  *
  *   <WpSwitch v-model="held" label="Hold across run" />                  track
  *   <WpSwitch v-model="held" variant="chip" icon="pi-link" label="Hold across run" />

@@ -13,6 +13,7 @@ import WpSelect from "@kit/WpSelect.vue";
 import KitEntry from "./KitEntry.vue";
 import KitMotion from "./KitMotion.vue";
 import KitTokens from "./KitTokens.vue";
+import SiteSearch from "./SiteSearch.vue";
 import { KIT_ENTRIES, KIT_GROUPS } from "./registry";
 import { LOOKS, PALETTES, applyAppearance, loadAppearance, saveAppearance, type Scheme } from "./appearance";
 
@@ -61,6 +62,7 @@ const REPO = "https://github.com/DumiFlex/wp-kit";
         <span class="wp-site__name">wp-kit</span>
         <span class="wp-site__version">v{{ version }}</span>
       </a>
+      <SiteSearch />
       <div class="wp-site__controls">
         <label class="wp-site__control">
           <span>Palette</span>

@@ -8,14 +8,20 @@
  * so it follows the swatch on scroll and closes on Escape or a click
  * outside. Works on the canvas (`size="sm"`) and in the manager.
  *
+ * `presets` adds a row of preset swatches under the square (`true` for the
+ * kit's COLOUR_PRESETS, or a list of hex colours); a click takes one and
+ * closes. `compact` shows the swatch alone, for a tight spot (a name row).
+ *
  *   <ColorField v-model="labelColor" alpha allow-none size="sm" aria-label="Label band" />
+ *   <ColorField v-model="color" presets size="md" aria-label="Category colour" />
  */
 import { computed, ref, watch } from "vue";
 import HsvPicker from "./HsvPicker.vue";
 import Popover from "./Popover.vue";
 import WpNumber from "./WpNumber.vue";
-import WpButton from "./WpButton.vue";
+import Button from "./Button.vue";
 import { rgbToHex } from "./hsv";
+import { COLOUR_PRESETS } from "./colour-presets";
 
 const props = withDefaults(defineProps<{
   modelValue: string;
@@ -23,11 +29,15 @@ const props = withDefaults(defineProps<{
   alpha?: boolean | undefined;
   /** Offer "None" (writes `none`). */
   allowNone?: boolean | undefined;
+  /** Preset swatches: `true` for COLOUR_PRESETS, or your own hex list. */
+  presets?: readonly string[] | boolean | undefined;
+  /** The swatch alone, without the value beside it. */
+  compact?: boolean | undefined;
   size?: "sm" | "md" | undefined;
   ariaLabel?: string | undefined;
   disabled?: boolean | undefined;
   dataTest?: string | undefined;
-}>(), { alpha: false, allowNone: false, size: "sm", ariaLabel: "Colour", disabled: false, dataTest: undefined });
+}>(), { alpha: false, allowNone: false, presets: false, compact: false, size: "sm", ariaLabel: "Colour", disabled: false, dataTest: undefined });
 
 const emit = defineEmits<{ "update:modelValue": [value: string] }>();
 
@@ -79,6 +89,17 @@ function onDraft(ev: Event): void {
   const p = parse(v);
   if (p) emit("update:modelValue", compose(p.rgb, props.alpha ? p.alpha : 255));
 }
+const presetList = computed<readonly string[]>(() => {
+  if (props.presets === true) return COLOUR_PRESETS;
+  return Array.isArray(props.presets) ? props.presets : [];
+});
+function isActivePreset(preset: string): boolean {
+  return !isNone.value && preset.trim().toLowerCase() === rgb.value && alphaValue.value === 255;
+}
+function pickPreset(preset: string): void {
+  emit("update:modelValue", preset);
+  open.value = false;
+}
 function pickNone(): void {
   emit("update:modelValue", "none");
   open.value = false;
@@ -92,7 +113,7 @@ function pickNone(): void {
         v-bind="triggerProps"
         type="button"
         class="wp-color-field wp-field-box"
-        :class="[`wp-color-field--${size}`, `wp-field-box--${size}`, { 'is-none': isNone }]"
+        :class="[`wp-color-field--${size}`, `wp-field-box--${size}`, { 'is-none': isNone, 'wp-color-field--compact': compact }]"
         :disabled="disabled"
         :aria-label="`${ariaLabel}: ${shown}`"
         :data-test="dataTest"
@@ -100,7 +121,7 @@ function pickNone(): void {
         <span class="wp-color-field__chip" aria-hidden="true">
           <span class="wp-color-field__fill" :style="{ background: swatch }" />
         </span>
-        <span class="wp-color-field__value" aria-hidden="true">{{ shown }}</span>
+        <span v-if="!compact" class="wp-color-field__value" aria-hidden="true">{{ shown }}</span>
       </button>
     </template>
     <div class="wp-color-field__panel" @keydown.stop>
@@ -128,7 +149,21 @@ function pickNone(): void {
           @update:model-value="onOpacity"
         />
       </div>
-      <WpButton
+      <div v-if="presetList.length" class="wp-color-field__presets" role="group" :aria-label="`${ariaLabel} presets`">
+        <button
+          v-for="preset in presetList"
+          :key="preset"
+          type="button"
+          class="wp-color-field__preset"
+          :style="{ background: preset }"
+          :title="preset"
+          :aria-pressed="isActivePreset(preset)"
+          :aria-label="`Use ${preset}`"
+          :data-test="dataTest ? `${dataTest}-preset` : undefined"
+          @click="pickPreset(preset)"
+        />
+      </div>
+      <Button
         v-if="allowNone"
         size="sm"
         variant="ghost"
@@ -136,7 +171,7 @@ function pickNone(): void {
         :pressed="isNone"
         :data-test="dataTest ? `${dataTest}-none` : undefined"
         @click="pickNone"
-      >None</WpButton>
+      >None</Button>
     </div>
   </Popover>
 </template>
@@ -165,6 +200,8 @@ function pickNone(): void {
   /* Checks show through a see-through colour. */
   background: repeating-conic-gradient(var(--wp-bg-4) 0 25%, var(--wp-bg-1) 0 50%) 0 0 / 8px 8px;
 }
+.wp-color-field--md .wp-color-field__chip { width: 20px; height: 20px; border-radius: min(4px, var(--wp-radius-cap, 999px)); }
+.wp-color-field--compact { padding: 0 3px; }
 .wp-color-field__fill { position: absolute; inset: 0; }
 .wp-color-field.is-none .wp-color-field__chip::after {
   content: "";
@@ -185,4 +222,21 @@ function pickNone(): void {
 .wp-color-field__row { display: flex; gap: 6px; align-items: center; }
 .wp-color-field__hex { flex: 1; min-width: 0; height: var(--wp-field-h); padding: 0 6px; font-family: var(--wp-font-mono, monospace); }
 .wp-color-field__alpha { width: 72px; flex: none; }
+.wp-color-field__presets { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.wp-color-field__preset {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  padding: 0;
+  border: 1px solid var(--wp-border);
+  border-radius: min(4px, var(--wp-radius-cap, 999px));
+  cursor: pointer;
+  transition: transform var(--wp-motion-quick), box-shadow var(--wp-motion-quick);
+}
+.wp-color-field__preset:hover { transform: scale(1.08); }
+.wp-color-field__preset:focus-visible { outline: none; box-shadow: var(--wp-focus-ring); }
+.wp-color-field__preset[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--wp-bg-1), 0 0 0 4px var(--wp-accent-500); }
+@media (prefers-reduced-motion: reduce) {
+  .wp-color-field__preset { transition: none; }
+}
 </style>

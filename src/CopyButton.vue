@@ -119,7 +119,7 @@ onBeforeUnmount(() => clearTimeout(timer));
 .wp-copy-btn[data-size="lg"] { min-width: var(--wp-control-h-lg); height: var(--wp-control-h-lg); }
 .wp-copy-btn[data-variant="secondary"] { background: var(--wp-bg-3); border-color: var(--wp-border); color: var(--wp-text); }
 .wp-copy-btn:not([data-inline]) .pi { font-size: 12px; }
-.wp-copy-btn[data-size="sm"]:not([data-inline]) .pi { font-size: 11px; }
+.wp-copy-btn[data-size="sm"]:not([data-inline]) .pi { font-size: 12px; }
 .wp-copy-btn:not([data-inline]):hover:not(:disabled) { background: var(--wp-bg-3); border-color: var(--wp-border); color: var(--wp-text); }
 .wp-copy-btn[data-variant="secondary"]:hover:not(:disabled) { background: var(--wp-bg-4); border-color: var(--wp-border-strong); }
 .wp-copy-btn:not([data-inline]):focus-visible { outline: none; box-shadow: 0 0 0 2px var(--wp-border-focus); }

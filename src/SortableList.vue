@@ -241,7 +241,7 @@ function onGripBlur(i: number): void {
   background: transparent; color: var(--wp-text-dim); cursor: grab; touch-action: none;
 }
 .wp-sortable[data-size="sm"] .wp-sortable__grip { width: 20px; min-height: 20px; }
-.wp-sortable__grip .pi { font-size: 11px; }
+.wp-sortable__grip .pi { font-size: 12px; }
 .wp-sortable[data-size="sm"] .wp-sortable__grip .pi { font-size: 10px; }
 .wp-sortable__grip:hover:not(:disabled) { color: var(--wp-text); background: var(--wp-row-hover); }
 .wp-sortable__grip:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--wp-border-focus); }

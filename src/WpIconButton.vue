@@ -2,7 +2,7 @@
 /**
  * WpIconButton: the 20 px square icon button inside a canvas row (module,
  * injector, bundle and model rows, the Context toolbar). Rows are too tight
- * for the 24 px `WpButton size="sm"`, so this is the one smaller control on
+ * for the 24 px `Button size="sm"`, so this is the one smaller control on
  * the canvas, still at the 20 px hit-target floor.
  *
  *   <WpIconButton icon="pi-trash" label="Remove module" tone="danger" @click="remove" />
@@ -75,7 +75,8 @@ const emit = defineEmits<{ click: [evt: MouseEvent] }>();
 .wp-icon-btn[data-tone="accent"] { --tone: var(--wp-accent); }
 .wp-icon-btn[data-tone="warn"] { --tone: var(--wp-warn); }
 .wp-icon-btn[data-tone="danger"] { --tone: var(--wp-danger); }
-.wp-icon-btn .pi { font-size: 11px; }
+/* Even icon in the 18px inside of the box: an odd size sits half a pixel off. */
+.wp-icon-btn .pi { font-size: 12px; }
 .wp-icon-btn__glyph { font: 600 11px/1 var(--wp-font-mono); }
 .wp-icon-btn:hover:not(:disabled) { background: var(--wp-bg-4); color: var(--tone); }
 .wp-icon-btn:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--wp-border-focus); }

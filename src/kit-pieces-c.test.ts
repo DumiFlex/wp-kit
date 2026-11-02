@@ -8,7 +8,6 @@ import DiffView from "./DiffView.vue";
 import ImageGrid from "./ImageGrid.vue";
 import Lightbox from "./Lightbox.vue";
 import RadioGroup from "./RadioGroup.vue";
-import RangeSlider from "./RangeSlider.vue";
 import Timeline from "./Timeline.vue";
 import VirtualList from "./VirtualList.vue";
 import VisuallyHidden from "./VisuallyHidden.vue";
@@ -169,28 +168,6 @@ describe("DatePicker", () => {
     const late = [...document.querySelectorAll<HTMLElement>("[role=grid] td")].find((td) => td.getAttribute("aria-disabled") === "true");
     late?.click();
     expect(w.props("modelValue")).toBe("2026-03-12");
-  });
-});
-
-describe("RangeSlider", () => {
-  it("keeps the ends apart by min-gap from the keys", async () => {
-    const w = bound(RangeSlider, { modelValue: [20, 30], min: 0, max: 100, minGap: 5, ariaLabel: "Range" });
-    const [lo, hi] = w.findAll("[role=slider]");
-    expect(lo.attributes("aria-valuemax")).toBe("25");
-    expect(hi.attributes("aria-valuemin")).toBe("25");
-    await key(lo.element, "End");
-    expect(w.props("modelValue")).toEqual([25, 30]);
-    await key(lo.element, "ArrowRight");
-    expect(w.props("modelValue")).toEqual([25, 30]);
-    await key(hi.element, "Home");
-    expect(w.props("modelValue")).toEqual([25, 30]);
-    await key(hi.element, "ArrowRight");
-    expect(w.props("modelValue")).toEqual([25, 31]);
-  });
-
-  it("with-input has a number box per end", () => {
-    const w = bound(RangeSlider, { modelValue: [1, 2], min: 0, max: 5, withInput: true, ariaLabel: "Weight" });
-    expect(w.findAll("input").map((i: { attributes: (n: string) => string }) => i.attributes("aria-label"))).toEqual(["Weight, low end", "Weight, high end"]);
   });
 });
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import WpButton from "@kit/WpButton.vue";
+import Button from "@kit/Button.vue";
 import WpImageZoom from "@kit/WpImageZoom.vue";
 
 /** A big test picture with fine print, so 100% and 200% show something Fit can't. */
@@ -35,7 +35,7 @@ const zoom = ref<number | null>(null);
         autohide
       >
         <template #bar-end>
-          <WpButton variant="ghost" icon="pi-chevron-right" aria-label="Next picture" @click="at = (at + 1) % pictures.length" />
+          <Button size="sm" variant="ghost" icon="pi-chevron-right" aria-label="Next picture" @click="at = (at + 1) % pictures.length" />
         </template>
       </WpImageZoom>
     </div>

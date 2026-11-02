@@ -6,7 +6,7 @@
  *               the dialog grows into place.
  *
  * Selector for the panel is `> *` (immediate child of the overlay
- * element). Works for ModalShell's `.wp-modal-wrapper`, ConfirmDialog's
+ * element). Works for ModalShell's `.wp-modal-wrapper` (Modal, ConfirmModal), the old
  * `.wp-confirm`, InjectorBindingModal's `.ibm`, and any future modal
  * that follows the overlay-with-one-child layout.
  *

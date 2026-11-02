@@ -47,8 +47,9 @@ Each release is staged on npm by the release workflow (trusted publishing, with 
 - Props use the shared names `size` / `variant` / `tone` / `v-model:open`; heights come from `--wp-control-h-sm|md|lg` (24 / 32 / 40 px).
 - Overlays place themselves through `floating.ts` and handle Escape, Tab and focus return through `useDialogFocus`.
 - No app code: no stores, routers, ComfyUI globals or `@/` imports. A piece only imports `vue` and other kit files.
+- One piece per job: a piece that does another's job with a different look is a prop or mode on that one, not a second piece.
 
-Every piece has an entry and a demo on the site (`site/src/registry.ts` + `site/src/demos/<id>.vue`); `site/src/coverage.test.ts` fails when one is missing. The longer component standard lives in the extension repo: `docs/component-standard.md`.
+Every piece has an entry and a demo on the site (`site/src/registry.ts` + `site/src/demos/<id>.vue`); `site/src/coverage.test.ts` fails when one is missing. Each entry's `usedBy` says which apps import it; the site shows "Not used by an app yet" when none does. The longer component standard lives in the extension repo: `docs/component-standard.md`.
 
 ## Develop
 
