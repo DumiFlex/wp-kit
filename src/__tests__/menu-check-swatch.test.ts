@@ -3,6 +3,12 @@ import { mount, type VueWrapper } from "@vue/test-utils";
 import ContextMenu, { type ContextMenuEntry } from "../ContextMenu.vue";
 import RadioGroup from "../RadioGroup.vue";
 
+/** The element, or a failed test that names what was missing. */
+function must<T>(v: T | null | undefined, what: string): T {
+  if (v == null) throw new Error(`missing ${what}`);
+  return v;
+}
+
 let w: VueWrapper | null = null;
 afterEach(() => {
   w?.unmount();
@@ -24,12 +30,12 @@ describe("ContextMenu checkable items", () => {
     const rows = [...document.body.querySelectorAll<HTMLElement>(".wp-ctxmenu__item")];
     expect(rows.map((r) => r.getAttribute("role"))).toEqual(["menuitemcheckbox", "menuitemcheckbox", "menuitem"]);
     expect(rows.map((r) => r.getAttribute("aria-checked"))).toEqual(["true", "false", null]);
-    expect(rows[0]!.querySelector(".wp-ctxmenu__check")?.hasAttribute("data-on")).toBe(true);
-    expect(rows[1]!.querySelector(".wp-ctxmenu__check")?.hasAttribute("data-on")).toBe(false);
-    rows[1]!.click();
+    expect(must(rows[0], "row 0").querySelector(".wp-ctxmenu__check")?.hasAttribute("data-on")).toBe(true);
+    expect(must(rows[1], "row 1").querySelector(".wp-ctxmenu__check")?.hasAttribute("data-on")).toBe(false);
+    must(rows[1], "row 1").click();
     expect(tick).toHaveBeenCalledTimes(1);
     expect(w.emitted("close")).toBeUndefined();
-    rows[2]!.click();
+    must(rows[2], "row 2").click();
     expect(act).toHaveBeenCalledTimes(1);
     expect(w.emitted("close")).toHaveLength(1);
   });
@@ -52,7 +58,7 @@ describe("RadioGroup swatches", () => {
     expect(opts.map((o) => o.attributes("aria-label"))).toEqual(["Violet", "Teal"]);
     expect(w.find(".wp-radio-group__swatch").attributes("style")).toContain("background");
     expect(w.find(".wp-radio-group__dot").exists()).toBe(false);
-    await opts[1]!.trigger("click");
+    await must(opts[1], "option 1").trigger("click");
     expect(w.emitted("update:modelValue")?.[0]).toEqual(["teal"]);
   });
 });
