@@ -24,6 +24,7 @@
  */
 import { computed } from "vue";
 import Checkbox from "./Checkbox.vue";
+import Skeleton from "./Skeleton.vue";
 
 export interface DataColumn<R> {
   key: string;
@@ -202,8 +203,8 @@ const span = computed(() => props.columns.length + (props.selectable ? 1 : 0));
       </thead>
       <tbody>
         <template v-if="loading && rows.length === 0">
-          <tr v-for="n in loadingRows" :key="`skel-${n}`" class="wp-row-skel" aria-hidden="true">
-            <td v-for="i in span" :key="i"><span class="wp-skel-bar" :style="{ width: `${40 + ((n * 17 + i * 23) % 50)}%` }" /></td>
+          <tr v-for="n in loadingRows" :key="`skel-${n}`" class="wp-data-table__loading" aria-hidden="true">
+            <td v-for="i in span" :key="i"><Skeleton :width="`${40 + ((n * 17 + i * 23) % 50)}%`" /></td>
           </tr>
         </template>
         <tr v-else-if="shown.length === 0" class="wp-data-table__empty">

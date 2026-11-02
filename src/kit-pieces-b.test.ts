@@ -117,6 +117,17 @@ describe("Skeleton, Separator, Kbd", () => {
     expect(w.findAll(".wp-skeleton__row")).toHaveLength(3);
   });
 
+  it("skeleton draws a run of pills, and square icon tiles for item rows", () => {
+    const chips = mount(Skeleton, { props: { shape: "chip", lines: 4, height: "24px" } });
+    const pills = chips.findAll(".wp-skeleton__chip");
+    expect(pills).toHaveLength(4);
+    expect(pills[0]?.attributes("style")).toContain("height: 24px");
+    expect(new Set(pills.map((p) => p.attributes("style"))).size).toBeGreaterThan(1);
+    const rows = mount(Skeleton, { props: { shape: "row", lines: 2, icon: "square" } });
+    expect(rows.findAll(".wp-skeleton__tile")).toHaveLength(2);
+    expect(rows.find(".wp-skeleton__circle").exists()).toBe(false);
+  });
+
   it("separator is decorative unless asked, and carries text", () => {
     expect(mount(Separator).attributes("role")).toBe("none");
     const w = mount(Separator, { props: { decorative: false, orientation: "vertical" } });

@@ -330,7 +330,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "skeleton", name: "Skeleton", group: "feedback", file: "src/Skeleton.vue", surfaces: ["manager", "canvas"],
-    use: "Grey shapes where content is about to land (rows, lines, a card), so nothing jumps. label says Loading… to screen readers. A whole page or panel uses LoadingMark block instead.",
+    use: "Grey shapes where content is about to land, so nothing jumps: shape row (icon circle, or square for an item icon), line, block (a card or a picture), circle, chip (a tag or filter row). label says Loading… to screen readers. A whole page or panel whose shape isn't known uses LoadingMark block instead.",
     instead: "The wp-skel classes from _skeleton.css, or a Loading… flash.",
   },
   {
