@@ -4,24 +4,30 @@
  * default slot) and how to write it. Text comes from `registry.ts`.
  */
 import { computed } from "vue";
+import Chip from "@kit/Chip.vue";
 import CodeBlock from "@kit/CodeBlock.vue";
-import { KIT_EXAMPLES, kitEntry } from "./registry";
+import { KIT_APP_LABEL, KIT_EXAMPLES, KIT_UNUSED, KIT_UNUSED_CHIP, KIT_USED_BY, kitEntry } from "./registry";
 
 const props = defineProps<{ id: string }>();
 const entry = computed(() => kitEntry(props.id));
 const example = computed(() => KIT_EXAMPLES[props.id]);
-const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas" } as const;
+const usedBy = computed(() => entry.value.usedBy.length
+  ? `${KIT_USED_BY} ${entry.value.usedBy.map((a) => KIT_APP_LABEL[a]).join(" and ")}.`
+  : `${KIT_UNUSED}.`);
+const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas", community: "Community" } as const;
 </script>
 
 <template>
   <article :id="`kit-${entry.id}`" class="wp-kit-entry" :data-kit-entry="entry.id">
     <header class="wp-kit-entry__head">
       <h3 class="wp-kit-entry__name">{{ entry.name }}</h3>
-      <span v-for="s in entry.surfaces" :key="s" class="wp-chip" :data-test="`kit-surface-${s}`">{{ SURFACE_LABEL[s] }}</span>
+      <Chip v-for="s in entry.surfaces" :key="s" :data-test="`kit-surface-${s}`">{{ SURFACE_LABEL[s] }}</Chip>
+      <Chip v-if="!entry.usedBy.length" tone="warn" dot :title="`${KIT_UNUSED}.`" data-test="kit-unused">{{ KIT_UNUSED_CHIP }}</Chip>
       <code class="wp-kit-entry__file">{{ entry.file }}</code>
     </header>
     <p class="wp-kit-entry__use">{{ entry.use }}</p>
     <p v-if="entry.instead" class="wp-kit-entry__instead">Instead of: {{ entry.instead }}</p>
+    <p class="wp-kit-entry__used" :data-unused="entry.usedBy.length ? undefined : 'true'" data-test="kit-used-by">{{ usedBy }}</p>
     <div class="wp-kit-entry__demo">
       <slot />
     </div>
@@ -51,6 +57,8 @@ const SURFACE_LABEL = { manager: "Manager", canvas: "Canvas" } as const;
 }
 .wp-kit-entry__use { margin: 0; color: var(--wp-text-muted); font-size: var(--wp-text-base); line-height: 20px; max-width: 76ch; }
 .wp-kit-entry__instead { margin: 0; color: var(--wp-text-dim); font-size: var(--wp-text-sm); }
+.wp-kit-entry__used { margin: 0; color: var(--wp-text-dim); font-size: var(--wp-text-sm); }
+.wp-kit-entry__used[data-unused] { font-style: italic; }
 .wp-kit-entry__demo {
   display: flex;
   flex-wrap: wrap;
