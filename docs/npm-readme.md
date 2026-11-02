@@ -57,6 +57,11 @@ If you already import the kit as `@/kit/...`, alias `@/kit` to `node_modules/@du
 
 - **Vue 3.5** and **PrimeIcons 7** (peer dependencies). Icons are `pi pi-*` classes. The kit imports nothing else at runtime.
 - **A theme:** the kit's own sheets above. A host with its own colour sheet can define the names in [`SHARED_TOKENS`](https://github.com/DumiFlex/wp-kit/blob/main/src/tokens.ts) instead and use the pieces that read only those.
+- **A layer order, if your app uses cascade layers** (Tailwind 4 does). A few pieces (the tooltip, Popover, DropdownMenu, the entrance classes) put their rules in `@layer wp-extension`, so a host page's unlayered CSS wins a clash. Layers rank by first declaration, so declare the order in your page's `<head>`, before any stylesheet, with the kit above your reset and below your utilities. Otherwise Tailwind's preflight (`border-width: 0`) strips the tooltip's border:
+
+  ```html
+  <style>@layer theme, base, wp-extension, components, utilities;</style>
+  ```
 
 ## Versions
 
