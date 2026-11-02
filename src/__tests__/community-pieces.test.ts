@@ -4,11 +4,10 @@ import { describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import { mount } from "@vue/test-utils";
 import BookmarkButton from "../BookmarkButton.vue";
-import ChipToggle from "../ChipToggle.vue";
+import Chip from "../Chip.vue";
 import BundleMeta from "../BundleMeta.vue";
-import KindChip from "../KindChip.vue";
 import PostCard, { type PostCardData } from "../PostCard.vue";
-import RatingBadge from "../RatingBadge.vue";
+import { itemType, kindColour } from "../kind-colour";
 import StarButton from "../StarButton.vue";
 
 const post: PostCardData = {
@@ -21,20 +20,17 @@ const post: PostCardData = {
   tags: ["a", "b", "c", "d", "e", "f"],
 };
 
-describe("KindChip", () => {
-  it("names the subtype, a bare module as fixed_values and a bundle as bundle", () => {
-    expect(mount(KindChip, { props: { kind: "module", subtype: "combine" } }).attributes("data-type")).toBe("combine");
-    expect(mount(KindChip, { props: { kind: "module" } }).text()).toBe("fixed_values");
-    expect(mount(KindChip, { props: { kind: "bundle", subtype: "wildcard" } }).text()).toBe("bundle");
+describe("kind colour", () => {
+  it("reads a bare module as fixed_values and a bundle subtype as a bundle", () => {
+    expect(itemType("module", "combine")).toBe("combine");
+    expect(itemType("module")).toBe("fixed_values");
+    expect(itemType("bundle", "wildcard")).toBe("bundle");
+    expect(itemType("module", "bundle")).toBe("bundle");
   });
-});
-
-describe("RatingBadge", () => {
-  it("shows NSFW and Featured only when they apply", () => {
-    expect(mount(RatingBadge, { props: { rating: "sfw" } }).text()).toBe("");
-    const both = mount(RatingBadge, { props: { rating: "nsfw", featured: true } });
-    expect(both.text()).toContain("NSFW");
-    expect(both.text()).toContain("Featured");
+  it("gives each type its kind colour, bundles slate", () => {
+    expect(kindColour("wildcard")).toBe("var(--wp-kind-wildcard)");
+    expect(kindColour("fixed_values")).toBe("var(--wp-kind-fixed)");
+    expect(kindColour("bundle")).toBe("var(--wp-bundle-default)");
   });
 });
 
@@ -49,6 +45,14 @@ describe("BundleMeta", () => {
 });
 
 describe("PostCard", () => {
+  it("shows its kind, NSFW and Featured as plain Chips", () => {
+    const w = mount(PostCard, { props: { post: { ...post, rating: "nsfw", featured: true } } });
+    const chips = w.findAll(".wp-post-card__badges .wp-chip");
+    expect(chips.map((c) => c.text())).toEqual(["wildcard", "NSFW", "Featured"]);
+    expect(chips[1]?.classes()).toContain("wp-chip--danger");
+    expect(chips[2]?.classes()).toContain("wp-chip--warn");
+  });
+
   it("is an <a> by default and passes href through", () => {
     const w = mount(PostCard, { props: { post }, attrs: { href: "/p/dumi/warm-palette" } });
     expect(w.element.tagName).toBe("A");
@@ -126,22 +130,28 @@ describe("StarButton and BookmarkButton", () => {
   });
 });
 
-describe("ChipToggle", () => {
-  it("is a button that says whether it is pressed and shows its count", async () => {
-    const w = mount(ChipToggle, { props: { pressed: true, count: 4, icon: "tag" }, slots: { default: "portrait" } });
+describe("Chip as a toggle", () => {
+  it("is a button with aria-pressed, a count and an icon", () => {
+    const w = mount(Chip, { props: { pressed: true, count: 4, icon: "tag", size: "sm" }, slots: { default: "portrait" } });
     expect(w.element.tagName).toBe("BUTTON");
     expect(w.attributes("aria-pressed")).toBe("true");
-    expect(w.text()).toContain("portrait");
-    expect(w.find(".wp-chip-toggle__count").text()).toBe("4");
-    await w.trigger("click");
-    expect(w.emitted("click")).toHaveLength(1);
+    expect(w.classes()).toEqual(expect.arrayContaining(["wp-chip", "wp-chip--sm", "wp-chip--toggle"]));
+    expect(w.find(".wp-chip__count").text()).toBe("4");
   });
 
-  it("takes a colour for its tint and shows nothing extra without a count", () => {
-    const w = mount(ChipToggle, { props: { color: "var(--wp-kind-wildcard)" }, slots: { default: "Wildcard" } });
-    expect(w.attributes("aria-pressed")).toBe("false");
-    expect(w.attributes("style")).toContain("--chip-toggle-c: var(--wp-kind-wildcard)");
-    expect(w.classes()).toContain("wp-chip-toggle--tinted");
-    expect(w.find(".wp-chip-toggle__count").exists()).toBe(false);
+  it("is off with pressed false, and lit in its colour when given one", () => {
+    const off = mount(Chip, { props: { pressed: false }, slots: { default: "noir" } });
+    expect(off.attributes("aria-pressed")).toBe("false");
+    const w = mount(Chip, { props: { pressed: false, color: "var(--wp-kind-wildcard)" }, slots: { default: "Wildcard" } });
+    expect(w.attributes("style")).toContain("--wp-chip-c: var(--wp-kind-wildcard)");
+    expect(w.classes()).toContain("wp-chip--tinted");
+    expect(w.find(".wp-chip__count").exists()).toBe(false);
+  });
+
+  it("stays a plain label without pressed, with a dot when asked", () => {
+    const w = mount(Chip, { props: { tone: "success", dot: true }, slots: { default: "recommended" } });
+    expect(w.element.tagName).toBe("SPAN");
+    expect(w.attributes("aria-pressed")).toBeUndefined();
+    expect(w.find(".wp-chip__dot").exists()).toBe(true);
   });
 });

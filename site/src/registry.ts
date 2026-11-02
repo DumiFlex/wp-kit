@@ -214,8 +214,8 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "chip", name: "Chip", group: "display", file: "src/Chip.vue", surfaces: ["manager"],
-    use: "A short label: a tag, a status, a count, a category. Tones carry meaning (success, warn, danger, info); color tints it for a category or kind (the text blends toward the theme's text so any pick stays readable), and icon puts the category's icon in front. removable adds a plain ✕ that keeps the chip's height. as=\"button\" (or a link, e.g. RouterLink) makes the chip something you press, such as a tag that opens a filtered list; for a filter that turns on and off use ChipToggle.",
-    instead: "CategoryChip (merged into Chip: <Chip :color :icon>{{ name }}</Chip>) or a hand-made pill span.",
+    use: "The one pill: a tag, a status, a count, a category, a module type, a post's rating, a filter you turn on and off. Tones carry meaning (success, warn, danger, info); color tints it for a category or kind (kindColour(type) gives a module type's) and icon puts an icon in front. dot adds a status dot, count a small number, removable a plain ✕ that keeps the height. as=\"button\" (or a link) makes it take you somewhere; pressed (true or false) makes it a filter toggle with aria-pressed, lit in the accent or its color when on. size: xs (default, in a line of text), sm (24px, a filter row), md (32px).",
+    instead: "ChipToggle, KindChip, RatingBadge and CategoryChip (all merged into Chip), a <button class=\"wp-chip\"> with its own active state, or a hand-made pill span."
   },
   {
     id: "kbd", name: "Kbd", group: "display", file: "src/Kbd.vue", surfaces: ["manager", "canvas"],
@@ -423,28 +423,14 @@ export const KIT_ENTRIES: KitEntry[] = [
   // Community pieces: what the community site shows for a post. Kept here so
   // the extension's Community tab and any later screen draw them the same way.
   {
-    id: "kind-chip", name: "KindChip", group: "display", file: "src/KindChip.vue", surfaces: ["manager"],
-    use: "The module type of a post or library item: wildcard, fixed_values, combine, constraint, derivation or bundle, in the kind colour the extension uses for that type (bundles are slate).",
-    instead: "A span with its own per-type colours.",
-  },
-  {
-    id: "chip-toggle", name: "ChipToggle", group: "choice", file: "src/ChipToggle.vue", surfaces: ["manager", "canvas"],
-    use: "A pill you press to turn a filter or flag on and off: tag and type filters, a category you pick, Recommended on a version. pressed lights it in the accent, or in color (a kind or category colour), which also tints the icon. count shows a number after the label. For one on/off setting with a label use WpSwitch; for one choice of a few, WpSegmented.",
-    instead: "A <button class=\"wp-chip\"> with its own active state.",
-  },
-  {
     id: "drag-handle", name: "DragHandle", group: "layout", file: "src/DragHandle.vue", surfaces: ["manager", "canvas"],
     use: "The six-dot grip on a row you drag to reorder when the row owns the drag (HTML drag-and-drop on a module row, a bundle child). It only shows where to grab and is hidden from screen readers; give keyboard users their own way to move the row. For a list the kit reorders itself, with keyboard moves, use SortableList.",
     instead: "An inline six-circle <svg> in each row.",
   },
   {
     id: "list-row", name: "ListRow", group: "navigation", file: "src/ListRow.vue", surfaces: ["manager", "canvas"],
-    use: "One row of a list you click through: a facet with its count, a child in a bundle's list, a category in a tree, a dependency that opens its page. The whole row is the target. selected marks it (aria-current, or aria-pressed with toggle for a filter), muted dims a row that stays clickable, depth indents a simple tree, arrow says it opens a page, and #start takes anything before the label (a KindChip). ArrowUp/ArrowDown move between rows inside the nearest data-wp-rows. For a pill filter use ChipToggle; for a heading that folds a section, Disclosure.",
+    use: "One row of a list you click through: a facet with its count, a child in a bundle's list, a category in a tree, a dependency that opens its page. The whole row is the target. selected marks it (aria-current, or aria-pressed with toggle for a filter), muted dims a row that stays clickable, depth indents a simple tree, arrow says it opens a page, and #start takes anything before the label (a kind Chip). ArrowUp/ArrowDown move between rows inside the nearest data-wp-rows. For a pill filter use Chip with pressed; for a heading that folds a section, Disclosure.",
     instead: "A <button> styled as a row, with its own hover, active bar and count.",
-  },
-  {
-    id: "rating-badge", name: "RatingBadge", group: "display", file: "src/RatingBadge.vue", surfaces: ["manager"],
-    use: "The NSFW and Featured badges on a post. Renders nothing for a safe, unfeatured post.",
   },
   {
     id: "bundle-meta", name: "BundleMeta", group: "display", file: "src/BundleMeta.vue", surfaces: ["manager"],
@@ -484,11 +470,8 @@ export const KIT_EXEMPT: Record<string, string> = {
 };
 
 export const KIT_EXAMPLES: Record<string, string> = {
-  "kind-chip": `<KindChip kind="module" subtype="wildcard" />`,
-  "chip-toggle": `<ChipToggle :pressed="kind === 'wildcard'" color="var(--wp-kind-wildcard)" icon="pi-sparkles" @click="kind = 'wildcard'">Wildcard</ChipToggle>`,
   "drag-handle": `<DragHandle />`,
   "list-row": `<ListRow :selected="tag === t" toggle icon="tag" :count="12" @click="pick(t)">portrait</ListRow>`,
-  "rating-badge": `<RatingBadge rating="nsfw" featured />`,
   "bundle-meta": `<BundleMeta :count="3" :names="['palette', 'mood', 'style']" />`,
   "tokenized-value": `<TokenizedValue value="a {calm|fierce} $mood @{1a2b3c4d}" :uuid-to-name="names" />`,
   "constraint-matrix-preview": `<ConstraintMatrixPreview :rows :cols :matrix :source-groups :target-groups :exceptions source-name="species" target-name="temperament" target-select="next 2" :ref-map="names" />`,

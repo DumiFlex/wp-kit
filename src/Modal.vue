@@ -42,6 +42,8 @@ useDialogFocus(dialog, () => props.open, {
 
 <template>
   <Teleport to="body">
+    <!-- The backdrop is a click target only; keyboard users close with Escape. -->
+    <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
     <div
       v-if="open"
       class="wp-modal__backdrop"

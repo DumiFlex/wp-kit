@@ -66,8 +66,8 @@ describe("ContextMenu — new affordances", () => {
     });
     const header = document.body.querySelector(".wp-ctxmenu__header");
     expect(header).not.toBeNull();
-    expect(header!.textContent).toContain("Bundle · foo");
-    expect(header!.querySelector(".pi-box")).not.toBeNull();
+    expect(header?.textContent).toContain("Bundle · foo");
+    expect(header?.querySelector(".pi-box")).not.toBeNull();
     wrapper.unmount();
   });
 
@@ -112,7 +112,7 @@ describe("ContextMenu — new affordances", () => {
     });
     const section = document.body.querySelector(".wp-ctxmenu__section");
     expect(section).not.toBeNull();
-    expect(section!.textContent!.trim()).toBe("Drift · library has newer version");
+    expect(section?.textContent?.trim()).toBe("Drift · library has newer version");
     wrapper.unmount();
   });
 
@@ -146,8 +146,8 @@ describe("ContextMenu — new affordances", () => {
       },
       attachTo: document.body,
     });
-    expect(document.body.querySelector(".wp-ctxmenu__title")!.textContent).toBe("Refresh from library");
-    expect(document.body.querySelector(".wp-ctxmenu__sub")!.textContent).toBe("Pull current library version");
+    expect(document.body.querySelector(".wp-ctxmenu__title")?.textContent).toBe("Refresh from library");
+    expect(document.body.querySelector(".wp-ctxmenu__sub")?.textContent).toBe("Pull current library version");
     wrapper.unmount();
   });
 
@@ -159,7 +159,7 @@ describe("ContextMenu — new affordances", () => {
       },
       attachTo: document.body,
     });
-    expect(document.body.querySelector(".wp-ctxmenu__title")!.textContent).toBe("Edit");
+    expect(document.body.querySelector(".wp-ctxmenu__title")?.textContent).toBe("Edit");
     expect(document.body.querySelector(".wp-ctxmenu__sub")).toBeNull();
     wrapper.unmount();
   });

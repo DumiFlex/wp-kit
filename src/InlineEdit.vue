@@ -171,7 +171,7 @@ function onReadKey(ev: KeyboardEvent): void {
 .wp-inline-edit__input {
   width: 100%; min-width: 12ch;
   border: 1px solid var(--wp-border-focus); background: var(--wp-bg-1); outline: none;
-  box-shadow: 0 0 0 3px var(--wp-focus-ring);
+  box-shadow: var(--wp-focus-ring);
 }
 .wp-inline-edit__input[aria-invalid="true"] { border-color: var(--wp-error-border); box-shadow: 0 0 0 3px color-mix(in srgb, var(--wp-danger) 22%, transparent); }
 .wp-inline-edit__error {

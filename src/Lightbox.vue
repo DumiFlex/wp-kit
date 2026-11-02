@@ -165,7 +165,7 @@ watch(() => props.open, async (v, was) => {
 .wp-lightbox__step[data-dir="prev"] { left: var(--wp-space-2); }
 .wp-lightbox__step[data-dir="next"] { right: var(--wp-space-2); }
 .wp-lightbox__step:hover:not(:disabled) { background: var(--wp-bg-3); }
-.wp-lightbox__step:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--wp-focus-ring); border-color: var(--wp-border-focus); }
+.wp-lightbox__step:focus-visible { outline: none; box-shadow: var(--wp-focus-ring); border-color: var(--wp-border-focus); }
 .wp-lightbox__step:disabled { opacity: 0.35; cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) {
   .wp-lightbox__step { transition: none; }

@@ -19,6 +19,7 @@
  */
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from "vue";
 import { placeFloating, viewportSize, type Placement, type Side } from "./floating";
+import { provideFloatingLayer, useFloatingChild } from "./floating-layer";
 
 const props = withDefaults(defineProps<{
   open: boolean;
@@ -73,8 +74,14 @@ function place(): void {
   pos.value = { ...at, minWidth: props.matchWidth ? r.width : undefined };
 }
 
+// A Select list, menu or Popover opened from inside this panel is part of it.
+const layer = provideFloatingLayer();
+// And this panel is part of a Popover it was opened from.
+useFloatingChild(() => (props.open ? panelEl.value : null));
+
 function onPointerDown(ev: PointerEvent): void {
   const path = ev.composedPath();
+  if (layer.owns(path)) return;
   if (panelEl.value && path.includes(panelEl.value)) return;
   if (anchorEl.value && path.includes(anchorEl.value)) return;
   if (props.anchor && path.includes(props.anchor)) return;
@@ -83,6 +90,8 @@ function onPointerDown(ev: PointerEvent): void {
 
 function onKeydown(ev: KeyboardEvent): void {
   if (ev.key !== "Escape") return;
+  // An open list or menu inside the panel shuts first, on its own handler.
+  if (layer.childOpen()) return;
   ev.preventDefault();
   ev.stopPropagation();
   setOpen(false);

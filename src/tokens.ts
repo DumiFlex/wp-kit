@@ -45,11 +45,11 @@ export const SHARED_TOKENS = [
 export const OPTIONAL_TOKENS = ["--wp-bg-deep", "--wp-bg2"] as const;
 
 /** Set by the piece itself, on its own root, not by the host. */
-export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-t", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon"] as const;
+export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-t", "--wp-lm-x", "--wp-lm-r", "--wp-lm-s", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon", "--wp-chip-c", "--wp-field-h"] as const;
 
 /** Pieces that need a page with src/theme/ loaded (not the canvas). */
 export const PAGE_PIECES = [
-  "axis-color.ts", "matrix-axis.ts", "BundleMeta.vue", "ConstraintMatrixPreview.vue", "KindChip.vue", "PostCard.vue", "RatingBadge.vue", "TokenizedValue.vue",
+  "axis-color.ts", "kind-colour.ts", "matrix-axis.ts", "BundleMeta.vue", "ConstraintMatrixPreview.vue", "PostCard.vue", "TokenizedValue.vue",
   "Button.vue", "Card.vue", "Checkbox.vue", "Chip.vue", "ChoiceCards.vue", "ColorPicker.vue", "ConfirmModal.vue",
   "DataTable.vue", "Drawer.vue", "EmptyState.vue", "Field.vue", "Icon.vue", "IconPicker.vue", "Input.vue",
   "ListFilter.vue", "Modal.vue", "RelativeDate.vue", "Select.vue", "Textarea.vue", "ToastHost.vue", "Toggle.vue",

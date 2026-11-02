@@ -8,7 +8,7 @@ describe("Textarea.vue", () => {
     await wrap.get("textarea").setValue("hello");
     const emitted = wrap.emitted("update:modelValue");
     expect(emitted).toBeTruthy();
-    expect(emitted![0]).toEqual(["hello"]);
+    expect(emitted?.[0]).toEqual(["hello"]);
   });
 
   it("reflects error state via aria-invalid", () => {

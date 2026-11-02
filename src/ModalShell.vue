@@ -1,6 +1,8 @@
 <template>
   <Teleport to="body">
     <Transition name="wp-modal" appear>
+      <!-- The overlay is a click target only; keyboard users close with Escape. -->
+      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
       <div v-if="visible" ref="overlayEl" class="wp-modal-overlay" @click="$emit('close')">
         <div
           class="wp-modal-wrapper"

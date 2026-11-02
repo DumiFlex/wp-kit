@@ -65,6 +65,8 @@ onBeforeUnmount(() => window.removeEventListener("keydown", onKeydown));
 <template>
   <Teleport to="body">
     <Transition name="wp-modal" appear>
+      <!-- The backdrop is a click target only; keyboard users close with Escape. -->
+      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
       <div
         v-if="visible"
         class="wp-confirm-overlay"

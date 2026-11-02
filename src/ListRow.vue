@@ -3,13 +3,13 @@
  * One row of a list you click through: a facet ("portrait 12"), a child in a
  * bundle's list, a category in a tree, a dependency that opens its page. The
  * whole row is the target, full width, with an optional icon (or `#start`
- * for anything else, e.g. a KindChip), a label, a second `description` line,
+ * for anything else, e.g. a kind Chip), a label, a second `description` line,
  * and a `count` or `#end` at the right; `arrow` adds a "goes somewhere"
  * arrow that moves on hover.
  *
  *   <ListRow :selected="tag === t" toggle icon="tag" :count="12" @click="pick(t)">portrait</ListRow>
  *   <ListRow :selected="current === c.key" :icon="kindIcon(c.type)" :description="summary(c)" :muted="!c.enabled">{{ c.name }}</ListRow>
- *   <ListRow :as="RouterLink" :to="`/p/${dep.slug}`" arrow><template #start><KindChip … /></template>{{ dep.slug }}</ListRow>
+ *   <ListRow :as="RouterLink" :to="`/p/${dep.slug}`" arrow><template #start><Chip :color="kindColour(t)">{{ t }}</Chip></template>{{ dep.slug }}</ListRow>
  *
  * `selected` marks the row in the accent with a bar on its left. A row that
  * turns a filter on and off says so with `aria-pressed` (pass `toggle`);
