@@ -49,7 +49,7 @@ describe("ColorPicker.vue", () => {
     await hexInput.setValue("#ff0000");
     const events = wrap.emitted("update:modelValue");
     expect(events).toBeTruthy();
-    expect(events?.[events!.length - 1]).toEqual(["#ff0000"]);
+    expect(events?.at(-1)).toEqual(["#ff0000"]);
   });
 
   it("uses provided ariaLabel on the swatch button", () => {

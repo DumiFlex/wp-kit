@@ -9,7 +9,7 @@ describe("Input.vue", () => {
     await el.setValue("hello");
     const emitted = wrap.emitted("update:modelValue");
     expect(emitted).toBeTruthy();
-    expect(emitted![0]).toEqual(["hello"]);
+    expect(emitted?.[0]).toEqual(["hello"]);
   });
 
   it("renders an inline icon when icon prop set", () => {

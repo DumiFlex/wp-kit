@@ -14,7 +14,8 @@ The Vue 3 component kit shared by the Wildcard Pipeline extension (DumiFlex/Comf
 - CSS: scoped, every class `wp-*`. A piece that runs on the ComfyUI canvas reads only `SHARED_TOKENS` (`src/tokens.ts`); a page-only piece is listed in `PAGE_PIECES` and may read anything `src/theme/` defines (`tokens.test.ts`). No new raw hex colours; the few fixed ones (logo, colour picker, text on the accent) stay where they are.
 - Corners `min(Npx, var(--wp-radius-cap, 999px))`, pills `var(--wp-radius-cap, 999px)`, circles inside controls `min(50%, var(--wp-radius-cap, 999px))`.
 - Props: `size` / `variant` / `tone` / `v-model:open`; heights from `--wp-control-h-*`. Keyboard + Escape + focus return for anything interactive.
-- No `as any`, `@ts-ignore`, `@ts-expect-error`. No `v-html`.
+- No `as any`, `@ts-ignore`, `@ts-expect-error`. No `v-html`. No non-null assertions (`x!`), tests included: use `?.` or a `must()` helper.
+- Lint holds the kit to the apps' ratchet (they install it from npm and don't lint it): non-null assertions and the a11y rules (click/mouse key events, static-element interactions, interactive focus, label-has-for) are errors. A real exception (a backdrop that only takes clicks, a role the rule can't see because it's bound) gets an `eslint-disable-next-line` with its reason in a comment above it.
 - Type-checked with `exactOptionalPropertyTypes` (the community site uses it): an optional prop or option is `name?: T | undefined`, so a parent can pass `undefined` through. In a template read a defaulted prop as `props.x` when you do maths or call a method on it.
 - A new piece needs its site entry and demo in the same PR: `site/src/registry.ts` + `site/src/demos/<id>.vue` (`site/src/coverage.test.ts` fails otherwise). The site (`site/`, Vite, imports the kit through `@kit/`) is the kit's docs, deployed to GitHub Pages by `site.yml` on each release; `pnpm site:dev` to look at it.
 

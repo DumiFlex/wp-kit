@@ -194,6 +194,10 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
 
 <template>
   <Teleport to="body">
+    <!-- Keys reach the menu through its window keydown (arrows, Home/End,
+         Enter, Escape), so the list itself takes no focus; leaving with the
+         mouse only clears the hover highlight. -->
+    <!-- eslint-disable-next-line vuejs-accessibility/interactive-supports-focus, vuejs-accessibility/mouse-events-have-key-events -->
     <ul
       v-if="visible"
       ref="menuEl"
@@ -226,7 +230,7 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
           <li v-if="entry.divider" class="wp-ctxmenu__sep" aria-hidden="true"></li>
           <!-- The role is menuitem or menuitemcheckbox (bound, so the rule
                can't see it); keys come from the menu's own keydown. -->
-          <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
+          <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions, vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/mouse-events-have-key-events -->
           <li
             class="wp-ctxmenu__item"
             :class="{

@@ -102,6 +102,8 @@ function toggle() {
         />
       </svg>
     </button>
+    <!-- A click on the words toggles too, like a <label>; keyboard users use the box itself. -->
+    <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
     <span v-if="label" class="wp-checkbox__label" @click="toggle">{{ label }}</span>
   </span>
 </template>
