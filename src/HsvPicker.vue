@@ -2,7 +2,7 @@
 /**
  * HsvPicker — saturation/value square + hue slider.
  *
- * Shared between manager ColorPicker / TweaksPanel AND the canvas
+ * Shared between ColorField / TweaksPanel AND the canvas
  * bundle modal. CSS uses `--wp-*` tokens with hardcoded fallbacks so
  * the picker renders inside the extension where the manager spacing
  * tokens (`--wp-space-*`) aren't loaded.
