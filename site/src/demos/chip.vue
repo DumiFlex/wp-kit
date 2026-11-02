@@ -26,5 +26,10 @@ import Chip from "@kit/Chip.vue";
       <Chip tone="accent" removable>$mood</Chip>
       <Chip color="var(--wp-kind-wildcard)" removable>Wildcard</Chip>
     </div>
+    <p class="wp-kit__muted">Pressable: as="button" (or a link) for a chip that takes you somewhere.</p>
+    <div class="wp-kit__row">
+      <Chip as="button" icon="tag">portrait</Chip>
+      <Chip as="button" tone="accent" icon="folder">Characters</Chip>
+    </div>
   </div>
 </template>

@@ -199,7 +199,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "radio-group", name: "RadioGroup", group: "choice", file: "src/RadioGroup.vue", surfaces: ["manager", "canvas"],
-    use: "One of a few options that each need a line of explanation (prompt style, install mode). One Tab stop, the arrows move and choose; cards draws each option as a bordered card, and the label slot adds a badge after an option's name (the AI provider list). For two to five short words on one row use Segmented.",
+    use: "One of a few options that each need a line of explanation (prompt style, install mode). One Tab stop, the arrows move and choose; cards draws each option as a bordered card, and the label slot adds a badge after an option's name (the AI provider list). For two to five short words on one row use Segmented. variant=\"swatch\" draws each option as a round colour swatch named by its label (an accent or frame colour).",
     instead: "A column of .wp-radio inputs with their own labels and hint text.",
   },
   {
@@ -214,7 +214,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "chip", name: "Chip", group: "display", file: "src/Chip.vue", surfaces: ["manager"],
-    use: "A short label: a tag, a status, a count, a category. Tones carry meaning (success, warn, danger, info); color tints it for a category or kind (the text blends toward the theme's text so any pick stays readable), and icon puts the category's icon in front. removable adds a plain ✕ that keeps the chip's height.",
+    use: "A short label: a tag, a status, a count, a category. Tones carry meaning (success, warn, danger, info); color tints it for a category or kind (the text blends toward the theme's text so any pick stays readable), and icon puts the category's icon in front. removable adds a plain ✕ that keeps the chip's height. as=\"button\" (or a link, e.g. RouterLink) makes the chip something you press, such as a tag that opens a filtered list; for a filter that turns on and off use ChipToggle.",
     instead: "CategoryChip (merged into Chip: <Chip :color :icon>{{ name }}</Chip>) or a hand-made pill span.",
   },
   {
@@ -253,7 +253,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "disclosure", name: "Disclosure", group: "display", file: "src/Disclosure.vue", surfaces: ["manager", "canvas"],
-    use: "A section that folds open under its heading (advanced options, details, a long list). The chevron turns and the body grows; boxed draws it as a card. Controls that must not fold it (an on/off switch, a select-all box) go in #actions (right) or #lead (left), outside the heading button.",
+    use: "A section that folds open under its heading (advanced options, details, a long list). The chevron turns and the body grows; boxed draws it as a card; flush makes the heading a full-width band with no body indent, for a section of a table that fills its card (a group of options, a rule). Controls that must not fold it (an on/off switch, a select-all box) go in #actions (right) or #lead (left), outside the heading button.",
     instead: "A button with its own aria-expanded, chevron and v-if.",
   },
   {
@@ -349,7 +349,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "loading-mark", name: "LoadingMark", group: "feedback", file: "src/LoadingMark.vue", surfaces: ["manager", "canvas"],
-    use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour.",
+    use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour, brand=\"community\" in the community site's colours.",
     instead: "A spinner or plain \"Loading…\" text.",
   },
   // Overlays
@@ -370,7 +370,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "dropdown-menu", name: "DropdownMenu", group: "overlays", file: "src/DropdownMenu.vue", surfaces: ["canvas", "manager"],
-    use: "A list of actions behind a button (the ⋯ menu, More, Add…). Arrows, Home/End and Enter work. Takes the same items as ContextMenu, so a row's right-click and ⋯ menus can share one list.",
+    use: "A list of actions behind a button (the ⋯ menu, More, Add…). Arrows, Home/End and Enter work. Takes the same items as ContextMenu, so a row's right-click and ⋯ menus can share one list. An item with checked is a checkbox item (a tick when on); keepOpen leaves the menu open so several can be ticked in a row.",
     instead: "A hand-built menu of buttons under a ⋯ button.",
   },
   {
@@ -384,7 +384,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "confirm-modal", name: "ConfirmModal", group: "overlays", file: "src/ConfirmModal.vue", surfaces: ["manager"],
-    use: "Ask before something that can't be undone, in the manager. Built on Modal, so Escape, Tab and focus return work like every other dialog. Name the action on the confirm button (Delete, not OK); tone=\"danger\" for deletes and discards.",
+    use: "Ask before something that can't be undone, in the manager. Built on Modal, so Escape, Tab and focus return work like every other dialog. Name the action on the confirm button (Delete, not OK); tone=\"danger\" for deletes and discards, tone=\"warn\" for something that matters but can be undone. requireType makes the user type a word first (deleting an account); confirmDisabled holds Confirm off while a field in the slot is empty.",
     instead: "ConfirmDialog in a manager screen, or window.confirm().",
   },
   {
@@ -418,7 +418,58 @@ export const KIT_ENTRIES: KitEntry[] = [
   // Brand
   {
     id: "logo", name: "Logo", group: "brand", file: "src/Logo.vue", surfaces: ["manager", "canvas"],
-    use: "The Wildcard Pipeline mark. Draw it at 16, 20, 28 or 40 px.",
+    use: "The Wildcard Pipeline mark. Draw it at 16, 20, 28 or 40 px. brand=\"community\" draws the community site's rust counterpart.",
+  },
+  // Community pieces: what the community site shows for a post. Kept here so
+  // the extension's Community tab and any later screen draw them the same way.
+  {
+    id: "kind-chip", name: "KindChip", group: "display", file: "src/KindChip.vue", surfaces: ["manager"],
+    use: "The module type of a post or library item: wildcard, fixed_values, combine, constraint, derivation or bundle, in the kind colour the extension uses for that type (bundles are slate).",
+    instead: "A span with its own per-type colours.",
+  },
+  {
+    id: "chip-toggle", name: "ChipToggle", group: "choice", file: "src/ChipToggle.vue", surfaces: ["manager", "canvas"],
+    use: "A pill you press to turn a filter or flag on and off: tag and type filters, a category you pick, Recommended on a version. pressed lights it in the accent, or in color (a kind or category colour), which also tints the icon. count shows a number after the label. For one on/off setting with a label use WpSwitch; for one choice of a few, WpSegmented.",
+    instead: "A <button class=\"wp-chip\"> with its own active state.",
+  },
+  {
+    id: "drag-handle", name: "DragHandle", group: "layout", file: "src/DragHandle.vue", surfaces: ["manager", "canvas"],
+    use: "The six-dot grip on a row you drag to reorder when the row owns the drag (HTML drag-and-drop on a module row, a bundle child). It only shows where to grab and is hidden from screen readers; give keyboard users their own way to move the row. For a list the kit reorders itself, with keyboard moves, use SortableList.",
+    instead: "An inline six-circle <svg> in each row.",
+  },
+  {
+    id: "list-row", name: "ListRow", group: "navigation", file: "src/ListRow.vue", surfaces: ["manager", "canvas"],
+    use: "One row of a list you click through: a facet with its count, a child in a bundle's list, a category in a tree, a dependency that opens its page. The whole row is the target. selected marks it (aria-current, or aria-pressed with toggle for a filter), muted dims a row that stays clickable, depth indents a simple tree, arrow says it opens a page, and #start takes anything before the label (a KindChip). ArrowUp/ArrowDown move between rows inside the nearest data-wp-rows. For a pill filter use ChipToggle; for a heading that folds a section, Disclosure.",
+    instead: "A <button> styled as a row, with its own hover, active bar and count.",
+  },
+  {
+    id: "rating-badge", name: "RatingBadge", group: "display", file: "src/RatingBadge.vue", surfaces: ["manager"],
+    use: "The NSFW and Featured badges on a post. Renders nothing for a safe, unfeatured post.",
+  },
+  {
+    id: "bundle-meta", name: "BundleMeta", group: "display", file: "src/BundleMeta.vue", surfaces: ["manager"],
+    use: "One line under a bundle's name: how many modules it holds and their names.",
+  },
+  {
+    id: "tokenized-value", name: "TokenizedValue", group: "display", file: "src/TokenizedValue.vue", surfaces: ["manager"],
+    use: "A wildcard-grammar string, read-only, with $var chips (green, red for .neg), @{ref} chips (magenta, red when unresolved, with the filter on hover) and the {a|b} / {N$$…} scaffolding dimmed. Pass uuidToName to show ref names. Built on rich-tokenize.ts, the extension's lexer.",
+    instead: "Printing the raw string, or v-html from a hand-made highlighter.",
+  },
+  {
+    id: "constraint-matrix-preview", name: "ConstraintMatrixPreview", group: "pieces", file: "src/ConstraintMatrixPreview.vue", surfaces: ["manager"],
+    use: "A constraint's source × target matrix, read-only: boost, reduce, exclude and only cells, axis bands from the tag groups, the reach selector and the exception rows. The editor's matrix is the extension's ConstraintMatrix; this is its viewer.",
+  },
+  {
+    id: "post-card", name: "PostCard", group: "pieces", file: "src/PostCard.vue", surfaces: ["manager"],
+    use: "A community post in a grid: type stripe and chip, badges, version, slug, bundle contents, description, tags, stars, downloads and when it changed. The whole card is a link; pass the app's router link as `as`.",
+  },
+  {
+    id: "star-button", name: "StarButton", group: "pieces", file: "src/StarButton.vue", surfaces: ["manager"],
+    use: "Star a post: a toggle button with the count. The app sends the request and passes the new state back.",
+  },
+  {
+    id: "bookmark-button", name: "BookmarkButton", group: "pieces", file: "src/BookmarkButton.vue", surfaces: ["manager"],
+    use: "Bookmark a post: a toggle button. The app sends the request and passes the new state back.",
   },
 ];
 
@@ -433,6 +484,17 @@ export const KIT_EXEMPT: Record<string, string> = {
 };
 
 export const KIT_EXAMPLES: Record<string, string> = {
+  "kind-chip": `<KindChip kind="module" subtype="wildcard" />`,
+  "chip-toggle": `<ChipToggle :pressed="kind === 'wildcard'" color="var(--wp-kind-wildcard)" icon="pi-sparkles" @click="kind = 'wildcard'">Wildcard</ChipToggle>`,
+  "drag-handle": `<DragHandle />`,
+  "list-row": `<ListRow :selected="tag === t" toggle icon="tag" :count="12" @click="pick(t)">portrait</ListRow>`,
+  "rating-badge": `<RatingBadge rating="nsfw" featured />`,
+  "bundle-meta": `<BundleMeta :count="3" :names="['palette', 'mood', 'style']" />`,
+  "tokenized-value": `<TokenizedValue value="a {calm|fierce} $mood @{1a2b3c4d}" :uuid-to-name="names" />`,
+  "constraint-matrix-preview": `<ConstraintMatrixPreview :rows :cols :matrix :source-groups :target-groups :exceptions source-name="species" target-name="temperament" target-select="next 2" :ref-map="names" />`,
+  "post-card": `<PostCard :as="RouterLink" :to="\`/p/\${post.slug}\`" :post="card" />`,
+  "star-button": `<StarButton :starred="starred" :count="12" @toggle="star" />`,
+  "bookmark-button": `<BookmarkButton :bookmarked="saved" @toggle="bookmark" />`,
   "button": `<Button variant="primary" icon="pi-plus" @click="add">New module</Button>`,
   "btn-css": `<button class="wp-btn wp-btn--primary wp-btn--sm">Run</button>`,
   "input": `<Input v-model="name" prefix="$" aria-label="Variable name" />`,
