@@ -63,4 +63,38 @@ describe("ColorField", () => {
     expect(w.find('[data-test="cf"]').text()).toBe("red");
     w.unmount();
   });
+
+  it("offers no presets unless asked, and its own list when given one", async () => {
+    const plain = mk();
+    await openPanel(plain);
+    expect(document.querySelector('[data-test="cf-preset"]')).toBeNull();
+    plain.unmount();
+    const own = mk({ presets: ["#111111", "#222222"] });
+    await openPanel(own);
+    expect(document.querySelectorAll('[data-test="cf-preset"]')).toHaveLength(2);
+    own.unmount();
+  });
+
+  it("takes a preset in one click, marks the current one and closes", async () => {
+    const w = mk({ presets: true, modelValue: "#7C3AED" });
+    await openPanel(w);
+    const presets = [...document.querySelectorAll<HTMLButtonElement>('[data-test="cf-preset"]')];
+    expect(presets).toHaveLength(12);
+    expect(presets[0]?.getAttribute("aria-pressed")).toBe("true");
+    expect(presets[1]?.getAttribute("aria-pressed")).toBe("false");
+    presets[1]?.click();
+    await w.vm.$nextTick();
+    expect(last(w)).toBe("#a78bfa");
+    expect(document.querySelector('[data-test="cf-hex"]')).toBeNull();
+    w.unmount();
+  });
+
+  it("shows the swatch alone when compact, with a bigger swatch at md", () => {
+    const w = mk({ compact: true, size: "md" });
+    const trigger = w.get('[data-test="cf"]');
+    expect(trigger.text()).toBe("");
+    expect(trigger.classes()).toEqual(expect.arrayContaining(["wp-color-field--compact", "wp-color-field--md"]));
+    expect(trigger.attributes("aria-label")).toBe("Colour: #ff0000");
+    w.unmount();
+  });
 });

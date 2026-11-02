@@ -152,13 +152,9 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "dragover and drop handlers on a div, with a hidden file input and its own highlight.",
   },
   {
-    id: "color-picker", name: "ColorPicker", group: "inputs", file: "src/ColorPicker.vue", surfaces: ["manager"], usedBy: ["extension"],
-    use: "Pick a colour from presets, the HSV square or a typed hex, as categories do. The closed picker shows the swatch, the hex and a chevron (`compact`: swatch and chevron only, for a name row); the panel is a kit Popover.",
-  },
-  {
     id: "color-field", name: "ColorField", group: "inputs", file: "src/ColorField.vue", surfaces: ["canvas", "manager"], usedBy: ["extension"],
-    use: "A small swatch with its hex that opens the colour square, a hex box and, with alpha, an opacity number; allow-none adds None. For a colour setting on a canvas widget (label text, a band behind it, a background). Writes #rrggbb, #rrggbbaa once see-through, or none.",
-    instead: "A text box for a hex code, or a native <input type=\"color\">, which has no opacity and looks different in every browser.",
+    use: "The one colour picker: a swatch with its hex that opens the colour square, a hex box and, with alpha, an opacity number; allow-none adds None, presets a row of preset swatches (true for the kit's twelve, or your own list) that take a colour in one click. size sm on the canvas, md in a manager form (a 20px swatch); compact shows the swatch alone, for a name row. Writes #rrggbb, #rrggbbaa once see-through, or none.",
+    instead: "ColorPicker (merged in: presets), a text box for a hex code, or a native <input type=\"color\">, which has no opacity and looks different in every browser.",
   },
   {
     id: "hsv-picker", name: "HsvPicker", group: "inputs", file: "src/HsvPicker.vue", surfaces: ["canvas", "manager"], usedBy: ["extension"],
@@ -176,26 +172,14 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   // Choice
   {
-    id: "checkbox", name: "Checkbox", group: "choice", file: "src/Checkbox.vue", surfaces: ["manager"], usedBy: ["extension", "community"],
-    use: "Tick one item, or one row in a list. Supports a mixed state for \"some selected\". Disabled turns grey with a dimmed label. `field` draws it as an input-height box for a yes/no filter beside dropdowns (Favorites only).",
-    instead: "<input type=\"checkbox\"> drawn by the browser.",
+    id: "checkbox", name: "Checkbox", group: "choice", file: "src/Checkbox.vue", surfaces: ["canvas", "manager"], usedBy: ["extension", "community"],
+    use: "The one checkbox, on the canvas and in the manager: tick one item, or one row in a list. A label (prop or slot) toggles on click; without one the box alone is the piece, so give it an aria-label. size sm is the 12px box of a canvas row, md 14px. indeterminate draws the mixed state for \"some selected\"; --check-on tints the checked fill (a bundle colour). Disabled turns grey with a dimmed label. field draws it as an input-height box for a yes/no filter beside dropdowns (Favorites only).",
+    instead: "WpCheck (merged in: size=\"sm\", --check-on), the global .wp-check class on a hand-made span, or <input type=\"checkbox\"> drawn by the browser.",
   },
   {
-    id: "wp-check", name: "WpCheck", group: "choice", file: "src/WpCheck.vue", surfaces: ["canvas", "manager"], usedBy: ["extension"],
-    use: "The checkbox for canvas widgets.",
-  },
-  {
-    id: "toggle", name: "Toggle", group: "choice", file: "src/Toggle.vue", surfaces: ["manager"], usedBy: ["extension", "community"],
-    use: "A setting that takes effect at once (on or off). Use a Checkbox when the choice is saved later with a button. It is WpSwitch at the manager size.",
-  },
-  {
-    id: "wp-switch", name: "WpSwitch", group: "choice", file: "src/WpSwitch.vue", surfaces: ["canvas", "manager"], usedBy: ["extension"],
+    id: "wp-switch", name: "WpSwitch", group: "choice", file: "src/WpSwitch.vue", surfaces: ["canvas", "manager"], usedBy: ["extension", "community"],
     use: "On or off, taking effect at once, on the canvas or in the manager (one component, so one stylesheet). The track look is a sliding knob; the chip look is a labelled chip that lights up, for a row of runtime switches (Hide from prompt, Lock pick). mixed draws a bulk switch where only some children are on.",
-    instead: "A button with role=\"switch\" and its own toggle--on class.",
-  },
-  {
-    id: "radio", name: "Radio (.wp-radio)", group: "choice", file: "src/theme/tokens.css", surfaces: ["manager"], usedBy: ["extension"],
-    use: "One of a few options that all need to be visible. A real radio input with the class wp-radio, so arrow keys work. Disabled turns grey.",
+    instead: "Toggle (merged in: use size=\"md\" in the manager, invalid for the old error), or a button with role=\"switch\" and its own toggle--on class.",
   },
   {
     id: "tabs", name: "Tabs", group: "choice", file: "src/WpTabs.vue", surfaces: ["manager", "canvas"], usedBy: ["extension", "community"],
@@ -210,7 +194,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   {
     id: "radio-group", name: "RadioGroup", group: "choice", file: "src/RadioGroup.vue", surfaces: ["manager", "canvas"], usedBy: ["extension", "community"],
     use: "One of a few options that each need a line of explanation (prompt style, install mode). One Tab stop, the arrows move and choose; cards draws each option as a bordered card, and the label slot adds a badge after an option's name (the AI provider list). For two to five short words on one row use Segmented. variant=\"swatch\" draws each option as a round colour swatch named by its label (an accent or frame colour).",
-    instead: "A column of .wp-radio inputs with their own labels and hint text.",
+    instead: "A column of native radio inputs (the old .wp-radio class) with their own labels and hint text.",
   },
   {
     id: "choice-cards", name: "ChoiceCards", group: "choice", file: "src/ChoiceCards.vue", surfaces: ["manager"], usedBy: ["extension"],
@@ -362,6 +346,16 @@ export const KIT_ENTRIES: KitEntry[] = [
     use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour, brand=\"community\" in the community site's colours. The motion is drawn on a canvas, so it stays sharp and glides in every browser; with reduced motion the still mark only breathes. Hosts can slow or pause it with data-wp-motion-speed / data-wp-motion-paused on an ancestor.",
     instead: "A spinner or plain \"Loading…\" text.",
   },
+  {
+    id: "working-line", name: "WorkingLine", group: "feedback", file: "src/WorkingLine.vue", surfaces: ["manager", "canvas"], usedBy: [],
+    use: "The \"model is working\" line, like Claude Code's: a mark drawn from the logo's sparkles (variant typing, shuffle, orbit or burst), a word that crossfades when it changes, and the time so far. It only draws; the app picks the word, time and tempo (slow while the model reads, mid while it thinks, fast while it writes). wordKey keeps a token count ticking up from crossfading every time. inline makes it smaller for a top bar.",
+    instead: "LoadingMark plus a status text when an AI request is running.",
+  },
+  {
+    id: "motion-css", name: "Entrance classes (motion.css)", group: "feedback", file: "src/motion.css", surfaces: ["manager", "canvas"], usedBy: [],
+    use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves.",
+    instead: "A keyframe of opacity or transform in each component.",
+  },
   // Overlays
   {
     id: "modal", name: "Modal", group: "overlays", file: "src/Modal.vue", surfaces: ["manager"], usedBy: ["extension", "community"],
@@ -498,14 +492,10 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "wp-number": `<WpNumber v-model="count" :min="1" :max="64" aria-label="Count" />`,
   "search-input": `<SearchInput v-model="query" placeholder="Search modules" :visible="shown.length" :total="rows.length" />`,
   "list-filter": `<ListFilter v-model="query" :total="rows.length" :visible="shown.length" noun="rules" test-prefix="rules" />`,
-  "color-picker": `<ColorPicker v-model="color" aria-label="Category colour" />`,
-  "color-field": `<ColorField v-model="band" alpha allow-none size="sm" aria-label="Label band" />`,
+  "color-field": `<ColorField v-model="band" alpha allow-none size="sm" aria-label="Label band" />  <ColorField v-model="color" presets size="md" aria-label="Category colour" />`,
   "hsv-picker": `<HsvPicker v-model="color" aria-label="Colour" />`,
-  "checkbox": `<Checkbox v-model="picked" label="Include in bundle" />`,
-  "wp-check": `<WpCheck v-model="on" aria-label="Hold" />`,
-  "toggle": `<Toggle v-model="enabled" label="Show tooltips" />`,
+  "checkbox": `<Checkbox v-model="picked" label="Include in bundle" />  <Checkbox v-model="on" size="sm" aria-label="Enabled" />`,
   "wp-switch": `<WpSwitch v-model="held" variant="chip" icon="pi-link" label="Hold across run" />`,
-  "radio": `<label><input v-model="mode" type="radio" class="wp-radio" value="a"> Tags</label>`,
   "tabs": `<WpTabs v-model="tab" :tabs="[{ id: 'options', label: 'Options', count: 12 }, { id: 'rules', label: 'Rules' }]" aria-label="Editor sections" />`,
   "image-zoom": `<WpImageZoom v-model:zoom="zoom" :src="url" alt="Frame 3" hint="Drag to move · scroll to zoom" minimap autohide />`,
   "segmented": `<WpSegmented v-model="theme" :options="[{ value: 'dark', label: 'Dark', icon: 'pi-moon' }, { value: 'light', label: 'Light', icon: 'pi-sun' }]" aria-label="Theme" />`,
@@ -525,6 +515,8 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "toast": `useToast().push({ severity: "success", summary: "Saved", action: { label: "Undo", run: undo } })`,
   "toast-card": `<ToastCard tone="success" summary="Saved Hair colour" action-label="Undo" @action="undo" @dismiss="close" />`,
   "loading-mark": `<LoadingMark block>Loading bundle…</LoadingMark>`,
+  "working-line": `<WorkingLine :word="word" :word-key="phase" :time="elapsed" tempo="mid" variant="orbit" />`,
+  "motion-css": `import "@dumiflex/wp-kit/motion.css";\n<span class="wp-enter-pop">👍</span>\n<div class="wp-enter-drop wp-attention">Search the web?</div>`,
   "modal": `<Modal v-model:open="open" title="Rename"><template #footer>…</template></Modal>`,
   "modal-shell": `<ModalShell :visible="open" @close="open = false"><div class="my-dialog">…</div></ModalShell>`,
   "confirm-modal": `<ConfirmModal :open="ask" title="Delete Hair colour?" confirm-label="Delete" tone="danger" @confirm="del" @cancel="ask = false" />`,

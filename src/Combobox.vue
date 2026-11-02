@@ -284,7 +284,7 @@ function setOpen(v: boolean): void {
   color: var(--wp-text); font-size: var(--wp-text-xs); line-height: 1;
 }
 .wp-combo[data-size="sm"] .wp-combo__chip { height: 16px; padding-left: 5px; font-size: 10.5px; }
-.wp-combo__chip-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wp-combo__chip-text { min-width: 0; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wp-combo__remove, .wp-combo__clear {
   display: inline-grid; place-items: center; width: 16px; height: 16px; padding: 0;
   border: 0; border-radius: min(50%, var(--wp-radius-cap, 999px)); background: transparent; color: var(--wp-text-muted); cursor: pointer;

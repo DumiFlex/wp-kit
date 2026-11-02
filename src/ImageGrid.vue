@@ -15,7 +15,7 @@
 import { computed, ref } from "vue";
 import Lightbox from "./Lightbox.vue";
 import Skeleton from "./Skeleton.vue";
-import WpCheck from "./WpCheck.vue";
+import Checkbox from "./Checkbox.vue";
 
 export interface GridImage { id: string; src: string; alt: string; thumb?: string; caption?: string }
 
@@ -82,7 +82,7 @@ function toggle(id: string, on: boolean): void {
         <img v-if="img.thumb || img.src" class="wp-image-grid__img" :src="img.thumb || img.src" alt="" loading="lazy">
         <Skeleton v-else class="wp-image-grid__empty" shape="block" width="100%" height="100%" />
       </button>
-      <WpCheck
+      <Checkbox
         v-if="selectable"
         class="wp-image-grid__check"
         :model-value="props.selected.includes(img.id)"

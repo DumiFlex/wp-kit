@@ -1272,6 +1272,11 @@ input, textarea, select { font: inherit; }
  * every list page that imports Button.vue can wear the modifier
  * class without crossing :deep() boundaries. */
 .wp-refresh-btn--spin .pi-refresh {
+  /* The arrow's circle is not the middle of its em box: PrimeIcons draws it
+   * centred at (512, 360) on a 1024 grid whose box runs 960 → -64, so its
+   * centre sits 58.56% down. Turning on the box centre made it wobble. */
+  line-height: 1;
+  transform-origin: 50% 58.56%;
   animation: wp-refresh-spin 0.9s linear infinite;
 }
 @keyframes wp-refresh-spin {
@@ -1299,145 +1304,6 @@ input, textarea, select { font: inherit; }
 .wp-footer-bar__inner {
   display: contents;
 }
-
-/* ---------- Toggle ----------
-   Toggle.vue wraps the shared WpSwitch; its look lives in
-   kit/WpSwitch.vue (one sheet for canvas + manager). */
-
-/* ---------- Checkbox ----------
-   Canonical geometry matches the wildcard pool's per-option box
-   (`.opt__check` in OptionRow.vue: 14px, 1.5px soft border, 3px radius, sunk
-   into `--wp-bg`). This is THE checkbox look for the whole app; the only
-   opt-outs are the custom toggle BUTTONS (internal flag, seed-lock).
-
-   Markup-agnostic on purpose: works for both the shared ui/Checkbox.vue
-   `<button data-checked>` and bare `<span role="checkbox" aria-checked>`
-   used inline in the size-sensitive embed tree (which avoids importing the
-   component to stay within the bundle budget). On-state fill stays at
-   accent-600 for the white-tick contrast audit. */
-.wp-check {
-  width: 14px; height: 14px;
-  /* A visible edge on the empty box: the hairline border tokens vanished on
-   * a dark row, so nobody saw that list rows can be selected. */
-  border: 1.5px solid color-mix(in srgb, var(--wp-text-dim) 70%, transparent);
-  border-radius: min(3px, var(--wp-radius-cap, 999px));
-  background: var(--wp-bg);
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 0; margin: 0;
-  cursor: pointer;
-  flex-shrink: 0;
-  color: transparent;
-  transition: background .12s, border-color .12s, color .12s;
-  line-height: 0;
-}
-.wp-check[data-checked="true"],
-.wp-check[aria-checked="true"] {
-  background: var(--wp-accent-600);
-  border-color: var(--wp-accent-500);
-  color: #fff; /* audit-exempt: white checkmark on accent-600 background ≥4.5:1 both themes */
-}
-/* Indeterminate (tri-state) — must look visually distinct from an empty box.
-   The base .wp-check sets color: transparent, so the dash SVG (stroke="currentColor")
-   would be invisible without flipping color here. Mirrors the checked-state fill so
-   a section-checkbox with a partial selection is unmistakably "some, not none, not all".
-   Visibility contract: see src/manager/components/ui/Checkbox.vue (indeterminate prop)
-   and src/manager/__tests__/ui/Checkbox.test.ts (data-indeterminate assertions). */
-.wp-check[data-indeterminate="true"] {
-  background: var(--wp-accent-600);
-  border-color: var(--wp-accent-500);
-  color: #fff; /* audit-exempt: white dash on accent-600 background ≥4.5:1 both themes */
-}
-.wp-check svg { width: 9px; height: 9px; display: block; pointer-events: none; }
-.wp-check:not(:disabled, [aria-disabled="true"], [data-checked="true"], [aria-checked="true"], [data-indeterminate="true"]):hover {
-  border-color: var(--wp-accent-500);
-}
-/* Disabled: grey, not dim purple, so a ticked disabled box no longer reads
- * as a live one in dark mode. */
-.wp-check:disabled,
-.wp-check[aria-disabled="true"] {
-  cursor: not-allowed;
-  background: var(--wp-bg-3);
-  border-color: var(--wp-border);
-  opacity: 0.6;
-}
-.wp-check:disabled[data-checked="true"],
-.wp-check:disabled[data-indeterminate="true"],
-.wp-check[aria-disabled="true"][aria-checked="true"] {
-  background: var(--wp-text-dim);
-  border-color: var(--wp-text-dim);
-  color: var(--wp-bg-1);
-}
-.wp-checkbox.is-disabled { cursor: not-allowed; }
-.wp-checkbox.is-disabled .wp-checkbox__label { opacity: 0.5; }
-.wp-check:focus-visible { outline: none; box-shadow: var(--wp-focus-ring); }
-
-/* Inline checkbox wrapper (label + box) — min-height fills canonical hit-target. */
-.wp-checkbox {
-  display: inline-flex; align-items: center; gap: 8px;
-  min-height: var(--wp-input-h);
-  cursor: pointer;
-  user-select: none;
-  font-size: 12.5px;
-  color: var(--wp-text);
-}
-/* Box-only checkbox inside a row or a <label> that already gives the hit
-   target (AI result lists, file lists): no 32px min-height, so it sits on
-   the row's text line. */
-.wp-checkbox--inline { min-height: 0; flex: none; }
-/* Field checkbox (`<Checkbox field>`): an input-height box in a form grid.
-   The label fills the box so a click anywhere toggles once (the label
-   toggles, the box toggles, nothing else does). */
-.wp-checkbox--field {
-  display: flex;
-  width: 100%;
-  height: var(--wp-input-h);
-  gap: 0;
-  background: var(--wp-bg-2);
-  border: 1px solid var(--wp-border);
-  border-radius: var(--wp-radius-sm);
-  transition: border-color .12s;
-}
-.wp-checkbox--field:hover { border-color: var(--wp-border-strong); }
-.wp-checkbox--field:focus-within { border-color: var(--wp-accent-500); }
-.wp-checkbox--field .wp-check { margin-left: 10px; }
-.wp-checkbox--field .wp-checkbox__label {
-  flex: 1;
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  padding: 0 10px 0 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ---------- Radio ----------
-   Native <input type="radio" class="wp-radio"> drawn to match .wp-check:
-   same 14px box, soft border and accent-600 fill, round. Stays a real
-   radio so name-grouping, arrow keys and v-model keep working. */
-.wp-radio {
-  appearance: none; -webkit-appearance: none;
-  width: 14px; height: 14px; margin: 0; flex-shrink: 0;
-  border: 1.5px solid var(--wp-border-strong);
-  border-radius: 50%; /* round: a radio is round in every look */
-  background: var(--wp-bg);
-  display: inline-grid; place-items: center;
-  cursor: pointer;
-  transition: background .12s, border-color .12s;
-}
-.wp-radio::before {
-  content: ""; width: 6px; height: 6px; border-radius: 50%; /* round: radio dot */
-  background: #fff; /* audit-exempt: white dot on accent-600 fill ≥4.5:1 both themes */
-  transform: scale(0); transition: transform .12s;
-}
-.wp-radio:checked { background: var(--wp-accent-600); border-color: var(--wp-accent-500); }
-.wp-radio:checked::before { transform: scale(1); }
-.wp-radio:disabled { opacity: 0.6; cursor: not-allowed; background: var(--wp-bg-3); border-color: var(--wp-border); }
-.wp-radio:disabled:checked { background: var(--wp-text-dim); border-color: var(--wp-text-dim); }
-.wp-radio:disabled:checked::before { background: var(--wp-bg-1); }
-label:has(> .wp-radio:disabled) { cursor: not-allowed; color: var(--wp-text-dim); }
-.wp-radio:focus-visible { outline: none; box-shadow: var(--wp-focus-ring); }
-.wp-checkbox__label { color: var(--wp-text); }
 
 /* ---------- Star (favorite) ---------- */
 .wp-star { color: var(--wp-text-dim); cursor: pointer; transition: color .12s, transform .1s; background: none; border: none; padding: 4px; line-height: 0; }

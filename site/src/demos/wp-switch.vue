@@ -6,6 +6,7 @@ import KitLooks from "../KitLooks.vue";
 const live = ref(true);
 const hide = ref(false);
 const lock = ref(true);
+const tooltips = ref(true);
 </script>
 
 <template>
@@ -20,4 +21,6 @@ const lock = ref(true);
     <WpSwitch :model-value="false" mixed variant="chip" icon="pi-lock" :size="size" label="Lock all picks" />
     <WpSwitch :model-value="false" disabled variant="chip" icon="pi-link" :size="size" label="Hold across run" />
   </KitLooks>
+  <p class="wp-kit__muted">In the manager, size="md" (what Toggle used to be).</p>
+  <WpSwitch v-model="tooltips" size="md" label="Show tooltips" />
 </template>

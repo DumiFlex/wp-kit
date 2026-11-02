@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import "primeicons/primeicons.css";
 import "@kit/theme/tokens.css";
 import "@kit/button.css";
+import "@kit/motion.css";
 import "@kit/theme/palettes.css";
 import "@kit/theme/looks.css";
 import "./site.css";
