@@ -145,7 +145,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "slider", name: "Slider", group: "inputs", file: "src/Slider.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "A number you set by feel along a range: a weight, a threshold, a brush size. Arrows step, PageUp/PageDown take ten steps, Home/End jump to the ends; marks label key values and format says the value in words. with-input adds a WpNumber for the exact number. Give it a pair ([low, high]) for a range: two thumbs that can't cross, kept min-gap apart, a WpNumber at each side with with-input.",
+    use: "A number you set by feel along a range: a weight, a threshold, a brush size. Arrows step, PageUp/PageDown take ten steps, Home/End jump to the ends; marks label key values and format says the value in words; snap settles on the marks (snap alone: only mark values, arrows mark to mark; :snap=\"N\": pulled onto a mark within N, free elsewhere). with-input adds a WpNumber for the exact number. Give it a pair ([low, high]) for a range: two thumbs that can't cross, kept min-gap apart, a WpNumber at each side with with-input.",
     instead: "<input type=\"range\"> with the browser's track and thumb, or two Sliders for a range that can end up the wrong way round.",
   },
   {
@@ -541,7 +541,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "logo": `<Logo :size="28" />`,
   "relative-date": `<RelativeDate :value="row.updated_at" />`,
   "toolbar": `<Toolbar label="Text tools" attached><WpButton icon="pi-bold" aria-label="Bold" /><WpButton icon="pi-italic" aria-label="Italic" /></Toolbar>`,
-  "slider": `<Slider v-model="weight" :min="0" :max="2" :step="0.05" aria-label="Weight" with-input />\n<Slider v-model="range" :min="0" :max="200" :min-gap="20" aria-label="Token budget" show-value />`,
+  "slider": `<Slider v-model="weight" :min="0" :max="2" :step="0.05" aria-label="Weight" with-input />\n<Slider v-model="range" :min="0" :max="200" :min-gap="20" aria-label="Token budget" show-value />\n<Slider v-model="width" :min="512" :max="1536" :marks="widths" snap aria-label="Width" />\n<Slider v-model="cfg" :min="1" :max="15" :step="0.5" :marks="presets" :snap="1" aria-label="CFG" />`,
   "tag-input": `<TagInput v-model="tags" :suggestions="libraryTags" aria-label="Tags" />`,
   "inline-edit": `<InlineEdit v-model="mod.name" label="Wildcard name" :validate="(v) => taken(v) ? 'That name is taken' : null" />`,
   "drop-zone": `<DropZone accept=".txt,.yaml,.yml,.zip" multiple hint="Wildcard files or a zip" @files="load" @reject="explain" />`,

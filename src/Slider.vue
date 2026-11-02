@@ -16,6 +16,14 @@
  *
  *   <Slider v-model="range" :min="0" :max="2" :step="0.1" :min-gap="0.2" aria-label="Weight" with-input />
  *
+ * `snap` settles the thumb on the marks. `snap` (true) makes the marks the only
+ * values: a drag, a click or a typed number lands on the nearest mark and
+ * the arrows go mark to mark. A number pulls the thumb onto a mark only once
+ * the pointer comes within that distance of one, and moves it by `step`
+ * elsewhere (keys and typing stay exact, so a thumb can always leave a mark).
+ *
+ *   <Slider v-model="cfg" :min="1" :max="30" :marks="[{ value: 7, label: '7' }]" :snap="1" />
+ *
  * APG slider: each thumb is a focus stop; arrows move one step, PageUp /
  * PageDown ten, Home / End jump to the ends (for a pair, the ends that thumb
  * can reach), and `format` gives screen readers the value as words ("32 px").
@@ -24,7 +32,7 @@
  * jumps there and the drag carries on from it.
  */
 import { computed, ref } from "vue";
-import { keyStep, percentOf, snap, valueAt } from "./slider-math";
+import { keyStep, keyToMark, percentOf, snap, snapToMarks, valueAt } from "./slider-math";
 import WpNumber from "./WpNumber.vue";
 
 const props = withDefaults(defineProps<{
@@ -39,6 +47,12 @@ const props = withDefaults(defineProps<{
   ariaLabel?: string | undefined;
   /** Labelled ticks under the track. */
   marks?: { value: number; label?: string }[] | undefined;
+  /**
+   * Settle on the marks: true allows only mark values (drag, click, typing,
+   * arrows mark to mark); a number pulls the dragged thumb onto a mark within
+   * that distance of it and leaves it free elsewhere.
+   */
+  snap?: boolean | number | undefined;
   /** How the value reads (the tooltip-free label and screen readers). */
   format?: ((v: number) => string) | undefined;
   /** Show the value (a pair: "low – high") after the track. */
@@ -55,6 +69,11 @@ const active = ref<0 | 1 | null>(null);
 
 const isPair = computed(() => Array.isArray(props.modelValue));
 const sn = (v: number): number => snap(v, props.min, props.max, props.step);
+/** The marks' values inside the range, for `snap`. */
+const markValues = computed(() => (props.marks ?? []).map((m) => m.value).filter((v) => v >= props.min && v <= props.max));
+/** Only marks can be picked (`snap` true with marks). */
+const marksOnly = computed(() => props.snap === true && markValues.value.length > 0);
+const toMark = (v: number): number => snapToMarks(v, markValues.value, props.snap);
 
 /** The thumbs' values: one, or a pair sorted low to high. */
 const ends = computed<number[]>(() => {
@@ -104,7 +123,7 @@ function current(): T {
 
 function fromPointer(ev: PointerEvent): number {
   const r = trackEl.value?.getBoundingClientRect();
-  return r ? valueAt(ev.clientX, r.left, r.width, props.min, props.max, props.step) : lo.value;
+  return r ? toMark(valueAt(ev.clientX, r.left, r.width, props.min, props.max, props.step)) : lo.value;
 }
 
 function onPointerDown(ev: PointerEvent): void {
@@ -131,17 +150,20 @@ function onPointerUp(ev: PointerEvent): void {
 
 function onKeydown(ev: KeyboardEvent, i: 0 | 1): void {
   if (props.disabled) return;
-  const next = keyStep(ev.key, i === 0 ? lo.value : hi.value, props.min, props.max, props.step);
+  const now = i === 0 ? lo.value : hi.value;
+  const next = marksOnly.value
+    ? keyToMark(ev.key, now, markValues.value)
+    : keyStep(ev.key, now, props.min, props.max, props.step);
   if (next === null) return;
   ev.preventDefault();
   const [low, high] = limits(i);
-  const v = ev.key === "Home" ? low : ev.key === "End" ? high : next;
+  const v = marksOnly.value ? next : ev.key === "Home" ? low : ev.key === "End" ? high : next;
   emit("change", setEnd(i, v));
 }
 
 function onTyped(i: 0 | 1, v: number | null): void {
   if (v === null || props.disabled) return;
-  emit("change", setEnd(i, sn(v)));
+  emit("change", setEnd(i, marksOnly.value ? toMark(sn(v)) : sn(v)));
 }
 
 function passed(v: number): boolean {
