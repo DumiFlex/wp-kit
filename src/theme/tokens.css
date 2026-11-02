@@ -984,27 +984,6 @@ input, textarea, select { font: inherit; }
 
 .wp-row-skel:hover td { background: transparent; }
 .wp-row-skel td { vertical-align: middle; }
-.wp-skel-bar {
-  display: block;
-  height: 10px;
-  border-radius: min(5px, var(--wp-radius-cap, 999px));
-  background: linear-gradient(
-    90deg,
-    var(--wp-bg-3) 0%,
-    var(--wp-bg-4) 50%,
-    var(--wp-bg-3) 100%
-  );
-  background-size: 200% 100%;
-  animation: wp-skel-pulse 1.4s ease-in-out infinite;
-  opacity: 0.55;
-}
-@keyframes wp-skel-pulse {
-  0%   { background-position: 100% 50%; }
-  100% { background-position: -100% 50%; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .wp-skel-bar { animation: none; }
-}
 .wp-table .wp-row-expand {
   background: var(--wp-bg-2);
   padding: 12px 16px 14px 56px;
