@@ -214,7 +214,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "chip", name: "Chip", group: "display", file: "src/Chip.vue", surfaces: ["manager"],
-    use: "A short label: a tag, a status, a count, a category. Tones carry meaning (success, warn, danger, info); color tints it for a category or kind (the text blends toward the theme's text so any pick stays readable), and icon puts the category's icon in front. removable adds a plain ✕ that keeps the chip's height.",
+    use: "A short label: a tag, a status, a count, a category. Tones carry meaning (success, warn, danger, info); color tints it for a category or kind (the text blends toward the theme's text so any pick stays readable), and icon puts the category's icon in front. removable adds a plain ✕ that keeps the chip's height. as=\"button\" (or a link, e.g. RouterLink) makes the chip something you press, such as a tag that opens a filtered list; for a filter that turns on and off use ChipToggle.",
     instead: "CategoryChip (merged into Chip: <Chip :color :icon>{{ name }}</Chip>) or a hand-made pill span.",
   },
   {
