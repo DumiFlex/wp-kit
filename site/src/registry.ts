@@ -428,6 +428,11 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "A span with its own per-type colours.",
   },
   {
+    id: "chip-toggle", name: "ChipToggle", group: "choice", file: "src/ChipToggle.vue", surfaces: ["manager", "canvas"],
+    use: "A pill you press to turn a filter or flag on and off: tag and type filters, a category you pick, Recommended on a version. pressed lights it in the accent, or in color (a kind or category colour), which also tints the icon. count shows a number after the label. For one on/off setting with a label use WpSwitch; for one choice of a few, WpSegmented.",
+    instead: "A <button class=\"wp-chip\"> with its own active state.",
+  },
+  {
     id: "rating-badge", name: "RatingBadge", group: "display", file: "src/RatingBadge.vue", surfaces: ["manager"],
     use: "The NSFW and Featured badges on a post. Renders nothing for a safe, unfeatured post.",
   },
@@ -470,6 +475,7 @@ export const KIT_EXEMPT: Record<string, string> = {
 
 export const KIT_EXAMPLES: Record<string, string> = {
   "kind-chip": `<KindChip kind="module" subtype="wildcard" />`,
+  "chip-toggle": `<ChipToggle :pressed="kind === 'wildcard'" color="var(--wp-kind-wildcard)" icon="pi-sparkles" @click="kind = 'wildcard'">Wildcard</ChipToggle>`,
   "rating-badge": `<RatingBadge rating="nsfw" featured />`,
   "bundle-meta": `<BundleMeta :count="3" :names="['palette', 'mood', 'style']" />`,
   "tokenized-value": `<TokenizedValue value="a {calm|fierce} $mood @{1a2b3c4d}" :uuid-to-name="names" />`,

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { defineComponent, h } from "vue";
 import { mount } from "@vue/test-utils";
 import BookmarkButton from "../BookmarkButton.vue";
+import ChipToggle from "../ChipToggle.vue";
 import BundleMeta from "../BundleMeta.vue";
 import KindChip from "../KindChip.vue";
 import PostCard, { type PostCardData } from "../PostCard.vue";
@@ -113,5 +114,25 @@ describe("StarButton and BookmarkButton", () => {
     const star = mount(StarButton, { props: { starred: false, disabled: true } });
     await star.trigger("click");
     expect(star.emitted("toggle")).toBeUndefined();
+  });
+});
+
+describe("ChipToggle", () => {
+  it("is a button that says whether it is pressed and shows its count", async () => {
+    const w = mount(ChipToggle, { props: { pressed: true, count: 4, icon: "tag" }, slots: { default: "portrait" } });
+    expect(w.element.tagName).toBe("BUTTON");
+    expect(w.attributes("aria-pressed")).toBe("true");
+    expect(w.text()).toContain("portrait");
+    expect(w.find(".wp-chip-toggle__count").text()).toBe("4");
+    await w.trigger("click");
+    expect(w.emitted("click")).toHaveLength(1);
+  });
+
+  it("takes a colour for its tint and shows nothing extra without a count", () => {
+    const w = mount(ChipToggle, { props: { color: "var(--wp-kind-wildcard)" }, slots: { default: "Wildcard" } });
+    expect(w.attributes("aria-pressed")).toBe("false");
+    expect(w.attributes("style")).toContain("--chip-toggle-c: var(--wp-kind-wildcard)");
+    expect(w.classes()).toContain("wp-chip-toggle--tinted");
+    expect(w.find(".wp-chip-toggle__count").exists()).toBe(false);
   });
 });
