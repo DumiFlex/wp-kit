@@ -194,6 +194,8 @@
   --wp-on-accent: #fff;
   --wp-on-media: #fff;
   --wp-scrim: rgba(0, 0, 0, 0.55);
+  /* Brand colours of services we link to: the same in both themes. */
+  --wp-brand-discord: #5865f2;
 
   /* Error treatment */
   --wp-error-border: var(--wp-danger);
