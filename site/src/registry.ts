@@ -234,7 +234,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "code-block", name: "CodeBlock", group: "display", file: "src/CodeBlock.vue", surfaces: ["manager", "canvas"],
-    use: "Text that must stay as written (JSON, a prompt as sent, a log): mono font, a copy button and a wrap switch, scrolling past max-height. line-numbers for logs; bare drops the head.",
+    use: "Text that must stay as written (JSON, a prompt as sent, a log, a snippet): mono font, syntax colours, a copy button and a wrap switch, scrolling past max-height. language (JSON, TS, Vue/HTML, CSS, Shell) tags the head and picks the colours; syntax picks them without a tag (syntax=\"prompt\" colours $vars, @{refs}, {a|b} and weights). line-numbers for logs; bare drops the head.",
     instead: "A <pre> with its own copy button, or none.",
   },
   {
@@ -533,7 +533,8 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "drop-zone": `<DropZone accept=".txt,.yaml,.yml,.zip" multiple hint="Wildcard files or a zip" @files="load" @reject="explain" />`,
   "badge": `<Badge :count="3" tone="danger" label="3 problems"><Button variant="ghost" icon="pi-bell" aria-label="Problems" /></Badge>  <Badge dot tone="success" text="Running" pulse />`,
   "description-list": `<DescriptionList :items="[{ label: 'Family', value: 'SDXL' }, { label: 'ID', value: id, mono: true, copy: true }]" />`,
-  "code-block": `<CodeBlock :code="json" language="JSON" max-height="240px" />`,
+  "code-block": `<CodeBlock :code="json" language="JSON" max-height="240px" />
+<CodeBlock :code="template" title="Template" syntax="prompt" />`,
   "stepper": `<Stepper v-model="step" :steps="[{ id: 'describe', label: 'Describe' }, { id: 'plan', label: 'Plan' }, { id: 'build', label: 'Build' }]" clickable linear />`,
   "pagination": `<Pagination v-model:page="page" :total="rows.length" :page-size="50" />`,
   "separator": `<Separator label="or" />`,
