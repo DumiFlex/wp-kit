@@ -43,3 +43,47 @@ export function keyStep(key: string, v: number, min: number, max: number, step: 
     default: return null;
   }
 }
+
+/**
+ * Mark snapping. `snap: true` keeps the value on a mark (the nearest one);
+ * a number pulls it onto a mark only within that distance, so the thumb
+ * moves freely by its step elsewhere and "clicks" into a mark near one.
+ * With no marks, or snap off, the value comes back as it was.
+ */
+export function snapToMarks(v: number, marks: readonly number[], snapTo: boolean | number | undefined): number {
+  if (!snapTo || !marks.length) return v;
+  let best = marks[0] ?? v;
+  for (const m of marks) if (Math.abs(m - v) < Math.abs(best - v)) best = m;
+  if (snapTo === true) return best;
+  return Math.abs(best - v) <= snapTo ? best : v;
+}
+
+/**
+ * A key press on a slider that only takes marks (`snap: true`): arrows go to
+ * the next mark up or down, PageUp/PageDown jump `big` marks, Home/End the
+ * first and last. Null for a key the slider ignores.
+ */
+export function keyToMark(key: string, v: number, marks: readonly number[], big = 3): number | null {
+  const sorted = [...new Set(marks)].sort((a, b) => a - b);
+  if (!sorted.length) return null;
+  // Where v sits: the index of the mark at it, or between two marks.
+  const at = sorted.findIndex((m) => m >= v);
+  const exact = at >= 0 && sorted[at] === v;
+  const up = (n: number): number => {
+    const from = at < 0 ? sorted.length : exact ? at : at - 1;
+    return sorted[Math.min(sorted.length - 1, from + n)] ?? v;
+  };
+  const down = (n: number): number => {
+    const from = at < 0 ? sorted.length : at;
+    return sorted[Math.max(0, from - n)] ?? v;
+  };
+  switch (key) {
+    case "ArrowRight": case "ArrowUp": return up(1);
+    case "ArrowLeft": case "ArrowDown": return down(1);
+    case "PageUp": return up(big);
+    case "PageDown": return down(big);
+    case "Home": return sorted[0] ?? v;
+    case "End": return sorted[sorted.length - 1] ?? v;
+    default: return null;
+  }
+}

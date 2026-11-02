@@ -20,7 +20,7 @@ import TagInput from "./TagInput.vue";
 import Toolbar from "./Toolbar.vue";
 import { acceptList, dragItemMaybeAccepted, fileAccepted, formatBytes } from "./drop-zone";
 import { pageItems } from "./pagination";
-import { keyStep, percentOf, snap, valueAt } from "./slider-math";
+import { keyStep, keyToMark, percentOf, snap, snapToMarks, valueAt } from "./slider-math";
 import { dropIndex, moveItem } from "./sortable";
 
 const mounted: { unmount: () => void }[] = [];
@@ -294,6 +294,81 @@ describe("Slider", () => {
     expect(w.props("modelValue")).toEqual([25, 30]);
     await hi.trigger("keydown", { key: "ArrowRight" });
     expect(w.props("modelValue")).toEqual([25, 31]);
+  });
+
+  it("snapToMarks: true takes the nearest mark, a number only within reach", () => {
+    expect(snapToMarks(30, [0, 25, 50], true)).toBe(25);
+    expect(snapToMarks(40, [0, 25, 50], true)).toBe(50);
+    expect(snapToMarks(27, [0, 25, 50], 3)).toBe(25);
+    expect(snapToMarks(30, [0, 25, 50], 3)).toBe(30);
+    expect(snapToMarks(30, [], true)).toBe(30);
+    expect(snapToMarks(30, [25], false)).toBe(30);
+  });
+
+  it("keyToMark goes mark to mark, from on a mark or between two", () => {
+    const m = [50, 0, 25, 100];
+    expect(keyToMark("ArrowRight", 25, m)).toBe(50);
+    expect(keyToMark("ArrowLeft", 25, m)).toBe(0);
+    expect(keyToMark("ArrowRight", 30, m)).toBe(50);
+    expect(keyToMark("ArrowLeft", 30, m)).toBe(25);
+    expect(keyToMark("ArrowRight", 100, m)).toBe(100);
+    expect(keyToMark("ArrowLeft", 0, m)).toBe(0);
+    expect(keyToMark("PageUp", 0, m)).toBe(100);
+    expect(keyToMark("Home", 50, m)).toBe(0);
+    expect(keyToMark("End", 50, m)).toBe(100);
+    expect(keyToMark("Enter", 50, m)).toBeNull();
+  });
+
+  const MARKS = [0, 25, 50, 100].map((value) => ({ value }));
+  /** The track as 100px wide from x=0, so a pointer's x is its value on 0–100. */
+  function track(w: { find: (s: string) => { element: Element } }) {
+    const el = w.find(".wp-slider__track").element as HTMLElement;
+    el.getBoundingClientRect = () => ({ top: 0, bottom: 20, height: 20, left: 0, right: 100, width: 100, x: 0, y: 0, toJSON: () => ({}) });
+    return w.find(".wp-slider__track");
+  }
+
+  it("snap alone: the drag and the arrows land only on marks", async () => {
+    const w = bound(Slider, { modelValue: 25, min: 0, max: 100, marks: MARKS, snap: true, ariaLabel: "Size" });
+    const t = track(w);
+    await point(t, "pointerdown", { clientX: 33 });
+    expect(w.props("modelValue")).toBe(25);
+    await point(t, "pointermove", { clientX: 80 });
+    expect(w.props("modelValue")).toBe(100);
+    await point(t, "pointerup", { clientX: 80 });
+    const thumb = w.find("[role=slider]");
+    await thumb.trigger("keydown", { key: "ArrowLeft" });
+    expect(w.props("modelValue")).toBe(50);
+    await thumb.trigger("keydown", { key: "ArrowLeft" });
+    expect(w.props("modelValue")).toBe(25);
+  });
+
+  it("snap alone: a typed number goes to the nearest mark", async () => {
+    const w = bound(Slider, { modelValue: 25, min: 0, max: 100, marks: MARKS, snap: true, withInput: true, ariaLabel: "Size" });
+    const box = w.find("input");
+    await box.setValue("60");
+    await box.trigger("change");
+    expect(w.props("modelValue")).toBe(50);
+  });
+
+  it(":snap=N pulls a drag onto a mark near one, and keys can still leave it", async () => {
+    const w = bound(Slider, { modelValue: 10, min: 0, max: 100, marks: MARKS, snap: 4, ariaLabel: "Size" });
+    const t = track(w);
+    await point(t, "pointerdown", { clientX: 47 });
+    expect(w.props("modelValue")).toBe(50);
+    await point(t, "pointermove", { clientX: 40 });
+    expect(w.props("modelValue")).toBe(40);
+    await point(t, "pointermove", { clientX: 53 });
+    expect(w.props("modelValue")).toBe(50);
+    await point(t, "pointerup", { clientX: 53 });
+    await w.find("[role=slider]").trigger("keydown", { key: "ArrowRight" });
+    expect(w.props("modelValue")).toBe(51);
+  });
+
+  it("a pair snaps each end to marks and keeps them apart", async () => {
+    const w = bound(Slider, { modelValue: [0, 100], min: 0, max: 100, marks: MARKS, snap: true, ariaLabel: "Range" });
+    const [lo] = w.findAll("[role=slider]");
+    await lo.trigger("keydown", { key: "ArrowRight" });
+    expect(w.props("modelValue")).toEqual([25, 100]);
   });
 
   it("a pair with-input has a number box per end", () => {
