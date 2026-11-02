@@ -2,6 +2,7 @@
 import Button from "@kit/Button.vue";
 import DropdownMenu from "@kit/DropdownMenu.vue";
 import type { ContextMenuEntry } from "@kit/ContextMenu.vue";
+import { computed, ref } from "vue";
 import { useToast } from "@kit/useToast";
 
 const toast = useToast();
@@ -13,6 +14,18 @@ const items: ContextMenuEntry[] = [
   { section: "Danger" },
   { label: "Delete", icon: "pi-trash", danger: true, onSelect: did("Deleted") },
 ];
+// Checkable items stay open, so several tags can be ticked in a row.
+const tags = ref<string[]>(["portrait"]);
+const tagItems = computed<ContextMenuEntry[]>(() =>
+  ["portrait", "noir", "watercolor"].map((t) => ({
+    label: t,
+    checked: tags.value.includes(t),
+    keepOpen: true,
+    onSelect: () => {
+      tags.value = tags.value.includes(t) ? tags.value.filter((x) => x !== t) : [...tags.value, t];
+    },
+  })),
+);
 </script>
 
 <template>
@@ -24,6 +37,11 @@ const items: ContextMenuEntry[] = [
   <DropdownMenu :items="items" placement="bottom-end">
     <template #trigger="{ props }">
       <Button v-bind="props" icon="pi-chevron-down">More</Button>
+    </template>
+  </DropdownMenu>
+  <DropdownMenu :items="tagItems" label="Tags">
+    <template #trigger="{ props }">
+      <Button v-bind="props" icon="pi-tag">Tags ({{ tags.length }})</Button>
     </template>
   </DropdownMenu>
 </template>

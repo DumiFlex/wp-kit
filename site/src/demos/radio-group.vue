@@ -13,11 +13,19 @@ const style = ref<Style>("tags");
 const mode = ref<"merge" | "replace">("merge");
 const canvas = ref<"seed" | "fixed" | "random">("seed");
 const where = ref<"cloud" | "local">("local");
+const accent = ref("violet");
+const swatches = [
+  { value: "violet", label: "Violet", color: "#7c3aed" },
+  { value: "teal", label: "Teal", color: "#22d3ee" },
+  { value: "amber", label: "Amber", color: "#fbbf24" },
+  { value: "rose", label: "Rose", color: "#fb7185" },
+];
 </script>
 
 <template>
   <div class="wp-kit__stack">
     <RadioGroup v-model="style" :options="styles" aria-label="Prompt style" />
+    <RadioGroup v-model="accent" :options="swatches" variant="swatch" aria-label="Accent colour" />
     <RadioGroup
       v-model="mode"
       :options="[{ value: 'merge', label: 'Merge', hint: 'Keep my edits' }, { value: 'replace', label: 'Replace', hint: 'Take theirs' }]"
