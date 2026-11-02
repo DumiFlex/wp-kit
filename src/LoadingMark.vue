@@ -21,9 +21,10 @@ let nextId = 0;
  * box, for a panel or page that is loading. `mono` draws it in the text
  * colour, for a host with its own colours (a busy button).
  */
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, useSlots } from "vue";
+import { computed, ref, useSlots } from "vue";
 import { BRAND_COLOURS, RING_A, RING_B, STAR_A, STAR_B, STAR_BIG, type LogoBrand } from "./logo-paths";
-import { BOX, PAD, animate, drawNow, type Animated, type Look } from "./loading-mark-motion";
+import { canvasBox, useCanvasMotion } from "./canvas-motion";
+import { drawPose, poseAt, type Look } from "./loading-mark-motion";
 
 const props = withDefaults(defineProps<{
   /** Width and height in px. Default 14, or 40 with `block`. */
@@ -56,16 +57,10 @@ const fill = (colour: string): string => (props.mono ? "currentColor" : colour);
 
 /* The SVG is the still mark (first paint, reduced motion, a page with no
  * canvas). Once mounted, a canvas over it draws the motion: see
- * `loading-mark-motion.ts` for why it is not CSS. */
+ * `canvas-motion.ts` for why it is not CSS. */
 const root = ref<HTMLElement | null>(null);
 const canvas = ref<HTMLCanvasElement | null>(null);
-const live = ref(false);
-const drawn = ref(false);
-const canvasStyle = computed(() => {
-  const side = (px.value * BOX) / 1024;
-  const off = (px.value * PAD) / 1024;
-  return { width: `${side}px`, height: `${side}px`, top: `${-off}px`, left: `${-off}px` };
-});
+const canvasStyle = computed(() => canvasBox(px.value));
 
 let textColour = "";
 let textColourAt = -Infinity;
@@ -81,57 +76,7 @@ function look(): Look {
   return { variant: drawing.value, colours: [VIOLET.value, INDIGO.value, TEAL.value], flat: false };
 }
 
-let stop: (() => void) | null = null;
-let observer: IntersectionObserver | null = null;
-let motion: MediaQueryList | null = null;
-
-async function start(): Promise<void> {
-  if (stop) return;
-  live.value = true;
-  await nextTick();
-  const el = canvas.value;
-  if (!el || !live.value) return;
-  const mark: Animated = { canvas: el, look, clock: 0, visible: true };
-  if (!drawNow(mark)) {
-    live.value = false;
-    return;
-  }
-  drawn.value = true;
-  stop = animate(mark);
-  if (typeof IntersectionObserver === "function") {
-    observer = new IntersectionObserver((entries) => {
-      for (const e of entries) mark.visible = e.isIntersecting;
-    });
-    observer.observe(el);
-  }
-}
-function halt(): void {
-  stop?.();
-  stop = null;
-  observer?.disconnect();
-  observer = null;
-  live.value = false;
-  drawn.value = false;
-}
-function onMotionChange(): void {
-  if (motion?.matches) halt();
-  else void start();
-}
-
-onMounted(() => {
-  // No matchMedia means no way to honour reduced motion, and a test DOM
-  // (jsdom) has no canvas and logs an error for every attempt: keep the
-  // still SVG in both.
-  if (typeof window.matchMedia !== "function" || typeof requestAnimationFrame !== "function") return;
-  if (navigator.userAgent.includes("jsdom")) return;
-  motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-  motion.addEventListener?.("change", onMotionChange);
-  if (!motion.matches) void start();
-});
-onBeforeUnmount(() => {
-  motion?.removeEventListener?.("change", onMotionChange);
-  halt();
-});
+const { live, drawn } = useCanvasMotion(canvas, (ctx, width, ms) => drawPose(ctx, width, look(), poseAt(ms)));
 </script>
 
 <template>
