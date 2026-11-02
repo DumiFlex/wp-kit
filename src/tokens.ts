@@ -45,7 +45,7 @@ export const SHARED_TOKENS = [
 export const OPTIONAL_TOKENS = ["--wp-bg-deep", "--wp-bg2"] as const;
 
 /** Set by the piece itself, on its own root, not by the host. */
-export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-t", "--wp-lm-x", "--wp-lm-r", "--wp-lm-s", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon"] as const;
+export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-t", "--wp-lm-x", "--wp-lm-r", "--wp-lm-s", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon", "--wp-chip-c"] as const;
 
 /** Pieces that need a page with src/theme/ loaded (not the canvas). */
 export const PAGE_PIECES = [

@@ -67,7 +67,7 @@ const tags = computed(() => props.post.tags ?? []);
         <Chip :color="kindColour(type)">{{ type }}</Chip>
         <Chip v-if="post.rating === 'nsfw'" tone="danger">NSFW</Chip>
         <Chip v-if="post.featured" tone="warn" icon="star-fill">Featured</Chip>
-        <Chip v-if="post.recommended" tone="success"><span class="wp-chip__dot" />recommended</Chip>
+        <Chip v-if="post.recommended" tone="success" dot>recommended</Chip>
       </div>
       <span v-if="post.deleted" class="wp-chip wp-chip--danger"><Icon name="trash" :size="10" />deleted</span>
       <span v-else class="wp-chip">v{{ post.version ?? 1 }}</span>
