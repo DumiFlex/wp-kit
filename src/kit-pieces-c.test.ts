@@ -305,6 +305,35 @@ describe("ImageGrid + Lightbox", () => {
     expect(document.activeElement).toBe(tile.element);
   });
 
+  it("a tile still loading shows a Skeleton, can't be opened, and the Lightbox skips it", async () => {
+    const withLoading = [images[0], { id: "x", src: "", alt: "Frame 2" }, images[2]];
+    const w = bound(ImageGrid, { images: withLoading });
+    const tiles = w.findAll(".wp-image-grid__open");
+    expect(tiles[1]?.find(".wp-skeleton").exists()).toBe(true);
+    expect(tiles[1]?.attributes("aria-disabled")).toBe("true");
+    expect(tiles[1]?.attributes("aria-label")).toBe("Frame 2, still loading");
+    await tiles[1]?.trigger("click");
+    await nextTick();
+    expect(document.querySelector(".wp-lightbox")).toBeNull();
+    expect(w.emitted("open")).toBeUndefined();
+    await tiles[2]?.trigger("click");
+    await nextTick();
+    await nextTick();
+    const img = () => document.querySelector<HTMLImageElement>(".wp-lightbox__img");
+    expect(img()?.alt).toBe("Third");
+    expect(document.querySelector(".wp-lightbox__count")?.textContent?.trim()).toBe("2 / 2");
+    await key(document.querySelector(".wp-lightbox") as HTMLElement, "ArrowLeft");
+    expect(img()?.alt).toBe("First");
+    await key(document.querySelector(".wp-lightbox") as HTMLElement, "Escape");
+  });
+
+  it("Lightbox shows a Skeleton, not an empty frame, for an image with no src", async () => {
+    bound(Lightbox, { open: true, images: [{ src: "", alt: "Frame 5" }] }, "index");
+    await nextTick();
+    expect(document.querySelector(".wp-lightbox .wp-skeleton")).not.toBeNull();
+    expect(document.querySelector(".wp-lightbox__img")).toBeNull();
+  });
+
   it("Lightbox with zoom shows the picture in WpImageZoom", async () => {
     bound(Lightbox, { open: true, images, zoom: true }, "index");
     await nextTick();
