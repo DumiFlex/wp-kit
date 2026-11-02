@@ -253,7 +253,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "disclosure", name: "Disclosure", group: "display", file: "src/Disclosure.vue", surfaces: ["manager", "canvas"],
-    use: "A section that folds open under its heading (advanced options, details, a long list). The chevron turns and the body grows; boxed draws it as a card. Controls that must not fold it (an on/off switch, a select-all box) go in #actions (right) or #lead (left), outside the heading button.",
+    use: "A section that folds open under its heading (advanced options, details, a long list). The chevron turns and the body grows; boxed draws it as a card; flush makes the heading a full-width band with no body indent, for a section of a table that fills its card (a group of options, a rule). Controls that must not fold it (an on/off switch, a select-all box) go in #actions (right) or #lead (left), outside the heading button.",
     instead: "A button with its own aria-expanded, chevron and v-if.",
   },
   {
