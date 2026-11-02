@@ -4,7 +4,7 @@ Short, load-bearing notes for anyone (human or Claude) working here.
 
 ## What this repo is
 
-The Vue 3 component kit shared by the Wildcard Pipeline extension (DumiFlex/ComfyUI-Wildcard-Pipeline: manager + canvas) and the community site (DumiFlex/Wildcard-Pipeline-Community). It is published to npm as `@dumiflex/wp-kit` (source, no build: `files` is `src/` minus tests, `exports` maps `./*` to `./src/*`); the release workflow stages each version with trusted publishing and a maintainer approves it on npmjs.com. Apps not yet on the package copy `src/` in at a release tag with their own `scripts/kit-pull.mjs`, and a CI check there fails on hand edits to the copy. Either way, every kit change starts here.
+The Vue 3 component kit shared by the Wildcard Pipeline extension (DumiFlex/ComfyUI-Wildcard-Pipeline: manager + canvas) and the community site (DumiFlex/Wildcard-Pipeline-Community). It is published to npm as `@dumiflex/wp-kit` (source, no build: `files` is `src/` minus tests, `exports` maps `./*` to `./src/*`); the release workflow stages each version with trusted publishing and a maintainer approves it on npmjs.com. Both apps install it from npm, so every kit change starts here. The npm page shows `docs/npm-readme.md` (for people installing the kit; absolute links only), which the release job copies over `README.md` before staging; the repository README is for working on the kit.
 
 ## Rules
 

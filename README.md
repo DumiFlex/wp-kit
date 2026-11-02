@@ -1,5 +1,12 @@
 # wp-kit
 
+[![npm](https://img.shields.io/npm/v/@dumiflex/wp-kit?logo=npm&label=npm)](https://www.npmjs.com/package/@dumiflex/wp-kit)
+[![CI](https://github.com/DumiFlex/wp-kit/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/DumiFlex/wp-kit/actions/workflows/ci.yml)
+[![Site](https://github.com/DumiFlex/wp-kit/actions/workflows/site.yml/badge.svg)](https://dumiflex.github.io/wp-kit/)
+[![Vue 3](https://img.shields.io/badge/Vue-3-42b883?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License: GPL-3.0-or-later](https://img.shields.io/npm/l/@dumiflex/wp-kit)](LICENSE)
+
 The Vue 3 component kit shared by the [Wildcard Pipeline](https://github.com/DumiFlex/ComfyUI-Wildcard-Pipeline) extension (its manager and canvas widgets) and the [Wildcard Pipeline Community](https://github.com/DumiFlex/Wildcard-Pipeline-Community) site.
 
 Buttons, inputs, selects, checkboxes and toggles, cards, chips, tables, modals, drawers and confirm dialogs, overlays (Popover, DropdownMenu, ContextMenu, tooltip), tabs, sliders, tag, date, colour and icon pickers, lists, image grid and lightbox, toasts, diff and code views, and the logo. And the theme they wear: the design tokens, six colour palettes and seven looks in `src/theme/`.
@@ -24,17 +31,7 @@ import "@dumiflex/wp-kit/theme/tokens.css";
 
 Import one file at a time (there is no barrel file, on purpose), so the bundler ships only what you use. In `vite.config`, set `resolve.dedupe: ["vue"]` (one Vue, not the app's and a second one) and `optimizeDeps.exclude: ["@dumiflex/wp-kit"]` (the `.vue` sources go through your Vue plugin, not the pre-bundler). An app that already imports the kit as `@/kit/...` can keep that by aliasing `@/kit` to `node_modules/@dumiflex/wp-kit/src`.
 
-Each release is staged on npm by the release workflow (trusted publishing, with provenance) and goes live once a maintainer approves it.
-
-### Apps that copy the kit
-
-The Wildcard Pipeline apps still copy `src/` in at a release tag until they move to the package:
-
-```bash
-node scripts/kit-pull.mjs v0.2.1   # in the app repo
-```
-
-The app's script downloads that tag, copies `src/` into the app's kit folder, and writes the tag and commit next to it. A CI check (`kit-pull.mjs --check`) fails when the copy no longer matches what was pulled, so a fix to a kit piece is made here, released, and pulled into the apps in an ordinary PR.
+Each release is staged on npm by the release workflow (trusted publishing, with provenance) and goes live once a maintainer approves it. The npm page shows [`docs/npm-readme.md`](docs/npm-readme.md), written for people installing the kit; the release job puts it in place as `README.md` just before staging (`pnpm npm-readme`), and `pnpm check-package` checks it has no relative links. This README is for working on the kit.
 
 ## What a host must provide
 
@@ -65,11 +62,11 @@ pnpm site:build   # site/dist, what Pages serves
 pnpm check-package  # what npm would publish: the files apps import, nothing repo-only
 ```
 
-Node 22+ and pnpm 9. The site lives in `site/` (outside `src/`, so the apps never copy it). It is deployed to GitHub Pages by `.github/workflows/site.yml` on every release and on "Run workflow"; CI builds it on every PR.
+Node 22+ and pnpm 9. The site lives in `site/` (outside `src/`, so it never ships). It is deployed to GitHub Pages by `.github/workflows/site.yml` on every release and on "Run workflow"; CI builds it on every PR.
 
 ## Versions and releases
 
-Commits and PR titles follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `refactor:` …); the `pr-title` check enforces it. Work goes into `dev` by squash-merged PRs. Merging `dev` into `main` ships: release-please opens a release PR with the next version and `CHANGELOG.md`, it merges itself once CI passes, and the `vX.Y.Z` tag it makes is what the apps pull. While the kit is below 1.0, a `feat` bumps the minor version and a `fix` the patch.
+Commits and PR titles follow [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `refactor:` …); the `pr-title` check enforces it. Work goes into `dev` by squash-merged PRs. Merging `dev` into `main` ships: release-please opens a release PR with the next version and `CHANGELOG.md`, it merges itself once CI passes, and the `vX.Y.Z` tag it makes stages that version on npm. While the kit is below 1.0, a `feat` bumps the minor version and a `fix` the patch.
 
 ## License
 
