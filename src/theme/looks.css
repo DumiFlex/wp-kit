@@ -47,8 +47,10 @@
 /* --wp-radius-cap: the roundest a corner may get in this look. Fixed radii
    in components are written min(Npx, var(--wp-radius-cap, 999px)) and
    pills var(--wp-radius-cap, 999px), so Orbit draws them as authored and a
-   square look squares them without a rule per component. Circles (50%)
-   stay circles. The theme audit (scripts/theme-audit) fails on a corner
+   square look squares them without a rule per component. Circles are
+   min(50%, var(--wp-radius-cap, 999px)): round in Orbit, softened in Crisp,
+   square in Terminal and TUI (dots, radios, avatars, the timeline).
+   src/__tests__/corners.test.ts fails on a raw radius. The theme audit (scripts/theme-audit) fails on a corner
    rounder than the cap. */
 html[data-wp-look="crisp"] { --wp-radius-cap: 4px; }
 html[data-wp-look="terminal"],
