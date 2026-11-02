@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import Chip from "@kit/Chip.vue";
+import { kindColour, type ItemType } from "@kit/kind-colour";
+
+const TYPES: ItemType[] = ["wildcard", "fixed_values", "combine", "constraint", "derivation", "bundle"];
 </script>
 
 <template>
@@ -18,6 +21,12 @@ import Chip from "@kit/Chip.vue";
       <Chip color="#60a5fa" icon="user">Characters</Chip>
       <Chip color="#f472b6" icon="star">Styles</Chip>
       <Chip :color="null" icon="folder">No colour</Chip>
+    </div>
+    <p class="wp-kit__muted">A module type: color from kindColour(). A post's rating: a tone, with an icon for Featured.</p>
+    <div class="wp-kit__row">
+      <Chip v-for="t in TYPES" :key="t" :color="kindColour(t)">{{ t }}</Chip>
+      <Chip tone="danger">NSFW</Chip>
+      <Chip tone="warn" icon="star-fill">Featured</Chip>
     </div>
     <p class="wp-kit__muted">Removable: a plain ✕, same height as a bare chip.</p>
     <div class="wp-kit__row">

@@ -6,9 +6,8 @@ import { mount } from "@vue/test-utils";
 import BookmarkButton from "../BookmarkButton.vue";
 import ChipToggle from "../ChipToggle.vue";
 import BundleMeta from "../BundleMeta.vue";
-import KindChip from "../KindChip.vue";
 import PostCard, { type PostCardData } from "../PostCard.vue";
-import RatingBadge from "../RatingBadge.vue";
+import { itemType, kindColour } from "../kind-colour";
 import StarButton from "../StarButton.vue";
 
 const post: PostCardData = {
@@ -21,20 +20,17 @@ const post: PostCardData = {
   tags: ["a", "b", "c", "d", "e", "f"],
 };
 
-describe("KindChip", () => {
-  it("names the subtype, a bare module as fixed_values and a bundle as bundle", () => {
-    expect(mount(KindChip, { props: { kind: "module", subtype: "combine" } }).attributes("data-type")).toBe("combine");
-    expect(mount(KindChip, { props: { kind: "module" } }).text()).toBe("fixed_values");
-    expect(mount(KindChip, { props: { kind: "bundle", subtype: "wildcard" } }).text()).toBe("bundle");
+describe("kind colour", () => {
+  it("reads a bare module as fixed_values and a bundle subtype as a bundle", () => {
+    expect(itemType("module", "combine")).toBe("combine");
+    expect(itemType("module")).toBe("fixed_values");
+    expect(itemType("bundle", "wildcard")).toBe("bundle");
+    expect(itemType("module", "bundle")).toBe("bundle");
   });
-});
-
-describe("RatingBadge", () => {
-  it("shows NSFW and Featured only when they apply", () => {
-    expect(mount(RatingBadge, { props: { rating: "sfw" } }).text()).toBe("");
-    const both = mount(RatingBadge, { props: { rating: "nsfw", featured: true } });
-    expect(both.text()).toContain("NSFW");
-    expect(both.text()).toContain("Featured");
+  it("gives each type its kind colour, bundles slate", () => {
+    expect(kindColour("wildcard")).toBe("var(--wp-kind-wildcard)");
+    expect(kindColour("fixed_values")).toBe("var(--wp-kind-fixed)");
+    expect(kindColour("bundle")).toBe("var(--wp-bundle-default)");
   });
 });
 
@@ -49,6 +45,14 @@ describe("BundleMeta", () => {
 });
 
 describe("PostCard", () => {
+  it("shows its kind, NSFW and Featured as plain Chips", () => {
+    const w = mount(PostCard, { props: { post: { ...post, rating: "nsfw", featured: true } } });
+    const chips = w.findAll(".wp-post-card__badges .wp-chip");
+    expect(chips.map((c) => c.text())).toEqual(["wildcard", "NSFW", "Featured"]);
+    expect(chips[1]?.classes()).toContain("wp-chip--danger");
+    expect(chips[2]?.classes()).toContain("wp-chip--warn");
+  });
+
   it("is an <a> by default and passes href through", () => {
     const w = mount(PostCard, { props: { post }, attrs: { href: "/p/dumi/warm-palette" } });
     expect(w.element.tagName).toBe("A");
