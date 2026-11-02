@@ -158,7 +158,7 @@ function pickNone(): void {
 }
 .wp-color-field--md { height: var(--wp-control-h-md, 32px); font-size: 12px; }
 .wp-color-field:hover:not(:disabled) { border-color: var(--wp-border-strong); }
-.wp-color-field:focus-visible { outline: 2px solid var(--wp-focus-ring); outline-offset: 1px; }
+.wp-color-field:focus-visible { outline: none; box-shadow: var(--wp-focus-ring); }
 .wp-color-field:disabled { opacity: 0.5; cursor: default; }
 .wp-color-field__chip {
   position: relative;

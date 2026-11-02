@@ -196,7 +196,7 @@ function clear(): void {
 }
 .wp-date[data-size="sm"] .wp-date__field { min-width: 120px; padding: 0 var(--wp-space-2); border-radius: var(--wp-radius-sm); font-size: var(--wp-text-xs); }
 .wp-date__field:hover:not(:disabled) { border-color: var(--wp-border-strong); }
-.wp-date__field:focus-visible { outline: none; border-color: var(--wp-border-focus); box-shadow: 0 0 0 3px var(--wp-focus-ring); }
+.wp-date__field:focus-visible { outline: none; border-color: var(--wp-border-focus); box-shadow: var(--wp-focus-ring); }
 .wp-date__field[data-invalid] { border-color: var(--wp-error-border); }
 .wp-date__field:disabled { opacity: 0.45; cursor: not-allowed; }
 .wp-date__icon { color: var(--wp-text-muted); font-size: 12px; }

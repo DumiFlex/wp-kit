@@ -104,7 +104,7 @@ function toggle(id: string, on: boolean): void {
   transition: border-color var(--wp-motion-hover), box-shadow var(--wp-motion-hover);
 }
 .wp-image-grid__open:hover { border-color: var(--wp-border-strong); }
-.wp-image-grid__open:focus-visible { outline: none; border-color: var(--wp-border-focus); box-shadow: 0 0 0 3px var(--wp-focus-ring); }
+.wp-image-grid__open:focus-visible { outline: none; border-color: var(--wp-border-focus); box-shadow: var(--wp-focus-ring); }
 .wp-image-grid__tile[data-selected] .wp-image-grid__open { border-color: var(--wp-accent); box-shadow: 0 0 0 2px var(--wp-accent-glow); }
 .wp-image-grid__img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .wp-image-grid__empty {
