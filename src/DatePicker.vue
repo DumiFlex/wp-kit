@@ -209,7 +209,7 @@ function clear(): void {
   padding: 0 var(--wp-space-2); border: 0; border-radius: var(--wp-radius-sm);
   background: transparent; color: var(--wp-text-muted); cursor: pointer; font: inherit;
 }
-.wp-date__nav .pi { font-size: 11px; }
+.wp-date__nav .pi { font-size: 12px; }
 .wp-date__nav:hover, .wp-date__link:hover:not(:disabled) { background: var(--wp-row-hover); color: var(--wp-text); }
 .wp-date__nav:focus-visible, .wp-date__link:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--wp-border-focus); }
 .wp-date__link:disabled { opacity: 0.45; cursor: not-allowed; }

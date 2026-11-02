@@ -817,7 +817,7 @@ input, textarea, select { font: inherit; }
   user-select: none;
 }
 .wp-input-group__icon { padding-left: 10px; }
-.wp-input-group__icon .pi { font-size: 13px; line-height: 1; }
+.wp-input-group__icon .pi { font-size: 14px; line-height: 1; }
 .wp-input-group__affix { font-family: var(--wp-font-mono); font-size: 12.5px; }
 .wp-input-group__affix--prefix { padding-left: 10px; }
 .wp-input-group__affix--suffix { padding-right: 10px; }

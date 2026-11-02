@@ -300,7 +300,7 @@ function setOpen(v: boolean): void {
   position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
   color: var(--wp-text-muted); font-size: 10px; pointer-events: none;
 }
-.wp-combo[data-size="sm"] .wp-combo__caret { right: 8px; font-size: 9px; }
+.wp-combo[data-size="sm"] .wp-combo__caret { right: 8px; font-size: 10px; }
 .wp-combo__field {
   flex: 1 0 6ch; min-width: 6ch; height: calc(var(--_h) - 8px); margin: 0; padding: 0 2px;
   border: 0; outline: none; background: transparent; color: inherit; font: inherit;

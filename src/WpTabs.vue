@@ -165,7 +165,7 @@ function onKeydown(ev: KeyboardEvent): void {
 .wp-tabset__tab[data-active="true"] { color: var(--wp-text); border-bottom-color: var(--wp-accent-400); }
 .wp-tabset__tab:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--wp-border-focus); border-radius: var(--wp-radius-sm); }
 .wp-tabset__tab:disabled { opacity: 0.45; cursor: not-allowed; }
-.wp-tabset__tab .pi { font-size: 0.95em; }
+.wp-tabset__tab .pi { font-size: 12px; }
 .wp-tabset__count {
   min-width: 16px;
   padding: 1px 5px;

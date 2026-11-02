@@ -120,7 +120,8 @@ function toggle(): void {
 .wp-disclosure__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .wp-disclosure__chev {
   flex: none;
-  font-size: 0.75em;
+  /* A whole even size: 0.75em came to 9px and sat half a pixel off. */
+  font-size: 10px;
   color: var(--wp-text-muted);
   transition: transform var(--wp-motion-swap) var(--wp-motion-curve-collapse);
 }

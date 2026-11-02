@@ -428,7 +428,7 @@ function onKeydown(e: KeyboardEvent) {
   font-size: 10px;
   color: var(--wp-text-dim);
 }
-.wp-select__chevron { color: var(--wp-text-dim); font-size: 11px; margin-left: 6px; flex-shrink: 0; }
+.wp-select__chevron { color: var(--wp-text-dim); font-size: 12px; margin-left: 6px; flex-shrink: 0; }
 /* Clear ✕: a plain glyph kept well clear of the chevron (a 1px rule and
  * 8px either side) so it is not mis-clicked, and shown only while the
  * field is hovered or focused. The ::after gives it a 20px click target. */
