@@ -263,7 +263,7 @@ function setOpen(v: boolean): void {
   color: var(--wp-text); font-size: var(--wp-text-xs); line-height: 1;
 }
 .wp-tag-input[data-size="sm"] .wp-tag-input__chip { height: 16px; padding-left: 5px; font-size: 10.5px; }
-.wp-tag-input__chip-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wp-tag-input__chip-text { min-width: 0; line-height: 1.35; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 /* Plain ✕: no background zone, the chip keeps its height; the hit area is 20 px. */
 .wp-tag-input__remove {
   display: inline-grid; place-items: center; width: 16px; height: 16px; margin: -2px 0; padding: 0;

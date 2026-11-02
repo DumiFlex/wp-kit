@@ -1564,6 +1564,11 @@ input, textarea, select { font: inherit; }
  * every list page that imports Button.vue can wear the modifier
  * class without crossing :deep() boundaries. */
 .wp-refresh-btn--spin .pi-refresh {
+  /* The arrow's circle is not the middle of its em box: PrimeIcons draws it
+   * centred at (512, 360) on a 1024 grid whose box runs 960 → -64, so its
+   * centre sits 58.56% down. Turning on the box centre made it wobble. */
+  line-height: 1;
+  transform-origin: 50% 58.56%;
   animation: wp-refresh-spin 0.9s linear infinite;
 }
 @keyframes wp-refresh-spin {
