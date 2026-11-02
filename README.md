@@ -8,17 +8,33 @@ Every piece uses CSS custom properties, so it takes on the colours, corners and 
 
 **See every piece live:** [dumiflex.github.io/wp-kit](https://dumiflex.github.io/wp-kit/), with a switcher for the palette, the look and light or dark.
 
-## How the apps use it
+## Install
 
-The kit is not published to npm. Each app copies it in at a release tag:
+The kit is on npm as [`@dumiflex/wp-kit`](https://www.npmjs.com/package/@dumiflex/wp-kit). It ships its source (`.vue`, `.ts` and the theme CSS) with no build step, so your Vite app compiles the pieces it imports with its own Vue plugin:
 
 ```bash
-node scripts/kit-pull.mjs v0.1.0   # in the app repo
+pnpm add @dumiflex/wp-kit vue primeicons
+```
+
+```ts
+import Button from "@dumiflex/wp-kit/Button.vue";
+import { SHARED_TOKENS } from "@dumiflex/wp-kit/tokens.ts";
+import "@dumiflex/wp-kit/theme/tokens.css";
+```
+
+Import one file at a time (there is no barrel file, on purpose), so the bundler ships only what you use. In `vite.config`, set `resolve.dedupe: ["vue"]` (one Vue, not the app's and a second one) and `optimizeDeps.exclude: ["@dumiflex/wp-kit"]` (the `.vue` sources go through your Vue plugin, not the pre-bundler). An app that already imports the kit as `@/kit/...` can keep that by aliasing `@/kit` to `node_modules/@dumiflex/wp-kit/src`.
+
+Each release is staged on npm by the release workflow (trusted publishing, with provenance) and goes live once a maintainer approves it.
+
+### Apps that copy the kit
+
+The Wildcard Pipeline apps still copy `src/` in at a release tag until they move to the package:
+
+```bash
+node scripts/kit-pull.mjs v0.2.1   # in the app repo
 ```
 
 The app's script downloads that tag, copies `src/` into the app's kit folder, and writes the tag and commit next to it. A CI check (`kit-pull.mjs --check`) fails when the copy no longer matches what was pulled, so a fix to a kit piece is made here, released, and pulled into the apps in an ordinary PR.
-
-Pieces are imported one file at a time (`@/kit/WpButton.vue`), so an app's bundler only ships what it uses. There is no barrel file on purpose.
 
 ## What a host must provide
 
@@ -46,6 +62,7 @@ pnpm typecheck
 pnpm test
 pnpm site:dev     # the showcase site on localhost
 pnpm site:build   # site/dist, what Pages serves
+pnpm check-package  # what npm would publish: the files apps import, nothing repo-only
 ```
 
 Node 22+ and pnpm 9. The site lives in `site/` (outside `src/`, so the apps never copy it). It is deployed to GitHub Pages by `.github/workflows/site.yml` on every release and on "Run workflow"; CI builds it on every PR.
