@@ -3,6 +3,10 @@
 :root { --wp-site-bar-h: 56px; }
 html { scroll-padding-top: calc(var(--wp-site-bar-h) + 16px); }
 body { margin: 0; background: var(--wp-bg); color: var(--wp-text); font-family: var(--wp-font); }
+/* The kit theme pins html/body/#app to the window with overflow hidden: the
+   manager scrolls inside its own panes. The site is a normal page that the
+   window scrolls, so it lets them grow. */
+html, body, #app { height: auto; min-height: 100%; overflow: visible; }
 
 .wp-site { min-height: 100vh; display: flex; flex-direction: column; }
 .wp-site__bar {
@@ -26,7 +30,12 @@ body { margin: 0; background: var(--wp-bg); color: var(--wp-text); font-family: 
 .wp-site__controls { display: flex; align-items: center; gap: var(--wp-space-4); flex-wrap: wrap; }
 .wp-site__control { display: inline-flex; align-items: center; gap: var(--wp-space-3); font-size: var(--wp-text-sm); color: var(--wp-text-muted); }
 .wp-site__control > :last-child { min-width: 120px; }
-.wp-site .wp-page { width: 100%; max-width: 1280px; margin: 0 auto; box-sizing: border-box; flex: 1; }
+.wp-site .wp-page {
+  width: 100%; max-width: 1280px; margin: 0 auto; box-sizing: border-box; flex: 1;
+  /* The manager's shell pads its pages; the site pads its own. */
+  padding: var(--wp-space-8) var(--wp-space-7) 64px;
+  gap: var(--wp-space-7);
+}
 .wp-site__foot {
   padding: var(--wp-space-6);
   border-top: 1px solid var(--wp-border);

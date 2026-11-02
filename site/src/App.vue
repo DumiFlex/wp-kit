@@ -151,7 +151,7 @@ const REPO = "https://github.com/DumiFlex/wp-kit";
 .wp-kit__nav-link--sub { font-weight: 400; color: var(--wp-text-muted); padding-left: 16px; }
 .wp-kit__nav-link:hover { background: var(--wp-bg-3); color: var(--wp-text); }
 .wp-kit__main { display: flex; flex-direction: column; gap: var(--wp-space-8); min-width: 0; }
-.wp-kit__group { display: flex; flex-direction: column; gap: var(--wp-space-5); scroll-margin-top: 80px; }
+.wp-kit__group { display: flex; flex-direction: column; gap: var(--wp-space-6); scroll-margin-top: 80px; }
 .wp-kit__group-title { margin: 0; font-size: var(--wp-text-lg); font-weight: 600; color: var(--wp-text); }
 .wp-kit__group-blurb { margin: calc(-1 * var(--wp-space-3)) 0 0; color: var(--wp-text-muted); font-size: var(--wp-text-sm); }
 .wp-kit__stack { display: flex; flex-direction: column; gap: var(--wp-space-4); width: 100%; max-width: 420px; }
