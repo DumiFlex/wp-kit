@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.5.0](https://github.com/DumiFlex/wp-kit/compare/v0.4.0...v0.5.0) (2026-11-02)
+
+
+### Features
+
+* **site:** add an Animations section with speed and pause controls ([#46](https://github.com/DumiFlex/wp-kit/issues/46)) ([c1043ec](https://github.com/DumiFlex/wp-kit/commit/c1043ecd3562fba74c29e4033e9e9c3fd0f058fa))
+* Skeleton chip shape and square row icons; DataTable loads with Skeleton ([#47](https://github.com/DumiFlex/wp-kit/issues/47)) ([b38ec64](https://github.com/DumiFlex/wp-kit/commit/b38ec64a182e25073b59b6c22ef1a7e0246fee52))
+* syntax colours in CodeBlock ([#44](https://github.com/DumiFlex/wp-kit/issues/44)) ([758fecc](https://github.com/DumiFlex/wp-kit/commit/758fecc8f86264290916b6c1b15a0233939ce790))
+
+
+### Bug Fixes
+
+* a tile still loading can't open an empty Lightbox ([#45](https://github.com/DumiFlex/wp-kit/issues/45)) ([7063e64](https://github.com/DumiFlex/wp-kit/commit/7063e64a89ed8ce006602dd84804af7ff5f216c2))
+* draw LoadingMark's motion on a canvas so it glides in Firefox ([#48](https://github.com/DumiFlex/wp-kit/issues/48)) ([85fc9a0](https://github.com/DumiFlex/wp-kit/commit/85fc9a027214ced5de582bc44d5e50472ee7560b))
+
 ## [0.4.0](https://github.com/DumiFlex/wp-kit/compare/v0.3.0...v0.4.0) (2026-11-02)
 
 
