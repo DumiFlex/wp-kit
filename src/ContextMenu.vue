@@ -204,7 +204,7 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
     <ul
       v-if="visible"
       ref="menuEl"
-      class="wp-ctxmenu"
+      class="wp-ctxmenu wp-menu"
       :style="{ left: `${pos.x}px`, top: `${pos.y}px` }"
       role="menu"
       @click.stop
@@ -235,7 +235,8 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
                can't see it); keys come from the menu's own keydown. -->
           <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions, vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/mouse-events-have-key-events -->
           <li
-            class="wp-ctxmenu__item"
+            class="wp-ctxmenu__item wp-menu__item"
+            :data-active="activeIndex === i || undefined"
             :class="{
               'wp-ctxmenu__item--danger': entry.danger,
               'wp-ctxmenu__item--accent': entry.accent,
@@ -268,26 +269,16 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
   </Teleport>
 </template>
 
+<style scoped src="./menu.css"></style>
+
 <style scoped>
+/* The panel (background, border, corners, padding, shadow, layer, text) and
+ * the rows' padding, corners and hover / active / disabled states are the
+ * shared menu look (menu.css), the same as Select's and Combobox's lists. */
 .wp-ctxmenu {
   position: fixed;
-  z-index: 10000;
-  background: var(--wp-bg-2);
-  border: 1px solid var(--wp-border-strong);
-  border-radius: var(--wp-radius-sm);
-  box-shadow: var(--wp-shadow-md);
-  /* Tighter padding than the old 4px-0 to match the v2 mockup. Items
-   * carry their own 6px padding + rounded corners so the menu reads
-   * as a stack of pills, not a flat list. */
-  padding: 4px;
-  /* Bumped from 180px to 250px — subtitles wrap awkwardly at narrower
-   * widths. Existing callers without subtitles still fit comfortably. */
+  /* Subtitles wrap awkwardly below 250px. */
   min-width: 250px;
-  list-style: none;
-  margin: 0;
-  font-family: var(--wp-font-sans, sans-serif);
-  font-size: 12px;
-  color: var(--wp-text);
   user-select: none;
 }
 /* Header — scope label at the top of the menu. Border-bottom acts as
@@ -319,21 +310,16 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
   padding: 6px 8px 4px 8px;
 }
 .wp-ctxmenu__item {
-  padding: 6px 8px;
-  border-radius: min(4px, var(--wp-radius-cap, 999px));
-  cursor: pointer;
   white-space: nowrap;
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.wp-ctxmenu__item--active,
-.wp-ctxmenu__item:hover { background: var(--wp-accent-glow); color: var(--wp-accent); }
 /* A checkable item's tick: always takes its room, shows only when on. */
 .wp-ctxmenu__check { width: 14px; font-size: 11px; text-align: center; visibility: hidden; color: var(--wp-accent); }
 .wp-ctxmenu__check[data-on] { visibility: visible; }
 .wp-ctxmenu__item--danger { color: var(--wp-red); }
-.wp-ctxmenu__item--danger.wp-ctxmenu__item--active,
+.wp-ctxmenu__item--danger[data-active="true"],
 .wp-ctxmenu__item--danger:hover { background: var(--wp-red-bg); color: var(--wp-red); }
 /* Accent variant — recommended action highlight. Tinted background +
  * accent text in idle state so the eye lands on it; hover uses the
@@ -342,16 +328,11 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
   color: var(--wp-accent);
   background: color-mix(in oklab, var(--wp-accent) 12%, transparent);
 }
-.wp-ctxmenu__item--accent.wp-ctxmenu__item--active,
+.wp-ctxmenu__item--accent[data-active="true"],
 .wp-ctxmenu__item--accent:hover {
   background: var(--wp-accent-glow);
   color: var(--wp-accent);
 }
-.wp-ctxmenu__item--disabled {
-  color: var(--wp-text-dim);
-  cursor: not-allowed;
-}
-.wp-ctxmenu__item--disabled:hover { background: transparent; color: var(--wp-text-dim); }
 .wp-ctxmenu__icon,
 .wp-ctxmenu__icon-spacer {
   width: 14px;

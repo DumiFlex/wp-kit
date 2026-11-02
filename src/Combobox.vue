@@ -175,7 +175,7 @@ function setOpen(v: boolean): void {
 <!-- Popover's autofocus prop is off here: focus stays in the box you type in. -->
 <!-- eslint-disable vuejs-accessibility/no-autofocus -->
 <template>
-  <Popover :open="open" role="group" match-width :autofocus="false" :label="`${ariaLabel} choices`" @update:open="setOpen">
+  <Popover :open="open" variant="menu" role="group" match-width :max-height="280" :autofocus="false" :label="`${ariaLabel} choices`" @update:open="setOpen">
     <template #trigger>
       <!-- A click on the box's padding focuses the text field, which has the keys. -->
       <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
@@ -245,7 +245,7 @@ function setOpen(v: boolean): void {
         v-for="(o, i) in matches"
         :id="`${listId}-${i}`"
         :key="String(o.value)"
-        class="wp-combo__opt"
+        class="wp-combo__opt wp-menu__item"
         role="option"
         :aria-selected="isPicked(o.value)"
         :aria-disabled="o.disabled || undefined"
@@ -265,6 +265,7 @@ function setOpen(v: boolean): void {
 </template>
 
 <style scoped src="./field.css"></style>
+<style scoped src="./menu.css"></style>
 
 <style scoped>
 .wp-combo {
@@ -311,20 +312,15 @@ function setOpen(v: boolean): void {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
-.wp-combo__list { margin: calc(var(--wp-space-2) * -1); padding: 0; list-style: none; max-height: 280px; overflow: auto; }
-.wp-combo__opt {
-  display: flex; align-items: flex-start; gap: var(--wp-space-2);
-  padding: 6px var(--wp-space-4) 6px var(--wp-space-2); border-radius: var(--wp-radius-sm);
-  color: var(--wp-text); font-size: var(--wp-text-sm); cursor: pointer;
-}
-.wp-combo__opt:hover, .wp-combo__opt[data-active] { background: var(--wp-row-hover); }
-.wp-combo__opt[data-active] { box-shadow: inset 2px 0 0 var(--wp-accent); }
-.wp-combo__opt[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+/* The panel and the rows' padding, corners, text and states are the shared
+ * menu look (Popover variant="menu" + menu.css); the list scrolls in the panel. */
+.wp-combo__list { margin: 0; padding: 0; list-style: none; }
+.wp-combo__opt { display: flex; align-items: flex-start; gap: var(--wp-space-2); }
 .wp-combo__tick { width: 14px; margin-top: 2px; font-size: 10px; color: var(--wp-accent); visibility: hidden; }
 .wp-combo__tick[data-on] { visibility: visible; }
 .wp-combo__opt-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .wp-combo__hint { color: var(--wp-text-muted); font-size: var(--wp-text-xs); }
-.wp-combo__empty { padding: 6px var(--wp-space-4); color: var(--wp-text-muted); font-size: var(--wp-text-sm); }
+.wp-combo__empty { padding: 6px 8px; color: var(--wp-text-muted); font-size: 12px; }
 @media (prefers-reduced-motion: reduce) {
   .wp-combo { transition: none; }
 }

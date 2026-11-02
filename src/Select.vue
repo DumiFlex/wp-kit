@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
+import { computed, nextTick, ref, useId, watch } from "vue";
 import Icon, { ICON_SM } from "./Icon.vue";
+import Popover from "./Popover.vue";
 
 // Declared in `./select-types` so plain `.ts` helpers can build option lists
 // (a `.ts` importer only sees the `*.vue` ambient shim). Re-exported here so
 // existing `from "./Select.vue"` imports keep resolving.
 import type { SelectOption } from "./select-types";
-import { useFloatingChild } from "./floating-layer";
 export type { SelectOption };
 
 interface Props {
@@ -31,21 +31,16 @@ const emit = defineEmits<{
   (e: "change", v: string | number | null): void;
 }>();
 
-const wrapRef = ref<HTMLDivElement | null>(null);
+const listId = `wp-select-list-${useId()}`;
 const btnRef = ref<HTMLButtonElement | null>(null);
 const open = ref(false);
-const flip = ref(false);
 const active = ref(0);
 /** Type-to-filter query, built from printable keystrokes while the menu
  *  is open. Reset every time the menu opens or closes. */
 const query = ref("");
-/** The teleported menu, so the outside-click guard can exclude it. */
-const menuRef = ref<HTMLElement | null>(null);
-// Inside a Popover, clicks and Escape on the list are the list's own.
-useFloatingChild(() => menuRef.value);
-
-/** Fixed-position coordinates for the teleported menu. */
-const menuStyle = ref<Record<string, string>>({});
+// The list floats in a kit Popover (variant "menu"): it places, flips, fits
+// and follows the trigger, closes on a press outside or Escape, and counts as
+// part of a Popover the Select sits in. The keys stay on the trigger.
 
 const selected = computed(() => props.options.find((o) => o.value === props.modelValue) ?? null);
 
@@ -107,107 +102,17 @@ const composedAriaLabel = computed<string | undefined>(() => {
   return props.ariaLabel;
 });
 
-function onDocClick(e: MouseEvent) {
-  const t = e.target as Node | null;
-  if (!t) return;
-  // Close when the press is outside the trigger AND outside the menu. The menu
-  // is teleported to <body>, so it is NOT inside `wrapRef` — checking only the
-  // trigger meant a mousedown on the menu's own scrollbar counted as "outside"
-  // and dismissed it. The wheel worked, the scrollbar did not.
-  if (wrapRef.value?.contains(t)) return;
-  if (menuRef.value?.contains(t)) return;
-  open.value = false;
-}
-
-onMounted(() => {
-  document.addEventListener("mousedown", onDocClick, true);
-});
-onBeforeUnmount(() => {
-  document.removeEventListener("mousedown", onDocClick, true);
-  window.removeEventListener("scroll", followOnScroll, true);
-  window.removeEventListener("resize", reposition);
-});
-
-/** Any scroll in the page moves the menu with its trigger (like every kit
- *  overlay), instead of closing it or leaving it where the trigger used to
- *  be. Only once the trigger has scrolled right out of view does it close. */
-function followOnScroll(e: Event) {
-  // The menu's own list scroll changes nothing about where it sits.
-  const t = e.target as Element | null;
-  if (t && typeof t.closest === "function" && t.closest(".wp-select__menu")) return;
-  if (!open.value || !btnRef.value) return;
-  const r = btnRef.value.getBoundingClientRect();
-  if (r.bottom < 0 || r.top > window.innerHeight || r.right < 0 || r.left > window.innerWidth) {
-    open.value = false;
-    return;
-  }
-  computeMenuStyle();
-}
-function reposition() {
-  if (!open.value || !btnRef.value) return;
-  computeMenuStyle();
-}
-
-function computeMenuStyle() {
-  if (!btnRef.value) return;
-  const rect = btnRef.value.getBoundingClientRect();
-  // Ideal menu height = enough room for every option (~36px each + 12px
-  // padding), capped at 240px so a huge library doesn't blanket the
-  // viewport. The actual rendered height also gets capped by available
-  // screen space below — see `effectiveMaxHeight` — so the menu never
-  // bleeds past the viewport edge.
-  const idealHeight = Math.min(240, props.options.length * 36 + 12);
-  const gap = 4;       // spacing between trigger and menu
-  const margin = 8;    // breathing room from the viewport edge
-  const spaceBelow = window.innerHeight - rect.bottom - gap - margin;
-  const spaceAbove = rect.top - gap - margin;
-
-  // Flip above only when there isn't enough room below AND there's
-  // more room above than below — otherwise the menu still grows under
-  // the trigger and `effectiveMaxHeight` clamps it to whatever fits.
-  flip.value = spaceBelow < idealHeight && spaceAbove > spaceBelow;
-
-  const available = flip.value ? spaceAbove : spaceBelow;
-  // Floor at 80px so a tightly-cramped row (e.g. inside a modal near the
-  // viewport edge) still surfaces a usable scrolling list rather than
-  // collapsing to a 1-row sliver.
-  const effectiveMaxHeight = Math.max(80, Math.min(idealHeight, available));
-
-  menuStyle.value = flip.value
-    ? {
-        position: "fixed",
-        bottom: (window.innerHeight - rect.top + gap) + "px",
-        top: "auto",
-        left: rect.left + "px",
-        minWidth: rect.width + "px",
-        maxHeight: effectiveMaxHeight + "px",
-      }
-    : {
-        position: "fixed",
-        top: (rect.bottom + gap) + "px",
-        bottom: "auto",
-        left: rect.left + "px",
-        minWidth: rect.width + "px",
-        maxHeight: effectiveMaxHeight + "px",
-      };
-}
-
 watch(open, (v) => {
-  if (!v) {
-    query.value = "";
-    window.removeEventListener("scroll", followOnScroll, true);
-    window.removeEventListener("resize", reposition);
-    return;
-  }
-  if (!btnRef.value) return;
   query.value = "";
-  computeMenuStyle();
+  if (!v) return;
   // Highlight currently-selected option (or first).
   const idx = props.options.findIndex((o) => o.value === props.modelValue);
   active.value = idx >= 0 ? idx : 0;
-  window.addEventListener("scroll", followOnScroll, true);
-  window.addEventListener("resize", reposition);
 });
+
+function onOpen(v: boolean) {
+  open.value = v;
+}
 
 function toggle() {
   if (props.disabled) return;
@@ -246,6 +151,9 @@ function onKeydown(e: KeyboardEvent) {
   } else if (e.key === "ArrowUp") {
     e.preventDefault();
     if (list.length) active.value = (active.value - 1 + list.length) % list.length;
+  } else if (e.key === "Home" || e.key === "End") {
+    e.preventDefault();
+    if (list.length) active.value = e.key === "Home" ? 0 : list.length - 1;
   } else if (e.key === "Enter") {
     e.preventDefault();
     const opt = list[active.value];
@@ -264,7 +172,7 @@ function onKeydown(e: KeyboardEvent) {
 </script>
 
 <template>
-  <div ref="wrapRef" class="wp-select-wrap">
+  <div class="wp-select-wrap">
     <button
       ref="btnRef"
       type="button"
@@ -273,6 +181,7 @@ function onKeydown(e: KeyboardEvent) {
       :aria-label="composedAriaLabel"
       :aria-expanded="open"
       :aria-haspopup="'listbox'"
+      :aria-controls="open ? listId : undefined"
       :aria-invalid="error || undefined"
       data-test="select-trigger"
       @click="toggle"
@@ -332,15 +241,27 @@ function onKeydown(e: KeyboardEvent) {
       <Icon class="wp-select__chevron" name="chevron-down" />
     </button>
 
-    <!-- Menu teleported to <body> so it escapes any overflow:hidden ancestor
-         and renders above the sticky footer regardless of z-index stacking contexts. -->
-    <Teleport to="body">
+    <!-- The list floats on <body> in a menu Popover, so it escapes any
+         overflow:hidden ancestor and clears every modal. -->
+    <!-- Popover's autofocus is turned OFF: focus stays on the trigger, which has the keys. -->
+    <!-- eslint-disable vuejs-accessibility/no-autofocus -->
+    <Popover
+      :open="open && !disabled"
+      :anchor="btnRef"
+      variant="menu"
+      role="group"
+      match-width
+      :max-height="240"
+      :autofocus="false"
+      :label="ariaLabel ?? placeholder"
+      @update:open="onOpen"
+    >
+      <!-- eslint-enable vuejs-accessibility/no-autofocus -->
       <ul
-        v-if="open"
-        ref="menuRef"
+        :id="listId"
         class="wp-select__menu"
         role="listbox"
-        :style="menuStyle"
+        :aria-label="ariaLabel ?? placeholder"
         data-test="select-menu"
       >
         <li
@@ -364,7 +285,7 @@ function onKeydown(e: KeyboardEvent) {
         <li
           v-for="(opt, i) in filtered"
           :key="String(opt.value)"
-          class="wp-select__option"
+          class="wp-select__option wp-menu__item"
           role="option"
           tabindex="-1"
           :aria-selected="opt.value === modelValue"
@@ -407,7 +328,7 @@ function onKeydown(e: KeyboardEvent) {
           style="padding:6px 12px;opacity:0.55;"
         >No matches</li>
       </ul>
-    </Teleport>
+    </Popover>
   </div>
 </template>
 
@@ -415,14 +336,11 @@ function onKeydown(e: KeyboardEvent) {
   Self-contained styles so <Select> works everywhere it's used — including the
   ComfyUI CANVAS widget bundle, which does NOT load the manager-global
   tokens.css (that's why an unstyled Select rendered behind the modal there).
-  Class names stay wp-select* (global-namespaced, no collision); the menu is
-  teleported to <body>, so these are UNSCOPED — same pattern as the
-  RichTextInput autocomplete (wp-rt-suggestions), sharing its POPOVER tier
-  (10020) so the menu clears every modal overlay — those run up to 10010, so
-  the previous 9999 rendered the menu behind any modal above that. Vars fall
-  back to literals for the few the
-  canvas theme doesn't define (--wp-input-h[-sm], --wp-focus-ring). In the SPA
-  these duplicate tokens.css with identical rules — harmless.
+  Class names stay wp-select* (global-namespaced, no collision). The list's
+  look is the shared menu sheet (menu.css, scoped, at the end), whose layer
+  (10020) clears every modal overlay (those run up to 10010). Vars fall back
+  to literals for the few the canvas theme doesn't define (--wp-input-h[-sm],
+  --wp-focus-ring).
 -->
 <style>
 .wp-select-wrap { position: relative; display: inline-block; width: 100%; }
@@ -535,44 +453,20 @@ function onKeydown(e: KeyboardEvent) {
 @media (hover: none) { .wp-select__clear { opacity: 1; } }
 .wp-spacer { flex: 1 1 auto; }
 
-/* Menu — teleported to <body>. z-index 9999 matches wp-rt-suggestions, which
- * already renders above the canvas modals. */
+/* The list. Its panel (background, border, corners, padding, shadow, layer)
+ * and its rows' padding, corners, text and states are the shared menu look:
+ * Popover's `variant="menu"` and `menu.css` below. */
 .wp-select__menu {
   /* One line box for an option label, in px so a leading dot/icon can be
    * centred against it without the em-resolves-against-its-own-font-size trap
-   * (the icon runs at 12px, the label at 12.5px, so `1.5em` means two
-   * different heights depending on which element it is declared on).
-   * The menu teleports to <body>, so it carries its own copy. */
-  --wp-select-line-h: 18.75px;
-  background: var(--wp-bg-3);
-  border: 1px solid var(--wp-border-strong);
-  border-radius: min(7px, var(--wp-radius-cap, 999px));
-  box-shadow: var(--wp-shadow-md);
-  z-index: 10020;
-  padding: 4px;
-  max-height: 240px;
-  overflow: auto;
+   * (the icon runs at 12px and so does the label; `1.5em` on the icon would
+   * still measure against a different box). */
+  --wp-select-line-h: 18px;
   list-style: none;
   margin: 0;
+  padding: 0;
 }
-.wp-select__option {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 8px;
-  border-radius: min(6px, var(--wp-radius-cap, 999px));
-  color: var(--wp-text-muted);
-  cursor: pointer;
-  font-size: 12.5px;
-  user-select: none;
-}
-.wp-select__option:hover { background: var(--wp-bg-4); color: var(--wp-text); }
-.wp-select__option[data-active="true"] {
-  background: color-mix(in oklab, var(--wp-accent-500) 20%, transparent);
-  color: var(--wp-text);
-}
-.wp-select__option[data-selected="true"] {
-  background: color-mix(in oklab, var(--wp-accent-500) 18%, transparent);
-  color: var(--wp-text);
-}
+.wp-select__option { display: flex; gap: 6px; }
 /* Option rows WRAP (to two lines) rather than ellipsis-clipping at the first.
  * The menu is up to 620px wide and these values run long — a constraint
  * exception source is a whole phrase plus a nested `@ref` — so clipping them
@@ -640,5 +534,6 @@ function onKeydown(e: KeyboardEvent) {
   white-space: normal !important;
   overflow-wrap: anywhere;
 }
-.wp-select__menu { max-width: min(620px, 92vw); }
 </style>
+
+<style scoped src="./menu.css"></style>
