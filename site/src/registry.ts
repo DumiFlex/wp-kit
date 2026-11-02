@@ -349,7 +349,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "loading-mark", name: "LoadingMark", group: "feedback", file: "src/LoadingMark.vue", surfaces: ["manager", "canvas"],
-    use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour, brand=\"community\" in the community site's colours.",
+    use: "Anything busy. Inline (a text row, a button, a list item) it draws the AI sparkle; a block (a page or panel that is loading) draws the full logo animation. Give it a label, or slot text for a \"Loading bundle…\" row; mono draws it in the text colour, brand=\"community\" in the community site's colours. The motion is drawn on a canvas, so it stays sharp and glides in every browser; with reduced motion the still mark only breathes. Hosts can slow or pause it with data-wp-motion-speed / data-wp-motion-paused on an ancestor.",
     instead: "A spinner or plain \"Loading…\" text.",
   },
   // Overlays
