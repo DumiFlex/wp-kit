@@ -206,12 +206,15 @@ defineExpose({ place });
     max-width: min(420px, calc(100vw - 16px));
     max-height: calc(100vh - 16px);
     overflow: auto;
-    padding: var(--wp-space-3);
+    padding: calc(var(--wp-space-3) + 1px); /* plus the 1px the ring stands in for */
     background: var(--wp-bg-2);
     color: var(--wp-text);
-    border: 1px solid var(--wp-border-strong);
+    /* The outline is an inset ring, not a border: these rules are layered, and
+       a host's unlayered reset (Tailwind 3's preflight sets border-width: 0
+       on every element) would beat a border. Nothing resets box-shadow. */
+    border: 0;
     border-radius: var(--wp-radius);
-    box-shadow: var(--wp-shadow-md);
+    box-shadow: inset 0 0 0 1px var(--wp-border-strong), var(--wp-shadow-md);
     font-family: var(--wp-font-sans);
     font-size: var(--wp-text-sm);
     outline: none;
