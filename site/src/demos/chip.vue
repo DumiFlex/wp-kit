@@ -6,6 +6,15 @@ import { kindColour, type ItemType } from "@kit/kind-colour";
 const TYPES: ItemType[] = ["wildcard", "fixed_values", "combine", "constraint", "derivation", "bundle"];
 const kind = ref<ItemType | "all">("all");
 const tags = ref<string[]>(["portrait"]);
+const ROLES = [
+  { id: "subject", label: "Subjects", n: 24, color: "var(--wp-kind-wildcard)" },
+  { id: "style", label: "Styles", n: 9, color: "var(--wp-kind-combine)" },
+  { id: "list", label: "Lists", n: 131, color: "var(--wp-kind-fixed)" },
+];
+const roles = ref<string[]>(["subject"]);
+function flipRole(r: string): void {
+  roles.value = roles.value.includes(r) ? roles.value.filter((x) => x !== r) : [...roles.value, r];
+}
 function flip(t: string): void {
   tags.value = tags.value.includes(t) ? tags.value.filter((x) => x !== t) : [...tags.value, t];
 }
@@ -75,6 +84,19 @@ function flip(t: string): void {
     <div class="wp-kit__row">
       <Chip as="button" icon="tag">portrait</Chip>
       <Chip as="button" tone="accent" icon="folder">Characters</Chip>
+    </div>
+    <p class="wp-kit__muted">variant="stat": a tile with the count big on top and a top edge in its colour; with pressed it filters too.</p>
+    <div class="wp-kit__row">
+      <Chip
+        v-for="r in ROLES"
+        :key="r.id"
+        variant="stat"
+        :color="r.color"
+        :count="r.n"
+        :pressed="roles.includes(r.id)"
+        @click="flipRole(r.id)"
+      >{{ r.label }}</Chip>
+      <Chip variant="stat" count="98%">Carries over</Chip>
     </div>
   </div>
 </template>

@@ -35,4 +35,23 @@ describe("Chip.vue", () => {
     expect(a.attributes("type")).toBeUndefined();
     expect(a.attributes("href")).toBe("/browse?tag=x");
   });
+  it("draws a stat tile: the count on top, the label under it, the colour as its edge", async () => {
+    const w = mount(Chip, { props: { variant: "stat", count: 24, color: "red", pressed: false }, slots: { default: "Subjects" } });
+    const b = w.get("button.wp-chip");
+    expect(b.classes()).toContain("wp-chip--stat");
+    expect(b.classes()).not.toContain("wp-chip--color");
+    expect(b.attributes("aria-pressed")).toBe("false");
+    expect(b.attributes("style")).toContain("--wp-chip-c: red");
+    expect(w.get(".wp-chip__stat-n").text()).toBe("24");
+    expect(w.get(".wp-chip__stat-label").text()).toBe("Subjects");
+    expect(w.find(".wp-chip__count").exists()).toBe(false);
+    const order = [...b.element.children].map((c) => c.className);
+    expect(order).toEqual(["wp-chip__stat-n", "wp-chip__stat-label"]);
+  });
+
+  it("a stat tile without pressed is a plain label", () => {
+    const w = mount(Chip, { props: { variant: "stat", count: "98%" }, slots: { default: "Carries over" } });
+    expect(w.element.tagName).toBe("SPAN");
+    expect(w.get(".wp-chip__stat-n").text()).toBe("98%");
+  });
 });

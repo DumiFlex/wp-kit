@@ -210,8 +210,8 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "chip", name: "Chip", group: "display", file: "src/Chip.vue", surfaces: ["manager", "community"], usedBy: ["extension", "community"],
-    use: "The one pill: a tag, a status, a count, a category, a module type, a post's rating, a filter you turn on and off. Tones carry meaning (success, warn, danger, info); color tints it for a category or kind (kindColour(type) gives a module type's) and icon puts an icon in front. dot adds a status dot, count a small number, removable a plain ✕ that keeps the height. as=\"button\" (or a link) makes it take you somewhere; pressed (true or false) makes it a filter toggle with aria-pressed, lit in the accent or its color when on. size: xs (default, in a line of text), sm (24px, a filter row), md (32px).",
-    instead: "ChipToggle, KindChip, RatingBadge and CategoryChip (all merged into Chip), a <button class=\"wp-chip\"> with its own active state, or a hand-made pill span."
+    use: "The one pill: a tag, a status, a count, a category, a module type, a post's rating, a filter you turn on and off. Tones carry meaning (success, warn, danger, info); color tints it for a category or kind (kindColour(type) gives a module type's) and icon puts an icon in front. dot adds a status dot, count a small number, removable a plain ✕ that keeps the height. as=\"button\" (or a link) makes it take you somewhere; pressed (true or false) makes it a filter toggle with aria-pressed, lit in the accent or its color when on. size: xs (default, in a line of text), sm (24px, a filter row), md (32px). variant=\"stat\" is a tile: the count big on top, the label under it, a top edge in color; with pressed it filters a list (a summary row of counts).",
+    instead: "ChipToggle, KindChip, RatingBadge and CategoryChip (all merged into Chip), a <button class=\"wp-chip\"> with its own active state, a hand-made pill span, or a stat card button with a coloured top edge."
   },
   {
     id: "kbd", name: "Kbd", group: "display", file: "src/Kbd.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
@@ -254,8 +254,8 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "data-table", name: "DataTable", group: "display", file: "src/DataTable.vue", surfaces: ["manager", "community"], usedBy: ["extension"],
-    use: "Rows and columns: sticky header, sort by a column, tick rows, loading and empty rows. Put custom cells in #cell-<key>.",
-    instead: "A <table class=\"wp-table\"> with its own sort state and select-all.",
+    use: "Rows and columns: sticky header, sort by a column, tick rows, loading and empty rows. Put custom cells in #cell-<key>. Rows that open something: row-clickable + active-key; add a #detail slot and the open row unfolds under itself (aria-expanded).",
+    instead: "A <table class=\"wp-table\"> with its own sort state and select-all, or a div table whose rows are buttons that open a detail line.",
   },
   {
     id: "avatar", name: "Avatar", group: "display", file: "src/Avatar.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["community"],
@@ -555,7 +555,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "copy-button": `<CopyButton :text="prompt" label="Copy prompt" />`,
   "wp-icon-button": `<WpIconButton icon="pi-lock" tone="warn" :pressed="locked" label="Lock seed" @click="toggle" />`,
   "card": `<Card title="Options" subtitle="12 options">…</Card>`,
-  "chip": `<Chip tone="warn" icon="pi-exclamation-triangle">2 conflicts</Chip>  <Chip :color="cat.color" :icon="cat.icon">{{ cat.name }}</Chip>`,
+  "chip": `<Chip tone="warn" icon="pi-exclamation-triangle">2 conflicts</Chip>  <Chip :color="cat.color" :icon="cat.icon">{{ cat.name }}</Chip>  <Chip variant="stat" :color="c" :count="24" :pressed="on" @click="flip">Subjects</Chip>`,
   "kbd": `<Kbd keys="Mod+K" />`,
   "icon": `<Icon name="pi-bolt" :size="ICON_MD" />`,
   "support-links": `<SupportLinks :links="SUPPORT_LINKS" />`,

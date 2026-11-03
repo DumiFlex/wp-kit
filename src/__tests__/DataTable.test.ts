@@ -83,4 +83,27 @@ describe("DataTable", () => {
     await row.trigger("click");
     expect(w.emitted("row-click")).toBeUndefined();
   });
+  it("unfolds the open row with the #detail slot and says aria-expanded", async () => {
+    const w = mount(DataTable<Row>, {
+      props: { columns: COLS, rows: ROWS, rowKey: "id", rowClickable: true, activeKey: "2" },
+      slots: { detail: `<template #detail="{ row }"><p class="d">about {{ row.name }}</p></template>` },
+    });
+    const trs = w.findAll("tbody tr");
+    expect(trs).toHaveLength(4);
+    expect(trs[0].attributes("aria-expanded")).toBe("false");
+    expect(trs[1].attributes("aria-expanded")).toBe("true");
+    expect(trs[2].classes()).toContain("wp-data-table__detail");
+    expect(trs[2].get("td").attributes("colspan")).toBe("2");
+    expect(w.get(".d").text()).toBe("about Hair");
+    await trs[0].trigger("click");
+    expect(w.emitted("row-click")?.[0]).toEqual([ROWS[0]]);
+    await w.setProps({ activeKey: null });
+    expect(w.find(".wp-data-table__detail").exists()).toBe(false);
+    expect(w.findAll("tbody tr").every((tr) => tr.attributes("aria-expanded") === "false")).toBe(true);
+  });
+
+  it("leaves aria-expanded off without a #detail slot", () => {
+    const w = mount(DataTable<Row>, { props: { columns: COLS, rows: ROWS, rowKey: "id", rowClickable: true, activeKey: "2" } });
+    expect(w.findAll("tbody tr").some((tr) => tr.attributes("aria-expanded") !== undefined)).toBe(false);
+  });
 });
