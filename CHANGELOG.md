@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/DumiFlex/wp-kit/compare/v0.7.0...v0.7.1) (2026-11-03)
+
+
+### Bug Fixes
+
+* payload previews load their sheet once; SelectionBar says "1 report selected" ([#75](https://github.com/DumiFlex/wp-kit/issues/75)) ([d2774da](https://github.com/DumiFlex/wp-kit/commit/d2774dae3970f3b093778b0d84c5480a43961f9d))
+
 ## [0.7.0](https://github.com/DumiFlex/wp-kit/compare/v0.6.0...v0.7.0) (2026-11-03)
 
 
