@@ -50,7 +50,9 @@ export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-o", "--wp-select-line-h", 
   "--wp-wl-t", "--wp-wl-k", "--wp-wl-x", "--wp-wl-f", "--wp-wl-r", "--wp-wl-s", "--wp-wl-o", "--wp-wl-wo", "--wp-wl-wb",
   "--wp-wl-dx", "--wp-wl-dy", "--wp-wl-big", "--wp-wl-a", "--wp-wl-b",
   // motion.css entrances.
-  "--wp-enter-o", "--wp-enter-s", "--wp-enter-y", "--wp-enter-x"] as const;
+  "--wp-enter-o", "--wp-enter-s", "--wp-enter-y", "--wp-enter-x",
+  // SelectionBar: where a sticky bar stops under a fixed header.
+  "--wp-selection-bar-top"] as const;
 
 /** Pieces that need a page with src/theme/ loaded (not the canvas). */
 export const PAGE_PIECES = [
