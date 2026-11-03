@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/DumiFlex/wp-kit/compare/v0.12.0...v0.13.0) (2026-11-03)
+
+
+### Features
+
+* v-toggle-row, so a row's words flip its one checkbox or switch, and SettingRow rows do it ([#102](https://github.com/DumiFlex/wp-kit/issues/102)) ([1d3309b](https://github.com/DumiFlex/wp-kit/commit/1d3309b6f2a7da6f2dff82a41aed8bc46d1c779a))
+
 ## [0.12.0](https://github.com/DumiFlex/wp-kit/compare/v0.11.0...v0.12.0) (2026-11-03)
 
 
