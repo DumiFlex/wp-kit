@@ -405,6 +405,11 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   // Bigger pieces
   {
+    id: "selection-bar", name: "SelectionBar", group: "pieces", file: "src/SelectionBar.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    use: "The bar over a list while rows are ticked: \"3 selected\", the bulk actions and Clear. #start goes after the count (an option, a reason box), the default slot holds the actions; sticky keeps it at the top while the list scrolls (--wp-selection-bar-top for a fixed header). Escape inside it clears.",
+    instead: "A hand-made bulk bar per list (.wpc-bulk-bar, .wpc-seltoolbar, .wpc-deltoolbar) with its own count and colours.",
+  },
+  {
     id: "setting-group", name: "SettingGroup", group: "pieces", file: "src/SettingGroup.vue", surfaces: ["manager", "community"], usedBy: [],
     use: "A settings page: SettingGroup is a titled panel, each SettingRow a label and hint on the left and its control on the right, split by hairlines. setting-key gives a row an id for a search to jump to and highlighted flashes it; stacked puts a wide control under the text; form lines rows up as a label column; recommended names the usual pick. A narrow group puts every row in one column.",
     instead: "A hand-made settings row (.wpc-settings-row) with its own name, hint and control layout.",
@@ -540,6 +545,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "inline-edit": `<InlineEdit v-model="mod.name" label="Wildcard name" :validate="(v) => taken(v) ? 'That name is taken' : null" />`,
   "drop-zone": `<DropZone accept=".txt,.yaml,.yml,.zip" multiple hint="Wildcard files or a zip" @files="load" @reject="explain" />`,
   "badge": `<Badge :count="3" tone="danger" label="3 problems"><Button variant="ghost" icon="pi-bell" aria-label="Problems" /></Badge>  <Badge dot tone="success" text="Running" pulse />`,
+  "selection-bar": `<SelectionBar v-if="picked.size" :count="picked.size" noun="options" sticky @clear="picked.clear()"><Button size="sm" variant="danger" icon="trash" @click="del">Delete</Button></SelectionBar>`,
   "setting-group": `<SettingGroup title="Content"><SettingRow label="Include NSFW posts" hint="Off by default." for="nsfw"><WpSwitch id="nsfw" v-model="nsfw" size="md" /></SettingRow></SettingGroup>`,
   "setting-row": `<SettingRow label="Name" form for="name" hint="Shown in the library."><Input id="name" v-model="name" /></SettingRow>`,
   "description-list": `<DescriptionList :items="[{ label: 'Family', value: 'SDXL' }, { label: 'ID', value: id, mono: true, copy: true }]" />`,
