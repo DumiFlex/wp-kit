@@ -127,7 +127,9 @@ function onKeydown(ev: KeyboardEvent): void {
   height: var(--wp-control-h-md);
   box-sizing: border-box;
 }
-.wp-segmented[data-size="sm"] { height: var(--wp-control-h-sm); border-radius: var(--wp-radius-sm); }
+/* sm: a 1 px inset, so each option is 20 px tall in the 24 px box (a bigger
+   target in the same row, close to ComfyUI's 24 px toggle-group items). */
+.wp-segmented[data-size="sm"] { height: var(--wp-control-h-sm); padding: 1px; border-radius: var(--wp-radius-sm); }
 .wp-segmented[data-size="lg"] { height: var(--wp-control-h-lg); }
 .wp-segmented__opt {
   display: inline-flex;

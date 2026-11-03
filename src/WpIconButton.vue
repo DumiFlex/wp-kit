@@ -58,6 +58,7 @@ const emit = defineEmits<{ click: [evt: MouseEvent] }>();
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  position: relative;
   flex: none;
   box-sizing: border-box;
   width: 20px;
@@ -72,6 +73,9 @@ const emit = defineEmits<{ click: [evt: MouseEvent] }>();
   cursor: pointer;
   transition: background var(--wp-motion-quick), border-color var(--wp-motion-quick), color var(--wp-motion-quick);
 }
+/* The drawn box stays 20 px (it lines up with ComfyUI's own icon-sm and our
+   rows); the click reaches 24 x 24, ComfyUI's row control size. */
+.wp-icon-btn::after { content: ""; position: absolute; inset: -3px; }
 .wp-icon-btn[data-tone="accent"] { --tone: var(--wp-accent); }
 .wp-icon-btn[data-tone="warn"] { --tone: var(--wp-warn); }
 .wp-icon-btn[data-tone="danger"] { --tone: var(--wp-danger); }

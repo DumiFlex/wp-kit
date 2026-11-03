@@ -142,13 +142,15 @@ function bump(dir: 1 | -1): void {
 <style scoped src="./field.css"></style>
 
 <style scoped>
+/* Spinner columns sized so each arrow is a real target in the box
+ * (sm: 20 x 12 in a 24 px field, near ComfyUI's 24 px -/+ buttons). */
 .wp-cnum {
-  --cnum-spin: 16px;
+  --cnum-spin: 20px;
   display: inline-flex; align-items: stretch; height: var(--wp-field-h); min-width: 0; overflow: hidden;
   font-family: var(--wp-font-mono);
 }
-.wp-cnum--md { --cnum-spin: 20px; }
-.wp-cnum--lg { --cnum-spin: 22px; }
+.wp-cnum--md { --cnum-spin: 24px; }
+.wp-cnum--lg { --cnum-spin: 28px; }
 .wp-cnum__field {
   flex: 1; min-width: 0; padding: 0 6px 0 8px; background: transparent; border: 0;
   color: var(--wp-text); font: inherit; text-align: right;
@@ -170,8 +172,8 @@ function bump(dir: 1 | -1): void {
   flex: 1; display: flex; align-items: center; justify-content: center; padding: 0; border: 0;
   background: transparent; color: var(--wp-text-dim); cursor: pointer; line-height: 0;
 }
-.wp-cnum__btn .pi { font-size: 7px; }
-.wp-cnum--md .wp-cnum__btn .pi, .wp-cnum--lg .wp-cnum__btn .pi { font-size: 8px; }
+.wp-cnum__btn .pi { font-size: 10px; }
+.wp-cnum--md .wp-cnum__btn .pi, .wp-cnum--lg .wp-cnum__btn .pi { font-size: 10px; }
 .wp-cnum__btn + .wp-cnum__btn { border-top: 1px solid var(--wp-border); }
 .wp-cnum__btn:hover:not(:disabled) { color: var(--wp-accent-text); background: color-mix(in oklab, var(--wp-accent) 12%, transparent); }
 .wp-cnum__btn:disabled { cursor: not-allowed; }
