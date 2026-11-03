@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/DumiFlex/wp-kit/compare/v0.11.0...v0.12.0) (2026-11-03)
+
+
+### Features
+
+* Input and Textarea take mono and an accent / warn tone, and size themselves border-box ([#98](https://github.com/DumiFlex/wp-kit/issues/98)) ([7b1023f](https://github.com/DumiFlex/wp-kit/commit/7b1023f699e7f9b37904abf0200ed805f1db23a7))
+
 ## [0.11.0](https://github.com/DumiFlex/wp-kit/compare/v0.10.0...v0.11.0) (2026-11-03)
 
 
