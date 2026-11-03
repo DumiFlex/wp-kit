@@ -3,7 +3,15 @@
  * Scoped into Input.vue and Textarea.vue so a field looks right on the
  * canvas, which never loads theme/tokens.css; the theme imports it too so
  * a page can still write `.wp-input-group` around another field. Shared
- * tokens only. The other field pieces draw field.css' `.wp-field-box`. */
+ * tokens only. The other field pieces draw field.css' `.wp-field-box`.
+ *
+ * `data-mono` sets the text in the mono face (variable names, ids, tags);
+ * `data-tone="accent"` marks a value changed from its default (accent border
+ * and text), `data-tone="warn"` one that needs a look (an empty binding). */
+
+.wp-input,
+.wp-textarea,
+.wp-input-group { box-sizing: border-box; }
 
 .wp-input,
 .wp-textarea {
@@ -111,3 +119,20 @@
   flex: 1;
 }
 .wp-input-group .wp-input:focus { box-shadow: none; }
+
+/* Mono text and tones (see the top of this file). On a prefixed field the
+ * group draws the border, so the tone sits on the group. */
+.wp-input[data-mono],
+.wp-textarea[data-mono] { font-family: var(--wp-font-mono); font-size: 12px; }
+.wp-input--sm[data-mono] { font-size: 11px; }
+.wp-input[data-tone="accent"],
+.wp-textarea[data-tone="accent"],
+.wp-input-group[data-tone="accent"] { border-color: var(--wp-accent-500); }
+.wp-input[data-tone="accent"],
+.wp-textarea[data-tone="accent"],
+.wp-input-group[data-tone="accent"] .wp-input,
+.wp-input-group[data-tone="accent"] .wp-input-group__affix { color: var(--wp-accent-text); }
+.wp-input[data-tone="warn"],
+.wp-textarea[data-tone="warn"],
+.wp-input-group[data-tone="warn"] { border-color: var(--wp-warn); }
+.wp-input-group[data-tone="warn"] .wp-input-group__affix { color: var(--wp-warn); }

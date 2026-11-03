@@ -96,13 +96,13 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   // Inputs
   {
-    id: "input", name: "Input", group: "inputs", file: "src/Input.vue", surfaces: ["manager", "community"], usedBy: ["extension", "community"],
-    use: "One-line text in the manager, on the 24/32/40 scale (size sm/md/lg). Optional inline icon, a prefix like $ for variable names, a suffix like a unit, and a readonly look (dashed, dimmer, lock). Numbers use WpNumber, searches SearchInput.",
+    id: "input", name: "Input", group: "inputs", file: "src/Input.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
+    use: "One-line text, on the 24/32/40 scale (size sm/md/lg); styles itself, so it works on the canvas too. Optional inline icon, a prefix like $ for variable names, a suffix like a unit, a readonly look (dashed, dimmer, lock), mono text for names and ids, and a tone: accent for a value changed from its default, warn for one that needs a look. Numbers use WpNumber, searches SearchInput.",
     instead: "A bare <input> with its own border and focus ring.",
   },
   {
-    id: "textarea", name: "Textarea", group: "inputs", file: "src/Textarea.vue", surfaces: ["manager", "community"], usedBy: ["extension", "community"],
-    use: "Several lines of plain text. Turn on autoResize when the box should grow with its text. Prompt text with $variables uses RichTextInput instead.",
+    id: "textarea", name: "Textarea", group: "inputs", file: "src/Textarea.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
+    use: "Several lines of plain text. Turn on autoResize when the box should grow with its text; mono and tone work as on Input. Prompt text with $variables uses RichTextInput instead.",
   },
   {
     id: "field", name: "Field", group: "inputs", file: "src/Field.vue", surfaces: ["manager", "community"], usedBy: ["extension"],

@@ -16,6 +16,9 @@ const width = ref("1024");
     <Input model-value="Hair colour" error aria-label="Name with an error" />
     <Input model-value="hair_colour" prefix="$" readonly aria-label="Read-only variable" />
     <Input model-value="Locked" disabled aria-label="Disabled field" />
+    <p class="wp-kit__muted">mono for names and ids; tone accent for a value changed from its default, warn for one that needs a look.</p>
+    <Input v-model="variable" prefix="$" size="sm" mono tone="accent" aria-label="Changed variable" />
+    <Input model-value="" prefix="$" size="sm" mono tone="warn" placeholder="variable" aria-label="Empty variable" />
     <p class="wp-kit__muted">Sizes: sm 24, md 32, lg 40.</p>
     <Input model-value="Small" size="sm" aria-label="Small" />
     <Input model-value="Medium" aria-label="Medium" />
