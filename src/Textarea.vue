@@ -55,3 +55,5 @@ watch(() => props.modelValue, () => {
     @focus="(e) => emit('focus', e)"
   />
 </template>
+
+<style scoped src="./input.css"></style>

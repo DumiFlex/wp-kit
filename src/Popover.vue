@@ -17,6 +17,15 @@
  *
  *   <Popover :open="!!cell" :anchor="cell?.el" label="Cell rule" @update:open="cell = null">…</Popover>
  *
+ * A list that follows the text caret, or a card opened at a point, passes a
+ * virtual anchor instead: anything with `getBoundingClientRect()` (see
+ * `VirtualAnchor` in floating.ts). Hand it a new object to move the panel.
+ *
+ *   <Popover :open="!!at" :anchor="at" :autofocus="false" role="listbox" @update:open="at = null">…</Popover>
+ *
+ * Attributes (`class`, `data-test`, `@mouseenter` …) go on the panel, so a
+ * hover card can keep itself open while the pointer is over it.
+ *
  * `variant="menu"` draws the panel as a menu (`menu.css`, the look Select's
  * list, ContextMenu and Combobox share): tighter padding, 4px from the
  * trigger, above modals, and it closes once its trigger scrolls out of view.
@@ -24,8 +33,10 @@
  * scrolls past that instead of covering its trigger.
  */
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from "vue";
-import { placeFloating, roomOn, viewportSize, type Placement, type Side } from "./floating";
+import { placeFloating, roomOn, viewportSize, type Placement, type Side, type VirtualAnchor } from "./floating";
 import { provideFloatingLayer, useFloatingChild } from "./floating-layer";
+
+defineOptions({ inheritAttrs: false });
 
 const props = withDefaults(defineProps<{
   open: boolean;
@@ -38,8 +49,9 @@ const props = withDefaults(defineProps<{
   autofocus?: boolean | undefined;
   /** "dialog" for panels with controls, "menu"/"listbox" when the content is one. */
   role?: "dialog" | "menu" | "listbox" | "group" | undefined;
-  /** Place the panel against this element instead of the trigger slot. */
-  anchor?: HTMLElement | null | undefined;
+  /** Place the panel against this element (or a virtual anchor: a caret, a
+   *  point) instead of the trigger slot. */
+  anchor?: HTMLElement | VirtualAnchor | null | undefined;
   /** "menu" for a list of choices (Select, Combobox): the shared menu look. */
   variant?: "panel" | "menu" | undefined;
   /** Tallest the panel grows, in px, before it scrolls. */
@@ -59,10 +71,17 @@ const MIN_HEIGHT = 80;
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), '
   + 'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-function trigger(): HTMLElement | null {
+/** What the panel is placed against: the anchor prop or the trigger slot. */
+function trigger(): HTMLElement | VirtualAnchor | null {
   if (props.anchor) return props.anchor;
   const el = anchorEl.value;
   return (el?.firstElementChild as HTMLElement | null) ?? el;
+}
+
+/** The anchor as an element, when it is one (a virtual anchor takes no focus). */
+function anchorElement(): HTMLElement | null {
+  const a = props.anchor;
+  return a instanceof HTMLElement ? a : null;
 }
 
 function setOpen(v: boolean): void {
@@ -105,7 +124,9 @@ function triggerGone(): boolean {
   if (!t) return false;
   const r = t.getBoundingClientRect();
   const view = viewportSize();
-  return r.bottom < 0 || r.top > view.height || r.right < 0 || r.left > view.width;
+  const bottom = r.top + r.height;
+  const right = r.left + r.width;
+  return bottom < 0 || r.top > view.height || right < 0 || r.left > view.width;
 }
 
 function onScroll(ev: Event): void {
@@ -126,7 +147,8 @@ function onPointerDown(ev: PointerEvent): void {
   if (layer.owns(path)) return;
   if (panelEl.value && path.includes(panelEl.value)) return;
   if (anchorEl.value && path.includes(anchorEl.value)) return;
-  if (props.anchor && path.includes(props.anchor)) return;
+  const own = anchorElement();
+  if (own && path.includes(own)) return;
   setOpen(false);
 }
 
@@ -137,7 +159,8 @@ function onKeydown(ev: KeyboardEvent): void {
   ev.preventDefault();
   ev.stopPropagation();
   setOpen(false);
-  trigger()?.focus();
+  const t = trigger();
+  if (t instanceof HTMLElement) t.focus();
 }
 
 function listen(on: boolean): void {
@@ -183,6 +206,7 @@ defineExpose({ place });
       :role="role"
       :aria-label="label"
       tabindex="-1"
+      v-bind="$attrs"
       :style="{
         left: `${pos.x}px`,
         top: `${pos.y}px`,
