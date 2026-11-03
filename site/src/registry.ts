@@ -473,6 +473,29 @@ export const KIT_ENTRIES: KitEntry[] = [
     id: "bookmark-button", name: "BookmarkButton", group: "pieces", file: "src/BookmarkButton.vue", surfaces: ["manager", "community"], usedBy: ["community"],
     use: "Bookmark a post: a toggle button. The app sends the request and passes the new state back.",
   },
+  {
+    id: "payload-preview", name: "PayloadPreview", group: "pieces", file: "src/PayloadPreview.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "A published module or bundle payload, read-only, with Preview / Raw JSON tabs. It picks the view for the type: a wildcard's options with chance, tags, negatives, facets and grouping by axis; fixed values and a combine's template with where each input is used; a derivation's IF / ELSE IF / ELSE rules with AND / OR groups and numbered actions; a constraint's matrix (ConstraintMatrixPreview) or, when big, a searchable rules list; a bundle's children beside the picked child's own preview. Every value goes through TokenizedValue. Pass refNames (module id to name) and refGroups (module id to tag_groups) from the post's dependencies so refs and constraint axes read as names; tabs=false when the page draws its own.",
+    instead: "Printing the payload JSON, or a per-type preview written for one page.",
+  },
+  {
+    id: "rich-text", name: "RichText", group: "display", file: "src/RichText.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "Plain prose someone typed (a post description, a note): links open in a new tab and $var / @{ref} mentions become code chips, inline in your own paragraph. Built on linkify.ts, no v-html. A wildcard value is TokenizedValue, not this.",
+    instead: "v-html from a linkifier, or printing URLs as dead text.",
+  },
+  {
+    id: "post-grid-skeleton", name: "PostGridSkeleton", group: "pieces", file: "src/PostGridSkeleton.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "A grid of PostCards while its first page loads: card-sized blocks of mixed heights in the same masonry columns. count sets how many; label is read once to screen readers (\"\" inside another skeleton).",
+    instead: "A spinner over an empty grid, or Skeleton blocks laid out per page.",
+  },
+  {
+    id: "post-detail-skeleton", name: "PostDetailSkeleton", group: "pieces", file: "src/PostDetailSkeleton.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "A post page while it loads: meta line, title, description, tags and the preview card, with the download rail beside it (under it on narrow screens).",
+  },
+  {
+    id: "profile-skeleton", name: "ProfileSkeleton", group: "pieces", file: "src/ProfileSkeleton.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "A public profile while it loads: the head card with the avatar and name, the three stat cards when stats is set, then a short post grid.",
+  },
 ];
 
 
@@ -483,6 +506,14 @@ export const KIT_ENTRIES: KitEntry[] = [
 /** Pieces in src/ that are not building blocks of their own. */
 export const KIT_EXEMPT: Record<string, string> = {
   "src/ToastHost.vue": "Mounted once by the app; use useToast().",
+  "src/WildcardPreview.vue": "Drawn by PayloadPreview for a wildcard payload; use PayloadPreview.",
+  "src/FixedValuesPreview.vue": "Drawn by PayloadPreview for a fixed values payload; use PayloadPreview.",
+  "src/CombinePreview.vue": "Drawn by PayloadPreview for a combine payload; use PayloadPreview.",
+  "src/DerivationPreview.vue": "Drawn by PayloadPreview for a derivation payload; use PayloadPreview.",
+  "src/DerivationCondition.vue": "One condition (or AND / OR group) inside DerivationPreview.",
+  "src/ConstraintPreview.vue": "Drawn by PayloadPreview for a constraint payload; use PayloadPreview.",
+  "src/BundlePreview.vue": "Drawn by PayloadPreview for a bundle payload; use PayloadPreview.",
+  "src/PreviewGroup.vue": "A folding group inside WildcardPreview's tables.",
 };
 
 export const KIT_EXAMPLES: Record<string, string> = {
@@ -494,6 +525,11 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "post-card": `<PostCard :as="RouterLink" :to="\`/p/\${post.slug}\`" :post="card" />`,
   "star-button": `<StarButton :starred="starred" :count="12" @toggle="star" />`,
   "bookmark-button": `<BookmarkButton :bookmarked="saved" @toggle="bookmark" />`,
+  "payload-preview": `<PayloadPreview :payload="version.payload" :ref-names="names" :ref-groups="groups" />`,
+  "rich-text": `<p class="description"><RichText :text="post.description" /></p>`,
+  "post-grid-skeleton": `<PostGridSkeleton v-if="loading" :count="6" />`,
+  "post-detail-skeleton": `<PostDetailSkeleton v-if="loading" />`,
+  "profile-skeleton": `<ProfileSkeleton v-if="loading" stats />`,
   "button": `<Button variant="primary" icon="plus" @click="add">New module</Button>\n<Button variant="ghost" icon="times" aria-label="Close" kbd="Esc" @click="close" />\n<Button size="sm" variant="add" icon="plus" block>Add rule</Button>`,
   "btn-css": `<button class="wp-btn wp-btn--primary wp-btn--sm">Run</button>`,
   "input": `<Input v-model="name" prefix="$" aria-label="Variable name" />`,

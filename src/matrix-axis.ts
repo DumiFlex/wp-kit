@@ -89,3 +89,31 @@ export function groupHue(grp: AxisGroup, role: "source" | "target", labeled: boo
   if (!isBucket(grp)) return axisHueAt(grp.axisIndex);
   return labeled ? UNGROUPED_HUE : role === "source" ? "var(--wp-constraint-source)" : "var(--wp-constraint-target)";
 }
+
+/** A constraint cell's rule. `only` (schema v6, linked picks): when the
+ *  source fires, targets without a rule of their own in that row are
+ *  excluded. `allow` is the neutral cell. */
+export type CellMode = "allow" | "boost" | "reduce" | "exclude" | "only";
+
+/** The glyph each rule draws in a matrix cell, a legend or a rules list. */
+export const MODE_GLYPH: Record<CellMode, string> = {
+  only: "✓",
+  boost: "↑",
+  reduce: "↓",
+  exclude: "×",
+  allow: "·",
+};
+
+/** The word for each rule. */
+export const MODE_LABEL: Record<CellMode, string> = {
+  boost: "Boost",
+  reduce: "Reduce",
+  exclude: "Exclude",
+  allow: "Neutral",
+  only: "Only",
+};
+
+/** A published mode string as a rule: anything unknown reads as neutral. */
+export function normalizeMode(raw: string | null | undefined): CellMode {
+  return raw === "exclude" || raw === "boost" || raw === "reduce" || raw === "only" ? raw : "allow";
+}
