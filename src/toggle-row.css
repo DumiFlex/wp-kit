@@ -1,0 +1,7 @@
+/* v-toggle-row (toggle-row.ts): the row's words flip its one toggle, so the
+ * whole row shows the hand and its words don't get picked up as a selection
+ * on a quick double click. Layered, so a host's own cursor rule wins. */
+@layer wp-extension {
+  .wp-toggle-row { cursor: pointer; user-select: none; -webkit-user-select: none; }
+  .wp-toggle-row--disabled { cursor: not-allowed; }
+}

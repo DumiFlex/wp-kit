@@ -14,7 +14,13 @@
  * control column, like a form. `recommended` names the value most people
  * should pick ("On"). `for` makes the label a real `<label for>`. Slots:
  * `#badge` after the label, `#extra` under the hint (a status line).
+ *
+ * A row whose control is one checkbox or switch flips it on a click anywhere
+ * on the row's words (v-toggle-row), like a label; a WpSwitch is a span, so a
+ * `<label for>` alone can't reach it.
  */
+import { vToggleRow } from "./toggle-row";
+
 const props = defineProps<{
   label: string;
   hint?: string | undefined;
@@ -32,6 +38,7 @@ const props = defineProps<{
 <template>
   <div
     :id="settingKey"
+    v-toggle-row
     class="wp-set-row"
     :class="{ 'wp-set-row--stacked': stacked, 'wp-set-row--form': form, 'wp-set-row--target': highlighted }"
     :data-setting="settingKey"
