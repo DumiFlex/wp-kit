@@ -349,12 +349,12 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "A spinner or plain \"Loading…\" text.",
   },
   {
-    id: "working-line", name: "WorkingLine", group: "feedback", file: "src/WorkingLine.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    id: "working-line", name: "WorkingLine", group: "feedback", file: "src/WorkingLine.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
     use: "The \"model is working\" line, like Claude Code's: a mark drawn from the logo's sparkles (variant typing, shuffle, orbit or burst), a word that crossfades when it changes, and the time so far. It only draws; the app picks the word, time and tempo (slow while the model reads, mid while it thinks, fast while it writes). wordKey keeps a token count ticking up from crossfading every time. inline makes it smaller for a top bar.",
     instead: "LoadingMark plus a status text when an AI request is running.",
   },
   {
-    id: "motion-css", name: "Entrance classes (motion.css)", group: "feedback", file: "src/motion.css", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    id: "motion-css", name: "Entrance classes (motion.css)", group: "feedback", file: "src/motion.css", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
     use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves.",
     instead: "A keyframe of opacity or transform in each component.",
   },
@@ -404,6 +404,15 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "A fixed-position <img> with its own Escape listener (DocImage's zoom).",
   },
   // Bigger pieces
+  {
+    id: "setting-group", name: "SettingGroup", group: "pieces", file: "src/SettingGroup.vue", surfaces: ["manager", "community"], usedBy: [],
+    use: "A settings page: SettingGroup is a titled panel, each SettingRow a label and hint on the left and its control on the right, split by hairlines. setting-key gives a row an id for a search to jump to and highlighted flashes it; stacked puts a wide control under the text; form lines rows up as a label column; recommended names the usual pick. A narrow group puts every row in one column.",
+    instead: "A hand-made settings row (.wpc-settings-row) with its own name, hint and control layout.",
+  },
+  {
+    id: "setting-row", name: "SettingRow", group: "pieces", file: "src/SettingRow.vue", surfaces: ["manager", "community"], usedBy: [],
+    use: "One row of a SettingGroup: label, hint and the control. form lines rows up as a label column and a control column (a small form in a panel); stacked puts a wide control under the text; #badge goes after the label and #extra under the hint.",
+  },
   {
     id: "relative-date", name: "RelativeDate", group: "pieces", file: "src/RelativeDate.vue", surfaces: ["manager", "community"], usedBy: ["extension"],
     use: "\"5 min ago\" for a timestamp, with the full date on hover.",
@@ -529,6 +538,8 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "inline-edit": `<InlineEdit v-model="mod.name" label="Wildcard name" :validate="(v) => taken(v) ? 'That name is taken' : null" />`,
   "drop-zone": `<DropZone accept=".txt,.yaml,.yml,.zip" multiple hint="Wildcard files or a zip" @files="load" @reject="explain" />`,
   "badge": `<Badge :count="3" tone="danger" label="3 problems"><Button variant="ghost" icon="pi-bell" aria-label="Problems" /></Badge>  <Badge dot tone="success" text="Running" pulse />`,
+  "setting-group": `<SettingGroup title="Content"><SettingRow label="Include NSFW posts" hint="Off by default." for="nsfw"><WpSwitch id="nsfw" v-model="nsfw" size="md" /></SettingRow></SettingGroup>`,
+  "setting-row": `<SettingRow label="Name" form for="name" hint="Shown in the library."><Input id="name" v-model="name" /></SettingRow>`,
   "description-list": `<DescriptionList :items="[{ label: 'Family', value: 'SDXL' }, { label: 'ID', value: id, mono: true, copy: true }]" />`,
   "code-block": `<CodeBlock :code="json" language="JSON" max-height="240px" />
 <CodeBlock :code="template" title="Template" syntax="prompt" />`,
