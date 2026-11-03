@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.0](https://github.com/DumiFlex/wp-kit/compare/v0.7.1...v0.8.0) (2026-11-03)
+
+
+### Features
+
+* Chip stat tiles and DataTable rows that unfold ([8c1cade](https://github.com/DumiFlex/wp-kit/commit/8c1cade94cb5bd1900ca8fca948a4b18fa6ba4f5))
+
+
+### Bug Fixes
+
+* Lightbox closes on a click anywhere dark, the bar and around the picture included ([#79](https://github.com/DumiFlex/wp-kit/issues/79)) ([a6eb440](https://github.com/DumiFlex/wp-kit/commit/a6eb44053641342a96f795b2c75af82d5417c334))
+
 ## [0.7.1](https://github.com/DumiFlex/wp-kit/compare/v0.7.0...v0.7.1) (2026-11-03)
 
 
