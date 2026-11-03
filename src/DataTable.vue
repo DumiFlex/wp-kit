@@ -20,9 +20,11 @@
  *
  * `row-clickable` makes each row open something (a trace, a detail panel):
  * rows take focus, and a click or Enter emits `row-click`. `active-key`
- * marks the row that is open.
+ * marks the row that is open. With a `#detail` slot the open row unfolds:
+ * the slot is drawn full width under it and each row says `aria-expanded`
+ * (toggle `active-key` in `row-click` to open and close it).
  */
-import { computed } from "vue";
+import { computed, useSlots } from "vue";
 import Checkbox from "./Checkbox.vue";
 import Skeleton from "./Skeleton.vue";
 
@@ -146,6 +148,10 @@ function toggleRow(row: T, on: boolean): void {
   emit("update:selected", on ? [...props.selected.filter((x) => x !== k), k] : props.selected.filter((x) => x !== k));
 }
 
+const slots = useSlots();
+const hasDetail = computed(() => Boolean(slots.detail));
+const isActive = (row: T): boolean => props.activeKey !== null && keyOf(row) === props.activeKey;
+
 const span = computed(() => props.columns.length + (props.selectable ? 1 : 0));
 </script>
 
@@ -212,13 +218,13 @@ const span = computed(() => props.columns.length + (props.selectable ? 1 : 0));
           </td>
         </tr>
         <template v-else>
+          <template v-for="(row, index) in shown" :key="keyOf(row)">
           <tr
-            v-for="(row, index) in shown"
-            :key="keyOf(row)"
             v-bind="rowAttrs ? rowAttrs(row) : {}"
             :aria-selected="selectable ? picked.has(keyOf(row)) : undefined"
             :data-selected="selectable && picked.has(keyOf(row)) ? 'true' : undefined"
-            :data-active="activeKey !== null && keyOf(row) === activeKey ? 'true' : undefined"
+            :data-active="isActive(row) ? 'true' : undefined"
+            :aria-expanded="rowClickable && hasDetail ? isActive(row) : undefined"
             :data-clickable="rowClickable || undefined"
             :tabindex="rowClickable ? 0 : undefined"
             @click="rowClickable && emit('row-click', row)"
@@ -240,6 +246,10 @@ const span = computed(() => props.columns.length + (props.selectable ? 1 : 0));
               <slot :name="`cell-${c.key}`" :row="row" :value="cell(row, c.key)" :index="index">{{ cell(row, c.key) ?? "" }}</slot>
             </td>
           </tr>
+          <tr v-if="hasDetail && isActive(row)" class="wp-data-table__detail">
+            <td :colspan="span"><slot name="detail" :row="row" :index="index" /></td>
+          </tr>
+          </template>
         </template>
       </tbody>
     </table>
@@ -248,6 +258,7 @@ const span = computed(() => props.columns.length + (props.selectable ? 1 : 0));
 
 <style scoped>
 .wp-data-table { overflow: auto; }
+.wp-data-table__detail > td { background: var(--wp-bg-2); }
 .wp-data-table th[data-align="right"], .wp-data-table td[data-align="right"] { text-align: right; }
 .wp-data-table th[data-align="center"], .wp-data-table td[data-align="center"] { text-align: center; }
 .wp-data-table th[data-align="right"] .wp-data-table__sort { flex-direction: row-reverse; }
