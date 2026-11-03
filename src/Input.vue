@@ -97,3 +97,5 @@ function onInput(e: Event) {
     @focus="(e) => emit('focus', e)"
   />
 </template>
+
+<style scoped src="./input.css"></style>

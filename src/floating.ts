@@ -17,6 +17,18 @@ export interface Rect {
   height: number;
 }
 
+/** Something a panel can be placed against without being an element: the
+ *  text caret, a selection, a point the pointer was at. */
+export interface VirtualAnchor {
+  getBoundingClientRect(): Rect;
+}
+
+/** A virtual anchor for a fixed rectangle (a point is width and height 0). */
+export function rectAnchor(rect: Rect): VirtualAnchor {
+  const r = { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+  return { getBoundingClientRect: () => r };
+}
+
 export interface Size {
   width: number;
   height: number;

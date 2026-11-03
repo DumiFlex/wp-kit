@@ -1,3 +1,4 @@
+@import "../input.css";
 /* =========================================================
    Wildcard Pipeline — Design Tokens & Base
    PrimeVue 4 Aura-inspired, dark, brand-customized.
@@ -704,10 +705,11 @@ input, textarea, select { font: inherit; }
  * canvas Button (component standard, rule 8). main.ts loads it right after
  * this file. */
 
-/* ---------- Inputs ---------- */
-.wp-input,
-.wp-select,
-.wp-textarea {
+/* ---------- Inputs ----------
+ * Input and Textarea (and the .wp-input-group around a prefixed field) are
+ * drawn by ../input.css, imported at the top of this file and scoped into
+ * Input.vue / Textarea.vue so they look the same on the canvas. */
+.wp-select {
   height: var(--wp-input-h);
   width: 100%;
   background: var(--wp-bg-2);
@@ -719,51 +721,14 @@ input, textarea, select { font: inherit; }
   outline: none;
   transition: border-color .12s, background .12s, box-shadow .12s;
 }
-.wp-textarea {
-  height: auto;
-  padding: 8px 10px;
-  resize: vertical;
-  min-height: var(--wp-input-h);
-  line-height: 1.5;
-}
-.wp-input:focus-visible,
 .wp-select:focus-visible,
-.wp-textarea:focus-visible {
+.wp-select:focus {
   border-color: var(--wp-accent-500);
   box-shadow: var(--wp-focus-ring);
   background: var(--wp-bg-1);
 }
-/* Retain :focus fallback for browsers/contexts that don't support :focus-visible */
-.wp-input:focus,
-.wp-select:focus,
-.wp-textarea:focus {
-  border-color: var(--wp-accent-500);
-  box-shadow: var(--wp-focus-ring);
-  background: var(--wp-bg-1);
-}
-/* Error state on standalone controls (when not wrapped in .wp-field) */
-.wp-input[aria-invalid="true"],
-.wp-select[aria-invalid="true"],
-.wp-textarea[aria-invalid="true"] {
-  border-color: var(--wp-error-border);
-}
-.wp-input::placeholder, .wp-textarea::placeholder { color: var(--wp-text-dim); }
-.wp-input--sm, .wp-select--sm { height: var(--wp-input-h-sm); font-size: 12px; padding: 0 8px; }
-.wp-input--lg { height: var(--wp-control-h-lg); font-size: 13.5px; padding: 0 12px; }
-/* Readonly: shown, not editable. Dimmer fill, no focus ring (Input adds a lock). */
-.wp-input[readonly],
-.wp-textarea[readonly] {
-  background: var(--wp-bg-1);
-  color: var(--wp-text-muted);
-  border-style: dashed;
-  cursor: default;
-}
-.wp-input[readonly]:focus,
-.wp-input[readonly]:focus-visible,
-.wp-textarea[readonly]:focus,
-.wp-textarea[readonly]:focus-visible { box-shadow: none; border-color: var(--wp-border-strong); background: var(--wp-bg-1); }
-.wp-input:disabled,
-.wp-textarea:disabled { opacity: 0.45; cursor: not-allowed; }
+.wp-select[aria-invalid="true"] { border-color: var(--wp-error-border); }
+.wp-select--sm { height: var(--wp-input-h-sm); font-size: 12px; padding: 0 8px; }
 /* Custom select trigger button — flex layout so label + spacer + chevron align. */
 .wp-select {
   display: flex;
@@ -793,56 +758,7 @@ input, textarea, select { font: inherit; }
   border-color: var(--wp-error-border);
 }
 
-.wp-input-group {
-  display: inline-flex; align-items: stretch; width: 100%;
-  border: 1px solid var(--wp-border); border-radius: var(--wp-radius-sm);
-  background: var(--wp-bg-2);
-  overflow: hidden;
-  height: var(--wp-input-h);
-  min-height: var(--wp-input-h);
-  flex-shrink: 0;
-  transition: border-color .12s, box-shadow .12s;
-}
-.wp-input-group:focus-within {
-  border-color: var(--wp-accent-500);
-  box-shadow: var(--wp-focus-ring);
-}
-/* Inline icon and prefix/suffix text: no box, no divider, sitting in the
- * field's own padding so "$" reads as part of "$hair". */
-.wp-input-group__icon,
-.wp-input-group__affix,
-.wp-input-group__lock {
-  display: inline-flex; align-items: center; flex-shrink: 0;
-  color: var(--wp-text-dim);
-  user-select: none;
-}
-.wp-input-group__icon { padding-left: 10px; }
-.wp-input-group__icon .pi { font-size: 14px; line-height: 1; }
-.wp-input-group__affix { font-family: var(--wp-font-mono); font-size: 12.5px; }
-.wp-input-group__affix--prefix { padding-left: 10px; }
-.wp-input-group__affix--suffix { padding-right: 10px; }
-.wp-input-group__lock { padding-right: 10px; }
-.wp-input-group__icon + .wp-input,
-.wp-input-group__icon + .wp-input-group__affix--prefix { padding-left: 7px; }
-.wp-input-group__affix--prefix + .wp-input { padding-left: 2px; }
-.wp-input-group .wp-input:has(+ .wp-input-group__affix--suffix),
-.wp-input-group .wp-input:has(+ .wp-input-group__lock) { padding-right: 4px; }
-.wp-input-group--sm { height: var(--wp-control-h-sm); min-height: var(--wp-control-h-sm); }
-.wp-input-group--lg { height: var(--wp-control-h-lg); min-height: var(--wp-control-h-lg); }
-.wp-input-group--readonly { background: var(--wp-bg-1); border-style: dashed; }
-.wp-input-group--readonly:focus-within { box-shadow: none; border-color: var(--wp-border-strong); }
-.wp-input-group--readonly .wp-input[readonly] { border: none; }
-.wp-input-group--disabled { opacity: 0.45; cursor: not-allowed; }
-.wp-input-group--disabled .wp-input:disabled { opacity: 1; }
-.wp-input-group[aria-invalid="true"] { border-color: var(--wp-error-border); }
-.wp-input-group .wp-input {
-  border: none !important;
-  background: transparent !important;
-  border-radius: 0;
-  height: 100%;
-  flex: 1;
-}
-.wp-input-group .wp-input:focus { box-shadow: none; }
+
 
 /* ---------- Chips / tags ---------- */
 .wp-chip {
