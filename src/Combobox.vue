@@ -10,6 +10,8 @@
  *   <Combobox v-model="model" :options="models" aria-label="Model" />
  *   <Combobox v-model="cats" multiple :options="categories" aria-label="Categories" />
  *
+ * `mono` sets the box and the options in the mono font (variable names, ids).
+ *
  * APG "combobox with list autocomplete": focus stays in the text field and
  * the lit option is named by aria-activedescendant.
  */
@@ -33,6 +35,8 @@ const props = withDefaults(defineProps<{
   emptyText?: string | undefined;
   /** How many options the list shows at once (it scrolls past that). */
   limit?: number | undefined;
+  /** The box and the options in the mono font (variable names, ids). */
+  mono?: boolean | undefined;
 }>(), {
   multiple: false, placeholder: "Choose…", size: "md", ariaLabel: "Choose",
   clearable: false, emptyText: "No matches", limit: 50,
@@ -186,6 +190,7 @@ function setOpen(v: boolean): void {
         :data-multiple="multiple || undefined"
         :data-disabled="disabled || undefined"
         :data-invalid="invalid || undefined"
+        :data-mono="mono || undefined"
         @click="inputEl?.focus(); wanted = true"
       >
         <template v-if="multiple">
@@ -238,6 +243,7 @@ function setOpen(v: boolean): void {
       role="listbox"
       :aria-label="`${ariaLabel} choices`"
       :aria-multiselectable="multiple || undefined"
+      :data-mono="mono || undefined"
     >
       <!-- Options are lit with aria-activedescendant; the text field keeps focus and the keys. -->
       <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/interactive-supports-focus -->
@@ -324,4 +330,7 @@ function setOpen(v: boolean): void {
 @media (prefers-reduced-motion: reduce) {
   .wp-combo { transition: none; }
 }
+/* mono: names and ids read in the mono font, in the box and the list. */
+.wp-combo[data-mono] .wp-combo__field, .wp-combo[data-mono] .wp-combo__chip-text,
+.wp-combo__list[data-mono] .wp-combo__opt-text { font-family: var(--wp-font-mono); }
 </style>

@@ -22,6 +22,7 @@ const canvas = ref<string | null>("flux");
     <Combobox v-model="model" :options="models" aria-label="Model" clearable />
     <Combobox v-model="cats" multiple :options="categories" aria-label="Categories" placeholder="Add a category" />
     <Combobox v-model="none" :options="models" aria-label="Invalid" invalid />
+    <Combobox :model-value="'$seed'" :options="[{ value: '$seed', label: '$seed' }, { value: '$mood', label: '$mood' }, { value: '$outfit_color', label: '$outfit_color' }]" aria-label="Variable" mono />
     <Combobox :model-value="'sdxl'" :options="models" aria-label="Disabled" disabled />
     <div class="wp-kit__canvas">
       <p class="wp-kit__caption">Canvas, size sm</p>
