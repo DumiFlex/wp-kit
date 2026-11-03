@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.10.0](https://github.com/DumiFlex/wp-kit/compare/v0.9.0...v0.10.0) (2026-11-03)
+
+
+### Features
+
+* Combobox mono, for variable names and ids ([e9ddc4f](https://github.com/DumiFlex/wp-kit/commit/e9ddc4f7a5c78e1a2f2adfe8d69046f771d95840))
+
+
+### Bug Fixes
+
+* Chip carries its own base styles, so it is styled on the ComfyUI canvas ([5d81a79](https://github.com/DumiFlex/wp-kit/commit/5d81a791010a9a72c5491dfc08cc1ed44af1b25f))
+
 ## [0.9.0](https://github.com/DumiFlex/wp-kit/compare/v0.8.0...v0.9.0) (2026-11-03)
 
 
