@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// The shared preview sheet (wp-pv-* classes), loaded once for every preview.
+import "./preview.css";
 /** Combine: the template in its own block, its negative under it, and a
  *  list of the variables it reads with where each one is used. */
 import { computed, ref } from "vue";
@@ -130,7 +132,6 @@ const shown = computed(() => (showAll.value ? inputs.value : inputs.value.slice(
   </div>
 </template>
 
-<style scoped src="./preview.css"></style>
 <style scoped>
 .wp-cb__out {
   font-family: var(--wp-font-mono);

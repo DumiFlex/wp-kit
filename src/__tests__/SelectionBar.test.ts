@@ -11,6 +11,15 @@ describe("SelectionBar", () => {
     expect(w.find(".opt").exists()).toBe(true);
   });
 
+  it("says one row in the singular", async () => {
+    const w = mount(SelectionBar, { props: { count: 1, noun: "reports" } });
+    expect(w.find('[data-test="selection-count"]').text()).toBe("1 report selected");
+    await w.setProps({ noun: "boxes", nounOne: "box" });
+    expect(w.find('[data-test="selection-count"]').text()).toBe("1 box selected");
+    await w.setProps({ count: 2 });
+    expect(w.find('[data-test="selection-count"]').text()).toBe("2 boxes selected");
+  });
+
   it("clears from the button and from Escape inside it", async () => {
     const w = mount(SelectionBar, { props: { count: 1 } });
     await w.find('[data-test="selection-clear"]').trigger("click");
