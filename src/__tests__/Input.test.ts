@@ -46,4 +46,16 @@ describe("Input.vue", () => {
     const wrap = mount(Input, { props: { modelValue: "" } });
     expect(wrap.get("input").attributes("aria-invalid")).toBeUndefined();
   });
+
+  it("marks mono text and a tone on the field, or on the group when prefixed", () => {
+    const bare = mount(Input, { props: { modelValue: "hair", mono: true, tone: "accent" } });
+    expect(bare.get("input").attributes("data-mono")).toBe("true");
+    expect(bare.get("input").attributes("data-tone")).toBe("accent");
+    const grouped = mount(Input, { props: { modelValue: "", prefix: "$", mono: true, tone: "warn" } });
+    expect(grouped.get(".wp-input-group").attributes("data-tone")).toBe("warn");
+    expect(grouped.get("input").attributes("data-mono")).toBe("true");
+    const plain = mount(Input, { props: { modelValue: "" } });
+    expect(plain.get("input").attributes("data-mono")).toBeUndefined();
+    expect(plain.get("input").attributes("data-tone")).toBeUndefined();
+  });
 });

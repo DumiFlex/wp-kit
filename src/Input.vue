@@ -24,6 +24,10 @@ interface Props {
   suffix?: string | undefined;
   id?: string | undefined;
   ariaLabel?: string | undefined;
+  /** Mono text: variable names, ids, tags. */
+  mono?: boolean | undefined;
+  /** "accent" marks a value changed from its default, "warn" one that needs a look. */
+  tone?: "accent" | "warn" | undefined;
 }
 const props = withDefaults(defineProps<Props>(), {
   type: "text",
@@ -57,7 +61,7 @@ function onInput(e: Event) {
 </script>
 
 <template>
-  <div v-if="wrapped" :class="groupClasses" :aria-invalid="error || undefined">
+  <div v-if="wrapped" :class="groupClasses" :aria-invalid="error || undefined" :data-tone="tone">
     <span v-if="icon" class="wp-input-group__icon" aria-hidden="true">
       <Icon :name="icon" />
     </span>
@@ -65,6 +69,7 @@ function onInput(e: Event) {
     <input
       :id="id"
       :class="inputClasses"
+      :data-mono="mono || undefined"
       :type="type"
       :value="modelValue"
       :placeholder="placeholder"
@@ -85,6 +90,8 @@ function onInput(e: Event) {
     v-else
     :id="id"
     :class="inputClasses"
+    :data-mono="mono || undefined"
+    :data-tone="tone"
     :type="type"
     :value="modelValue"
     :placeholder="placeholder"
