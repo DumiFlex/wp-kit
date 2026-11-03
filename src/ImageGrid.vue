@@ -11,9 +11,15 @@
  * Tiles are buttons in reading order (one Tab stop each). A tile with no
  * `src` yet (a frame still rendering) draws a Skeleton and can't be opened;
  * the Lightbox steps only through the images that are there.
+ *
+ * `aspect="auto"` keeps each picture's own shape, `columns` fixes the column
+ * count and `hint` puts a magnifier on a tile under the pointer, so one
+ * screenshot that opens full size is `<ImageGrid :images="[shot]" aspect="auto"
+ * :columns="1" hint />`. A picture that fails to load emits `error`.
  */
 import { computed, ref } from "vue";
 import Lightbox from "./Lightbox.vue";
+import Icon from "./Icon.vue";
 import Skeleton from "./Skeleton.vue";
 import Checkbox from "./Checkbox.vue";
 
@@ -23,8 +29,12 @@ const props = withDefaults(defineProps<{
   images: GridImage[];
   /** Smallest tile width in px. */
   minSize?: number | undefined;
-  /** Width / height of a tile. */
-  aspect?: number | undefined;
+  /** Width / height of a tile; `"auto"` keeps each picture's own shape (no crop). */
+  aspect?: number | "auto" | undefined;
+  /** A fixed number of columns instead of as many as fit `minSize` (1 = one picture full width). */
+  columns?: number | undefined;
+  /** A magnifier in the corner of each tile on hover and focus. */
+  hint?: boolean | undefined;
   gap?: "sm" | "md" | undefined;
   selectable?: boolean | undefined;
   selected?: string[] | undefined;
@@ -36,6 +46,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   (e: "update:selected", v: string[]): void;
   (e: "open", index: number): void;
+  /** A picture failed to load. */
+  (e: "error", index: number): void;
 }>();
 
 const open = ref(false);
@@ -63,7 +75,12 @@ function toggle(id: string, on: boolean): void {
     class="wp-image-grid__list"
     :data-gap="gap"
     :aria-label="ariaLabel"
-    :style="{ '--_min': `${minSize}px`, '--_aspect': String(aspect) }"
+    :data-aspect="aspect === 'auto' ? 'auto' : undefined"
+    :style="{
+      '--_min': `${minSize}px`,
+      '--_aspect': String(aspect),
+      ...(columns ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` } : {}),
+    }"
   >
     <li
       v-for="(img, i) in images"
@@ -79,7 +96,8 @@ function toggle(id: string, on: boolean): void {
         :data-loading="!img.src || undefined"
         @click="show(i)"
       >
-        <img v-if="img.thumb || img.src" class="wp-image-grid__img" :src="img.thumb || img.src" alt="" loading="lazy">
+        <img v-if="img.thumb || img.src" class="wp-image-grid__img" :src="img.thumb || img.src" alt="" loading="lazy" @error="emit('error', i)">
+        <span v-if="hint && img.src" class="wp-image-grid__hint" aria-hidden="true"><Icon name="search-plus" :size="12" /></span>
         <Skeleton v-else class="wp-image-grid__empty" shape="block" width="100%" height="100%" />
       </button>
       <Checkbox
@@ -114,6 +132,15 @@ function toggle(id: string, on: boolean): void {
 .wp-image-grid__open:focus-visible { outline: none; border-color: var(--wp-border-focus); box-shadow: var(--wp-focus-ring); }
 .wp-image-grid__tile[data-selected] .wp-image-grid__open { border-color: var(--wp-accent); box-shadow: 0 0 0 2px var(--wp-accent-glow); }
 .wp-image-grid__img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.wp-image-grid__list[data-aspect="auto"] .wp-image-grid__open { position: relative; aspect-ratio: auto; }
+.wp-image-grid__list[data-aspect="auto"] .wp-image-grid__img { height: auto; }
+.wp-image-grid__open { position: relative; }
+.wp-image-grid__hint {
+  position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 24px; height: 24px;
+  border-radius: min(6px, var(--wp-radius-cap, 999px)); background: var(--wp-scrim); color: var(--wp-on-media);
+  opacity: 0; transition: opacity var(--wp-motion-hover);
+}
+.wp-image-grid__open:hover .wp-image-grid__hint, .wp-image-grid__open:focus-visible .wp-image-grid__hint { opacity: 1; }
 .wp-image-grid__open[data-loading] { cursor: progress; }
 .wp-image-grid__empty { width: 100%; height: 100%; }
 .wp-image-grid__check { position: absolute; top: 6px; left: 6px; }
@@ -122,6 +149,6 @@ function toggle(id: string, on: boolean): void {
   text-overflow: ellipsis; white-space: nowrap;
 }
 @media (prefers-reduced-motion: reduce) {
-  .wp-image-grid__open { transition: none; }
+  .wp-image-grid__open, .wp-image-grid__hint { transition: none; }
 }
 </style>
