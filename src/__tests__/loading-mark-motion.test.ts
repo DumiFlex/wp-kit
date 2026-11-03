@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { LOOP_MS, cubicBezier, motionOf, poseAt, track } from "../loading-mark-motion";
+import { cubicBezier, loop, mix, motionOf, track } from "../canvas-motion";
+import { LOOP_MS, poseAt } from "../loading-mark-motion";
 
 describe("loading-mark-motion", () => {
   it("eases like CSS cubic-bezier", () => {
@@ -34,6 +35,13 @@ describe("loading-mark-motion", () => {
       expect(now).toBeGreaterThan(prev);
       prev = now;
     }
+  });
+
+  it("holds a delayed loop at its start and mixes colours", () => {
+    expect(loop(100, 1000, 300)).toBe(0);
+    expect(loop(1300, 1000, 300)).toBe(0);
+    expect(loop(1550, 1000, 300)).toBeCloseTo(0.25, 5);
+    expect(mix("#ff0000", "#0000ff", 0.25)).toBe("#4000bf");
   });
 
   it("takes speed and pause from the nearest host", () => {

@@ -349,12 +349,12 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "A spinner or plain \"Loading…\" text.",
   },
   {
-    id: "working-line", name: "WorkingLine", group: "feedback", file: "src/WorkingLine.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    id: "working-line", name: "WorkingLine", group: "feedback", file: "src/WorkingLine.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
     use: "The \"model is working\" line, like Claude Code's: a mark drawn from the logo's sparkles (variant typing, shuffle, orbit or burst), a word that crossfades when it changes, and the time so far. It only draws; the app picks the word, time and tempo (slow while the model reads, mid while it thinks, fast while it writes). wordKey keeps a token count ticking up from crossfading every time. inline makes it smaller for a top bar.",
     instead: "LoadingMark plus a status text when an AI request is running.",
   },
   {
-    id: "motion-css", name: "Entrance classes (motion.css)", group: "feedback", file: "src/motion.css", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    id: "motion-css", name: "Entrance classes (motion.css)", group: "feedback", file: "src/motion.css", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
     use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves.",
     instead: "A keyframe of opacity or transform in each component.",
   },
@@ -405,12 +405,27 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   // Bigger pieces
   {
+    id: "selection-bar", name: "SelectionBar", group: "pieces", file: "src/SelectionBar.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    use: "The bar over a list while rows are ticked: \"3 selected\", the bulk actions and Clear. #start goes after the count (an option, a reason box), the default slot holds the actions; sticky keeps it at the top while the list scrolls (--wp-selection-bar-top for a fixed header). Escape inside it clears.",
+    instead: "A hand-made bulk bar per list (.wpc-bulk-bar, .wpc-seltoolbar, .wpc-deltoolbar) with its own count and colours.",
+  },
+  {
+    id: "setting-group", name: "SettingGroup", group: "pieces", file: "src/SettingGroup.vue", surfaces: ["manager", "community"], usedBy: [],
+    use: "A settings page: SettingGroup is a titled panel, each SettingRow a label and hint on the left and its control on the right, split by hairlines. setting-key gives a row an id for a search to jump to and highlighted flashes it; stacked puts a wide control under the text; form lines rows up as a label column; recommended names the usual pick. A narrow group puts every row in one column.",
+    instead: "A hand-made settings row (.wpc-settings-row) with its own name, hint and control layout.",
+  },
+  {
+    id: "setting-row", name: "SettingRow", group: "pieces", file: "src/SettingRow.vue", surfaces: ["manager", "community"], usedBy: [],
+    use: "One row of a SettingGroup: label, hint and the control. form lines rows up as a label column and a control column (a small form in a panel); stacked puts a wide control under the text; #badge goes after the label and #extra under the hint.",
+  },
+  {
     id: "relative-date", name: "RelativeDate", group: "pieces", file: "src/RelativeDate.vue", surfaces: ["manager", "community"], usedBy: ["extension"],
     use: "\"5 min ago\" for a timestamp, with the full date on hover.",
   },
   {
-    id: "icon-picker", name: "IconPicker", group: "pieces", file: "src/IconPicker.vue", surfaces: ["manager", "community"], usedBy: ["extension"],
-    use: "Pick an icon for a category or bundle from the curated set. The closed picker names the icon (or says Choose icon); compact drops the name for a table cell. The panel is a kit Popover.",
+    id: "icon-picker", name: "IconPicker", group: "pieces", file: "src/IconPicker.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
+    use: "Pick an icon: from the curated set for a category or bundle, or with all from every PrimeIcons glyph with a search box (a note's icon). The closed picker names the icon (or says Choose icon); compact drops the name for a table cell; color tints the glyphs; inline draws the list itself, no trigger, for a panel in an editor; allow-none=false drops No icon. The list opens in a kit Popover.",
+    instead: "NoteIconGrid and other hand-made icon grids with their own search box.",
   },
   {
     id: "support-links", name: "SupportLinks", group: "pieces", file: "src/SupportLinks.vue", surfaces: ["manager", "community"], usedBy: ["extension", "community"],
@@ -459,6 +474,29 @@ export const KIT_ENTRIES: KitEntry[] = [
     id: "bookmark-button", name: "BookmarkButton", group: "pieces", file: "src/BookmarkButton.vue", surfaces: ["manager", "community"], usedBy: ["community"],
     use: "Bookmark a post: a toggle button. The app sends the request and passes the new state back.",
   },
+  {
+    id: "payload-preview", name: "PayloadPreview", group: "pieces", file: "src/PayloadPreview.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "A published module or bundle payload, read-only, with Preview / Raw JSON tabs. It picks the view for the type: a wildcard's options with chance, tags, negatives, facets and grouping by axis; fixed values and a combine's template with where each input is used; a derivation's IF / ELSE IF / ELSE rules with AND / OR groups and numbered actions; a constraint's matrix (ConstraintMatrixPreview) or, when big, a searchable rules list; a bundle's children beside the picked child's own preview. Every value goes through TokenizedValue. Pass refNames (module id to name) and refGroups (module id to tag_groups) from the post's dependencies so refs and constraint axes read as names; tabs=false when the page draws its own.",
+    instead: "Printing the payload JSON, or a per-type preview written for one page.",
+  },
+  {
+    id: "rich-text", name: "RichText", group: "display", file: "src/RichText.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "Plain prose someone typed (a post description, a note): links open in a new tab and $var / @{ref} mentions become code chips, inline in your own paragraph. Built on linkify.ts, no v-html. A wildcard value is TokenizedValue, not this.",
+    instead: "v-html from a linkifier, or printing URLs as dead text.",
+  },
+  {
+    id: "post-grid-skeleton", name: "PostGridSkeleton", group: "pieces", file: "src/PostGridSkeleton.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "A grid of PostCards while its first page loads: card-sized blocks of mixed heights in the same masonry columns. count sets how many; label is read once to screen readers (\"\" inside another skeleton).",
+    instead: "A spinner over an empty grid, or Skeleton blocks laid out per page.",
+  },
+  {
+    id: "post-detail-skeleton", name: "PostDetailSkeleton", group: "pieces", file: "src/PostDetailSkeleton.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "A post page while it loads: meta line, title, description, tags and the preview card, with the download rail beside it (under it on narrow screens).",
+  },
+  {
+    id: "profile-skeleton", name: "ProfileSkeleton", group: "pieces", file: "src/ProfileSkeleton.vue", surfaces: ["manager", "community"], usedBy: ["community"],
+    use: "A public profile while it loads: the head card with the avatar and name, the three stat cards when stats is set, then a short post grid.",
+  },
 ];
 
 
@@ -469,6 +507,15 @@ export const KIT_ENTRIES: KitEntry[] = [
 /** Pieces in src/ that are not building blocks of their own. */
 export const KIT_EXEMPT: Record<string, string> = {
   "src/ToastHost.vue": "Mounted once by the app; use useToast().",
+  "src/WildcardPreview.vue": "Drawn by PayloadPreview for a wildcard payload; use PayloadPreview.",
+  "src/FixedValuesPreview.vue": "Drawn by PayloadPreview for a fixed values payload; use PayloadPreview.",
+  "src/CombinePreview.vue": "Drawn by PayloadPreview for a combine payload; use PayloadPreview.",
+  "src/DerivationPreview.vue": "Drawn by PayloadPreview for a derivation payload; use PayloadPreview.",
+  "src/DerivationCondition.vue": "One condition (or AND / OR group) inside DerivationPreview.",
+  "src/ConstraintPreview.vue": "Drawn by PayloadPreview for a constraint payload; use PayloadPreview.",
+  "src/BundlePreview.vue": "Drawn by PayloadPreview for a bundle payload; use PayloadPreview.",
+  "src/PreviewGroup.vue": "A folding group inside WildcardPreview's tables.",
+  "src/IconPickerPanel.vue": "IconPicker's list; use IconPicker (inline for the list alone).",
 };
 
 export const KIT_EXAMPLES: Record<string, string> = {
@@ -480,6 +527,11 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "post-card": `<PostCard :as="RouterLink" :to="\`/p/\${post.slug}\`" :post="card" />`,
   "star-button": `<StarButton :starred="starred" :count="12" @toggle="star" />`,
   "bookmark-button": `<BookmarkButton :bookmarked="saved" @toggle="bookmark" />`,
+  "payload-preview": `<PayloadPreview :payload="version.payload" :ref-names="names" :ref-groups="groups" />`,
+  "rich-text": `<p class="description"><RichText :text="post.description" /></p>`,
+  "post-grid-skeleton": `<PostGridSkeleton v-if="loading" :count="6" />`,
+  "post-detail-skeleton": `<PostDetailSkeleton v-if="loading" />`,
+  "profile-skeleton": `<ProfileSkeleton v-if="loading" stats />`,
   "button": `<Button variant="primary" icon="plus" @click="add">New module</Button>\n<Button variant="ghost" icon="times" aria-label="Close" kbd="Esc" @click="close" />\n<Button size="sm" variant="add" icon="plus" block>Add rule</Button>`,
   "btn-css": `<button class="wp-btn wp-btn--primary wp-btn--sm">Run</button>`,
   "input": `<Input v-model="name" prefix="$" aria-label="Variable name" />`,
@@ -529,6 +581,9 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "inline-edit": `<InlineEdit v-model="mod.name" label="Wildcard name" :validate="(v) => taken(v) ? 'That name is taken' : null" />`,
   "drop-zone": `<DropZone accept=".txt,.yaml,.yml,.zip" multiple hint="Wildcard files or a zip" @files="load" @reject="explain" />`,
   "badge": `<Badge :count="3" tone="danger" label="3 problems"><Button variant="ghost" icon="pi-bell" aria-label="Problems" /></Badge>  <Badge dot tone="success" text="Running" pulse />`,
+  "selection-bar": `<SelectionBar v-if="picked.size" :count="picked.size" noun="options" sticky @clear="picked.clear()"><Button size="sm" variant="danger" icon="trash" @click="del">Delete</Button></SelectionBar>`,
+  "setting-group": `<SettingGroup title="Content"><SettingRow label="Include NSFW posts" hint="Off by default." for="nsfw"><WpSwitch id="nsfw" v-model="nsfw" size="md" /></SettingRow></SettingGroup>`,
+  "setting-row": `<SettingRow label="Name" form for="name" hint="Shown in the library."><Input id="name" v-model="name" /></SettingRow>`,
   "description-list": `<DescriptionList :items="[{ label: 'Family', value: 'SDXL' }, { label: 'ID', value: id, mono: true, copy: true }]" />`,
   "code-block": `<CodeBlock :code="json" language="JSON" max-height="240px" />
 <CodeBlock :code="template" title="Template" syntax="prompt" />`,
@@ -540,7 +595,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "sortable-list": `<SortableList v-model="rules" :item-key="(r) => r.id" :item-label="(r) => r.name" label="Rules"><template #item="{ item }">{{ item.name }}</template></SortableList>`,
   "progress": `<ProgressBar :value="done" :max="total" label="Testing seeds" show-value />`,
   "skeleton": `<Skeleton shape="row" :lines="4" label="Loading modules" />`,
-  "icon-picker": `<IconPicker v-model="icon" aria-label="Category icon" />`,
+  "icon-picker": `<IconPicker v-model="icon" aria-label="Category icon" />\n<IconPicker v-model="note.icon" all :color="note.color" aria-label="Note icon" />\n<IconPicker :model-value="null" all inline :allow-none="false" @update:model-value="insertIcon" />`,
   "combobox": `<Combobox v-model="cats" multiple :options="categories" aria-label="Categories" />`,
   "date-picker": `<DatePicker v-model="since" :max="today" clearable aria-label="Changed since" />`,
   "choice-cards": `<ChoiceCards v-model="look" :options="LOOKS" aria-label="Look"><template #preview="{ option }"><LookDrawing :id="option.value" /></template></ChoiceCards>`,

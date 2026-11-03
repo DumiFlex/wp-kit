@@ -50,12 +50,18 @@ export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-o", "--wp-select-line-h", 
   "--wp-wl-t", "--wp-wl-k", "--wp-wl-x", "--wp-wl-f", "--wp-wl-r", "--wp-wl-s", "--wp-wl-o", "--wp-wl-wo", "--wp-wl-wb",
   "--wp-wl-dx", "--wp-wl-dy", "--wp-wl-big", "--wp-wl-a", "--wp-wl-b",
   // motion.css entrances.
-  "--wp-enter-o", "--wp-enter-s", "--wp-enter-y", "--wp-enter-x"] as const;
+  "--wp-enter-o", "--wp-enter-s", "--wp-enter-y", "--wp-enter-x",
+  // SelectionBar: where a sticky bar stops under a fixed header.
+  "--wp-selection-bar-top"] as const;
 
 /** Pieces that need a page with src/theme/ loaded (not the canvas). */
 export const PAGE_PIECES = [
   "axis-color.ts", "kind-colour.ts", "matrix-axis.ts", "BundleMeta.vue", "ConstraintMatrixPreview.vue", "PostCard.vue", "TokenizedValue.vue",
   "Card.vue", "Chip.vue", "ChoiceCards.vue",
-  "DataTable.vue", "Drawer.vue", "EmptyState.vue", "Field.vue", "Icon.vue", "IconPicker.vue", "Input.vue",
+  "DataTable.vue", "Drawer.vue", "EmptyState.vue", "Field.vue", "Icon.vue", "Input.vue",
   "ListFilter.vue", "RelativeDate.vue", "Select.vue", "Textarea.vue", "ToastHost.vue",
+  // The payload previews and post loading shapes (community post pages).
+  "PayloadPreview.vue", "WildcardPreview.vue", "FixedValuesPreview.vue", "CombinePreview.vue", "DerivationPreview.vue",
+  "DerivationCondition.vue", "ConstraintPreview.vue", "BundlePreview.vue", "PreviewGroup.vue", "preview.css", "RichText.vue",
+  "PostGridSkeleton.vue", "PostDetailSkeleton.vue", "ProfileSkeleton.vue",
 ] as const;

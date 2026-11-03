@@ -20,14 +20,16 @@
  * never narrower than the word: it widens at once and narrows smoothly once
  * the old word has mostly faded.
  *
- * Every mark animates registered custom properties, never `transform` or
- * `opacity` themselves, so the paths repaint sharp each frame instead of
- * going to a compositor layer that blurs them and snaps them to whole pixels.
+ * The marks move on a canvas over the still SVG, so they stay sharp and
+ * glide in every browser (`canvas-motion.ts` says why); the SVG is the first
+ * paint and stays under reduced motion, where it only breathes.
  */
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { BRAND_COLOURS, STAR_A, STAR_B, STAR_BIG, type LogoBrand } from "./logo-paths";
+import { canvasBox, useCanvasMotion } from "./canvas-motion";
+import { TEMPO_MS, TYPING_X, drawWorking, orbitNodes, type WorkingVariant } from "./working-line-motion";
 
-export type WorkingVariant = "typing" | "shuffle" | "orbit" | "burst";
+export type { WorkingVariant } from "./working-line-motion";
 
 const props = withDefaults(defineProps<{
   /** What is shown, without the "…" (the line adds it). */
@@ -55,14 +57,14 @@ const BIG = computed(() => colours.value[0]);
 const A = computed(() => colours.value[1]);
 const B = computed(() => colours.value[2]);
 /** The logo's four nodes for the orbit, with steps between the colours. */
-const nodes = computed(() => [
-  [911, 512, B.value],
-  [512, 911, `color-mix(in srgb, ${B.value} 70%, ${A.value})`],
-  [113, 512, `color-mix(in srgb, ${BIG.value} 60%, ${A.value})`],
-  [512, 113, A.value],
-] as const);
+const nodes = computed(() => orbitNodes(colours.value));
 /** Typing stars: the big sparkle drawn small three times in a row. */
-const typing = computed(() => [[250, A.value], [512, BIG.value], [774, B.value]] as const);
+const typing = computed(() => TYPING_X.map((x, i) => [x, [A.value, BIG.value, B.value][i] ?? BIG.value] as const));
+
+const canvas = ref<HTMLCanvasElement | null>(null);
+const canvasStyle = computed(() => canvasBox(props.size));
+const { live, drawn } = useCanvasMotion(canvas, (ctx, width, ms) =>
+  drawWorking(ctx, width, ms, props.variant, TEMPO_MS[props.tempo], colours.value));
 
 const measure = ref<HTMLElement | null>(null);
 const boxWidth = ref<number | null>(null);
@@ -98,41 +100,39 @@ onBeforeUnmount(() => resized?.disconnect());
     :data-tempo="tempo"
     :data-variant="variant"
     :data-inline="inline ? 'true' : undefined"
+    :data-drawn="drawn ? 'true' : undefined"
     role="status"
     :aria-label="name"
     :title="name"
     :style="{ '--wp-wl-big': BIG, '--wp-wl-a': A, '--wp-wl-b': B }"
   >
+    <span class="wp-wl__art" :style="{ width: `${size}px`, height: `${size}px` }">
     <svg class="wp-wl__logo" viewBox="0 0 1024 1024" :width="size" :height="size" aria-hidden="true">
       <template v-if="variant === 'typing'">
-        <g v-for="([x, c], i) in typing" :key="i" class="wp-wl__hop" :style="{ '--wp-wl-k': i }">
-          <path class="wp-wl__star" :style="{ fill: c }" :transform="`translate(${x - 256} 256) scale(.5)`" :d="STAR_BIG" />
-        </g>
+        <path
+          v-for="([x, c], i) in typing" :key="i" :style="{ fill: c }"
+          :transform="`translate(${x - 256} 256) scale(.5)`" :d="STAR_BIG"
+        />
       </template>
       <g v-else-if="variant === 'shuffle'" transform="translate(512 512) scale(1.45) translate(-512 -512)">
-        <path class="wp-wl__star wp-wl__star--big wp-wl__dip" :style="{ fill: BIG }" :d="STAR_BIG" />
-        <g class="wp-wl__vb wp-wl__swap">
-          <path class="wp-wl__star" :style="{ fill: A }" :d="STAR_A" />
-          <path class="wp-wl__star" :style="{ fill: B }" :d="STAR_B" />
-        </g>
+        <path :style="{ fill: BIG }" :d="STAR_BIG" />
+        <path :style="{ fill: A }" :d="STAR_A" />
+        <path :style="{ fill: B }" :d="STAR_B" />
       </g>
       <template v-else-if="variant === 'orbit'">
-        <g class="wp-wl__vb wp-wl__spin">
-          <circle
-            v-for="([x, y, c], i) in nodes" :key="i" class="wp-wl__dot"
-            :style="{ '--wp-wl-k': i, fill: c }" :cx="x" :cy="y" r="70"
-          />
-        </g>
-        <path class="wp-wl__star wp-wl__star--big wp-wl__breathe" :style="{ fill: BIG }" :d="STAR_BIG" />
-        <path class="wp-wl__star" :style="{ fill: A }" :d="STAR_A" />
-        <path class="wp-wl__star" :style="{ fill: B }" :d="STAR_B" />
+        <circle v-for="([x, y, c], i) in nodes" :key="i" :style="{ fill: c }" :cx="x" :cy="y" r="70" />
+        <path :style="{ fill: BIG }" :d="STAR_BIG" />
+        <path :style="{ fill: A }" :d="STAR_A" />
+        <path :style="{ fill: B }" :d="STAR_B" />
       </template>
       <g v-else transform="translate(512 512) scale(1.3) translate(-512 -512)">
-        <path class="wp-wl__star wp-wl__star--big wp-wl__pop" :style="{ fill: BIG }" :d="STAR_BIG" />
-        <path class="wp-wl__star wp-wl__burst" :style="{ fill: A, '--wp-wl-dx': '152px', '--wp-wl-dy': '-152px' }" :d="STAR_A" />
-        <path class="wp-wl__star wp-wl__burst" :style="{ fill: B, '--wp-wl-dx': '-152px', '--wp-wl-dy': '152px' }" :d="STAR_B" />
+        <path :style="{ fill: BIG }" :d="STAR_BIG" />
+        <path :style="{ fill: A }" :d="STAR_A" />
+        <path :style="{ fill: B }" :d="STAR_B" />
       </g>
     </svg>
+    <canvas v-if="live" ref="canvas" class="wp-wl__canvas" :style="canvasStyle" aria-hidden="true" />
+    </span>
     <span
       class="wp-wl__words"
       :data-grow="growing ? 'true' : undefined"
@@ -149,7 +149,6 @@ onBeforeUnmount(() => resized?.disconnect());
 
 <style scoped>
 .wp-wl {
-  --wp-wl-t: 2.8s;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -158,9 +157,7 @@ onBeforeUnmount(() => resized?.disconnect());
   font-size: 13px;
   white-space: nowrap;
 }
-.wp-wl[data-tempo="mid"] { --wp-wl-t: 2.2s; }
-.wp-wl[data-tempo="fast"] { --wp-wl-t: 1.5s; }
-.wp-wl__logo { flex-shrink: 0; overflow: visible; }
+.wp-wl__logo { overflow: visible; }
 .wp-wl__words {
   position: relative;
   display: inline-flex;
@@ -220,100 +217,17 @@ onBeforeUnmount(() => resized?.disconnect());
   .wp-wl-word-enter-from, .wp-wl-word-leave-to { --wp-wl-wb: 0px; }
 }
 
-/* Every mark animates registered custom properties, never `transform` or
- * `opacity` themselves. A `transform` / `opacity` animation goes to the
- * compositor, which lifts each path onto its own layer as it starts:
- * rasterised once at a fixed scale and snapped to whole pixels, so the sharp
- * mark went soft and jumped half a pixel the moment it began to move. A
- * custom property animates on the main thread and each frame repaints the
- * vector paths in place, as sharp as at rest. */
-@property --wp-wl-x { syntax: "<length>"; inherits: false; initial-value: 0px; }
-@property --wp-wl-f { syntax: "<number>"; inherits: false; initial-value: 0; }
-@property --wp-wl-r { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
-@property --wp-wl-s { syntax: "<number>"; inherits: false; initial-value: 1; }
+/* The marks move on the canvas; the SVG is the still mark under it. */
+.wp-wl__art { position: relative; display: inline-block; flex-shrink: 0; line-height: 0; }
+.wp-wl__logo { display: block; }
+.wp-wl__canvas { position: absolute; pointer-events: none; }
+.wp-wl[data-drawn="true"] .wp-wl__logo { visibility: hidden; }
+
 @property --wp-wl-o { syntax: "<number>"; inherits: false; initial-value: 1; }
 @property --wp-wl-wo { syntax: "<number>"; inherits: false; initial-value: 1; }
 @property --wp-wl-wb { syntax: "<length>"; inherits: false; initial-value: 0px; }
 
-.wp-wl__star, .wp-wl__dot, .wp-wl__hop { transform-box: fill-box; transform-origin: center; }
-.wp-wl__vb { transform-box: view-box; transform-origin: 512px 512px; }
-
-/* Typing stars: each hops in turn. */
-.wp-wl__hop {
-  transform: translateY(var(--wp-wl-x)) scale(var(--wp-wl-s));
-  animation: wp-wl-hop var(--wp-wl-t) ease-in-out infinite;
-  animation-delay: calc(var(--wp-wl-t) * var(--wp-wl-k) * 0.15);
-}
-@keyframes wp-wl-hop {
-  0%, 40%, 100% { --wp-wl-x: 0px; --wp-wl-s: 1; }
-  20% { --wp-wl-x: -110px; --wp-wl-s: 1.12; }
-}
-
-/* Shuffle: the small stars swap places, the big one dips and turns. */
-.wp-wl__swap {
-  transform: rotate(var(--wp-wl-r));
-  animation: wp-wl-swap calc(var(--wp-wl-t) * 2) cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-.wp-wl__dip {
-  transform: rotate(var(--wp-wl-r)) scale(var(--wp-wl-s));
-  animation: wp-wl-dip var(--wp-wl-t) cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-@keyframes wp-wl-swap {
-  0%, 15% { --wp-wl-r: 0deg; }
-  50%, 65% { --wp-wl-r: 180deg; }
-  100% { --wp-wl-r: 360deg; }
-}
-@keyframes wp-wl-dip {
-  0%, 15% { --wp-wl-s: 1; --wp-wl-r: 0deg; }
-  32% { --wp-wl-s: 0.7; --wp-wl-r: 45deg; }
-  50%, 100% { --wp-wl-s: 1; --wp-wl-r: 90deg; }
-}
-
-/* Orbit: the four nodes circle the stars and twinkle in turn. */
-.wp-wl__spin {
-  transform: rotate(var(--wp-wl-r));
-  animation: wp-wl-spin calc(var(--wp-wl-t) * 2) cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
-}
-.wp-wl__dot {
-  opacity: var(--wp-wl-o);
-  transform: scale(var(--wp-wl-s));
-  animation: wp-wl-twinkle var(--wp-wl-t) ease-in-out infinite;
-  animation-delay: calc(var(--wp-wl-t) * var(--wp-wl-k) * -0.25);
-}
-.wp-wl__breathe {
-  transform: scale(var(--wp-wl-s));
-  animation: wp-wl-breathe var(--wp-wl-t) ease-in-out infinite;
-}
-@keyframes wp-wl-spin { from { --wp-wl-r: 0deg; } to { --wp-wl-r: 360deg; } }
-@keyframes wp-wl-twinkle {
-  0%, 100% { --wp-wl-o: 1; --wp-wl-s: 1; }
-  50% { --wp-wl-o: 0.35; --wp-wl-s: 0.6; }
-}
-@keyframes wp-wl-breathe { 0%, 100% { --wp-wl-s: 1; } 50% { --wp-wl-s: 0.86; } }
-
-/* Burst: the small stars fly out of the big one and back. `--wp-wl-f` is
- * how far out they are (1 = at --wp-wl-dx/dy, 0 = home). */
-.wp-wl__burst {
-  opacity: var(--wp-wl-o);
-  transform:
-    translate(calc(var(--wp-wl-dx) * var(--wp-wl-f)), calc(var(--wp-wl-dy) * var(--wp-wl-f)))
-    scale(var(--wp-wl-s));
-  animation: wp-wl-burst var(--wp-wl-t) cubic-bezier(0.3, 0, 0.2, 1) infinite;
-}
-.wp-wl__pop {
-  transform: scale(var(--wp-wl-s));
-  animation: wp-wl-pop var(--wp-wl-t) ease-in-out infinite;
-}
-@keyframes wp-wl-burst {
-  0% { --wp-wl-f: 1; --wp-wl-s: 0; --wp-wl-o: 0; }
-  15% { --wp-wl-o: 1; }
-  45%, 75% { --wp-wl-f: 0; --wp-wl-s: 1.15; --wp-wl-o: 1; }
-  100% { --wp-wl-f: 1; --wp-wl-s: 0; --wp-wl-o: 0; }
-}
-@keyframes wp-wl-pop { 0%, 100% { --wp-wl-s: 1.1; } 40% { --wp-wl-s: 0.8; } }
-
 @media (prefers-reduced-motion: reduce) {
-  .wp-wl__logo * { animation: none !important; }
   .wp-wl__logo { opacity: var(--wp-wl-o); animation: wp-wl-fade 2.4s ease-in-out infinite; }
   @keyframes wp-wl-fade { 0%, 100% { --wp-wl-o: 1; } 50% { --wp-wl-o: 0.55; } }
 }
