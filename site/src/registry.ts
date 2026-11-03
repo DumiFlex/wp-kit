@@ -184,6 +184,11 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "Toggle (merged in: use size=\"md\" in the manager, invalid for the old error), or a button with role=\"switch\" and its own toggle--on class.",
   },
   {
+    id: "toggle-row", name: "Toggle row (v-toggle-row)", group: "choice", file: "src/toggle-row.ts", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    use: "Put it on a row that lays out its own words beside one Checkbox or WpSwitch (a label on the left, a switch on the right): a click on the words flips the toggle, like a label, and the row shows the hand. It stays out of the way when the row holds two toggles or another field, when the click lands on a button, link or the toggle itself, and while the toggle is disabled. SettingRow does this on every row. When the words can sit inside the toggle, pass them as its label instead.",
+    instead: "Words beside a box that do nothing on click, or an @click on the label span that flips the model by hand.",
+  },
+  {
     id: "tabs", name: "Tabs", group: "choice", file: "src/WpTabs.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
     use: "Switch between views of the same thing. The arrow keys move between tabs, a long row scrolls, and an optional count follows each label. size=\"sm\" on the canvas.",
     instead: "A tab strip of buttons with role=\"tab\" and its own underline and key handling (the old .wp-tabs class).",
@@ -411,7 +416,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "setting-group", name: "SettingGroup", group: "pieces", file: "src/SettingGroup.vue", surfaces: ["manager", "community"], usedBy: [],
-    use: "A settings page: SettingGroup is a titled panel, each SettingRow a label and hint on the left and its control on the right, split by hairlines. setting-key gives a row an id for a search to jump to and highlighted flashes it; stacked puts a wide control under the text; form lines rows up as a label column; recommended names the usual pick. A narrow group puts every row in one column.",
+    use: "A settings page: SettingGroup is a titled panel, each SettingRow a label and hint on the left and its control on the right, split by hairlines. setting-key gives a row an id for a search to jump to and highlighted flashes it; stacked puts a wide control under the text; form lines rows up as a label column; recommended names the usual pick. A click on a row's words flips its one checkbox or switch (v-toggle-row). A narrow group puts every row in one column.",
     instead: "A hand-made settings row (.wpc-settings-row) with its own name, hint and control layout.",
   },
   {
@@ -583,6 +588,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "badge": `<Badge :count="3" tone="danger" label="3 problems"><Button variant="ghost" icon="pi-bell" aria-label="Problems" /></Badge>  <Badge dot tone="success" text="Running" pulse />`,
   "selection-bar": `<SelectionBar v-if="picked.size" :count="picked.size" noun="options" sticky @clear="picked.clear()"><Button size="sm" variant="danger" icon="trash" @click="del">Delete</Button></SelectionBar>`,
   "setting-group": `<SettingGroup title="Content"><SettingRow label="Include NSFW posts" hint="Off by default." for="nsfw"><WpSwitch id="nsfw" v-model="nsfw" size="md" /></SettingRow></SettingGroup>`,
+  "toggle-row": `<div v-toggle-row class="row"><span>Override base seed</span><WpSwitch v-model="on" aria-label="Override base seed" /></div>`,
   "setting-row": `<SettingRow label="Name" form for="name" hint="Shown in the library."><Input id="name" v-model="name" /></SettingRow>`,
   "description-list": `<DescriptionList :items="[{ label: 'Family', value: 'SDXL' }, { label: 'ID', value: id, mono: true, copy: true }]" />`,
   "code-block": `<CodeBlock :code="json" language="JSON" max-height="240px" />
