@@ -19,6 +19,7 @@ const columns: DataColumn<Row>[] = [
 ];
 const sort = ref<DataSort | null>({ key: "modules", dir: "desc" });
 const picked = ref<string[]>(["c"]);
+const open = ref<string | null>("b");
 </script>
 
 <template>
@@ -27,7 +28,14 @@ const picked = ref<string[]>(["c"]);
       <template #cell-tag="{ row }"><Chip tone="accent">{{ row.tag }}</Chip></template>
       <template #cell-actions="{ row }"><Button size="sm" variant="ghost" icon="pi-trash" :aria-label="`Delete ${row.tag}`" /></template>
     </DataTable>
-    <p class="wp-kit__muted">{{ picked.length }} selected. Loading and empty:</p>
+    <p class="wp-kit__muted">{{ picked.length }} selected. Rows that unfold: row-clickable + active-key + a #detail slot.</p>
+    <DataTable
+      :columns="columns.slice(0, 3)" :rows="rows" row-key="id" size="sm" row-clickable :active-key="open" aria-label="Tags with details"
+      @row-click="(r) => (open = open === r.id ? null : r.id)"
+    >
+      <template #detail="{ row }"><span class="wp-kit__muted">{{ row.tag }} is used by {{ row.modules }} modules and {{ row.bundles }} bundles.</span></template>
+    </DataTable>
+    <p class="wp-kit__muted">Loading and empty:</p>
     <DataTable :columns="columns.slice(0, 3)" :rows="[]" row-key="id" loading :loading-rows="2" size="sm" aria-label="Loading" />
     <DataTable :columns="columns.slice(0, 3)" :rows="[]" row-key="id" size="sm" empty-text="No tags yet." aria-label="Empty" />
   </div>

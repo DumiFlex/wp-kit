@@ -18,6 +18,12 @@
  * filters reads at a glance. `count` puts a small number after the label.
  * `size`: `xs` (default, a label in a line of text), `sm` (24px, a filter
  * row) or `md` (32px, next to a md control).
+ *
+ * `variant="stat"` is the same chip as a tile: the `count` big on top, the
+ * label under it and a top edge in `color` (a summary row whose tiles also
+ * filter the list below):
+ *
+ *   <Chip variant="stat" :color="roleColour(r)" :count="n" :pressed="on.has(r)" @click="flip(r)">{{ label }}</Chip>
  */
 import { computed, type Component } from "vue";
 import Icon from "./Icon.vue";
@@ -45,9 +51,11 @@ interface Props {
   /** A status dot before the label, in the chip's colour. */
   dot?: boolean | undefined;
   size?: "xs" | "sm" | "md" | undefined;
+  /** `pill` (default) or `stat`: a tile with the count big on top. */
+  variant?: "pill" | "stat" | undefined;
   disabled?: boolean | undefined;
 }
-const props = withDefaults(defineProps<Props>(), { tone: "default", as: "span", size: "xs", pressed: undefined });
+const props = withDefaults(defineProps<Props>(), { tone: "default", as: "span", size: "xs", variant: "pill", pressed: undefined });
 
 const emit = defineEmits<{
   (e: "remove"): void;
@@ -56,19 +64,21 @@ const emit = defineEmits<{
 const toggle = computed(() => props.pressed !== undefined);
 const tag = computed(() => (toggle.value ? "button" : props.as));
 const pressable = computed(() => tag.value !== "span");
+const stat = computed(() => props.variant === "stat");
 const classes = computed(() => [
   "wp-chip",
   `wp-chip--${props.size}`,
+  stat.value && "wp-chip--stat",
   pressable.value && "wp-chip--action",
   toggle.value && "wp-chip--toggle",
   toggle.value && props.color && "wp-chip--tinted",
-  !toggle.value && (props.color ? "wp-chip--color" : props.tone !== "default" && `wp-chip--${props.tone}`),
+  !toggle.value && !stat.value && (props.color ? "wp-chip--color" : props.tone !== "default" && `wp-chip--${props.tone}`),
 ]);
 
 const colorStyle = computed(() => {
   if (!props.color) return undefined;
   const c = props.color;
-  if (toggle.value) return { "--wp-chip-c": c };
+  if (toggle.value || stat.value) return { "--wp-chip-c": c };
   return {
     color: `color-mix(in oklab, ${c} 65%, var(--wp-text))`,
     background: `color-mix(in oklab, ${c} 18%, transparent)`,
@@ -94,9 +104,15 @@ function onRemove(e: MouseEvent) {
     <span v-if="dot" class="wp-chip__dot" aria-hidden="true" />
     <!-- 10px sub-ICON_SM: the chip font is 10.5px and a 12px icon read
          oversized next to it. Larger chips get a larger icon. -->
-    <Icon v-if="icon" class="wp-chip__icon" :name="icon" :size="size === 'xs' ? 10 : 12" />
-    <slot />
-    <span v-if="count !== undefined" class="wp-chip__count">{{ count }}</span>
+    <Icon v-if="icon && !stat" class="wp-chip__icon" :name="icon" :size="size === 'xs' ? 10 : 12" />
+    <template v-if="stat">
+      <span v-if="count !== undefined" class="wp-chip__stat-n">{{ count }}</span>
+      <span class="wp-chip__stat-label"><slot /></span>
+    </template>
+    <template v-else>
+      <slot />
+      <span v-if="count !== undefined" class="wp-chip__count">{{ count }}</span>
+    </template>
     <button
       v-if="removable && !pressable"
       type="button"
@@ -163,4 +179,37 @@ function onRemove(e: MouseEvent) {
   background: color-mix(in oklab, var(--wp-chip-c) 22%, transparent);
   color: inherit;
 }
+
+/* A stat tile: the count big on top, the label under it, a top edge in its
+   colour. Pressed, it fills with a little of that colour. */
+.wp-chip--stat {
+  --wp-chip-c: var(--wp-border-strong);
+  box-sizing: border-box;
+  height: auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--wp-space-1);
+  padding: var(--wp-space-4) var(--wp-space-5);
+  border: 1px solid var(--wp-border);
+  border-top: 3px solid var(--wp-chip-c);
+  border-radius: min(8px, var(--wp-radius-cap, 999px));
+  background: var(--wp-bg-2);
+  color: var(--wp-text);
+  font-size: var(--wp-text-xs);
+  line-height: 1.3;
+  text-align: left;
+  white-space: normal;
+}
+.wp-chip--stat.wp-chip--toggle[aria-pressed="true"] {
+  border-color: var(--wp-chip-c);
+  background: color-mix(in oklab, var(--wp-chip-c) 12%, var(--wp-bg-2));
+  color: var(--wp-text);
+}
+.wp-chip__stat-n {
+  font-size: var(--wp-text-xl);
+  font-weight: var(--wp-weight-semibold);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+.wp-chip__stat-label { color: var(--wp-text-muted); }
 </style>
