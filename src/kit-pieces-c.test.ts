@@ -91,6 +91,14 @@ describe("Combobox", () => {
     { value: "illu", label: "Illustrious" },
   ];
 
+  it("mono sets the box and the list in the mono font", async () => {
+    const w = bound(Combobox, { modelValue: null, options, ariaLabel: "Var", mono: true });
+    expect(w.get(".wp-combo").attributes("data-mono")).toBe("true");
+    await w.get("input").trigger("focus");
+    await w.get("input").setValue("p");
+    expect(document.querySelector(".wp-combo__list")?.getAttribute("data-mono")).toBe("true");
+  });
+
   it("filters as you type and Enter takes the lit option", async () => {
     const w = bound(Combobox, { modelValue: null, options, ariaLabel: "Model" });
     const input = w.get("input");
