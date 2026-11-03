@@ -14,6 +14,7 @@ const mode = ref<"merge" | "replace">("merge");
 const canvas = ref<"seed" | "fixed" | "random">("seed");
 const where = ref<"cloud" | "local">("local");
 const accent = ref("violet");
+const named = ref("theme");
 const swatches = [
   { value: "violet", label: "Violet", color: "#7c3aed" },
   { value: "teal", label: "Teal", color: "#22d3ee" },
@@ -26,6 +27,25 @@ const swatches = [
   <div class="wp-kit__stack">
     <RadioGroup v-model="style" :options="styles" aria-label="Prompt style" />
     <RadioGroup v-model="accent" :options="swatches" variant="swatch" aria-label="Accent colour" />
+    <p class="wp-kit__caption">named, with the swatch slot drawing "Theme's own" and "Custom"</p>
+    <RadioGroup
+      v-model="named"
+      :options="[{ value: 'theme', label: 'Theme\'s own' }, ...swatches.slice(0, 4), { value: 'custom', label: 'Custom' }]"
+      variant="swatch"
+      named
+      aria-label="Accent colour, named"
+    >
+      <template #swatch="{ option }">
+        <span
+          class="wp-kit__swatch-fill"
+          :style="{ background: option.value === 'theme'
+            ? 'linear-gradient(135deg, var(--wp-accent) 50%, var(--wp-bg-3) 50%)'
+            : option.value === 'custom'
+              ? 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)'
+              : option.color }"
+        />
+      </template>
+    </RadioGroup>
     <RadioGroup
       v-model="mode"
       :options="[{ value: 'merge', label: 'Merge', hint: 'Keep my edits' }, { value: 'replace', label: 'Replace', hint: 'Take theirs' }]"
@@ -57,3 +77,7 @@ const swatches = [
     </div>
   </div>
 </template>
+
+<style scoped>
+.wp-kit__swatch-fill { display: block; width: 100%; height: 100%; }
+</style>

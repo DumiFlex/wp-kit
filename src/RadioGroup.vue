@@ -18,7 +18,9 @@
  *
  * `variant="swatch"` draws each option as a round colour swatch (its
  * `color`), in a row, with the label as its name and tooltip: an accent or
- * frame colour picked from a few.
+ * frame colour picked from a few. `named` writes each label under its
+ * swatch, and the `swatch` slot draws a swatch itself (a split "theme's own"
+ * circle, a rainbow for "custom"; the slot gets `{ option, checked }`).
  */
 import { nextTick, ref } from "vue";
 
@@ -45,9 +47,14 @@ const props = withDefaults(defineProps<{
   testPrefix?: string | undefined;
   /** `swatch`: round colour swatches in a row, named by their label. */
   variant?: "default" | "swatch" | undefined;
+  /** With `variant="swatch"`: show each label under its swatch. */
+  named?: boolean | undefined;
 }>(), { orientation: "vertical", size: "md", ariaLabel: undefined, testPrefix: undefined, variant: "default" });
 
-defineSlots<{ label?: (p: { option: RadioOption<T> }) => unknown }>();
+defineSlots<{
+  label?: (p: { option: RadioOption<T> }) => unknown;
+  swatch?: (p: { option: RadioOption<T>; checked: boolean }) => unknown;
+}>();
 
 const emit = defineEmits<{ (e: "update:modelValue", v: T): void }>();
 const rootEl = ref<HTMLElement | null>(null);
@@ -93,6 +100,7 @@ function onKeydown(ev: KeyboardEvent, at: T): void {
     :data-size="size"
     :data-cards="cards || undefined"
     :data-variant="variant"
+    :data-named="variant === 'swatch' && named ? '' : undefined"
   >
     <!-- Each radio has a tabindex (roving: only the checked one is a Tab stop). -->
     <!-- eslint-disable-next-line vuejs-accessibility/interactive-supports-focus -->
@@ -106,18 +114,19 @@ function onKeydown(ev: KeyboardEvent, at: T): void {
       :tabindex="!disabled && o.value === tabStop() ? 0 : -1"
       :data-checked="modelValue === o.value || undefined"
       :data-test="testPrefix ? `${testPrefix}-${o.value}` : undefined"
-      :aria-label="variant === 'swatch' ? o.label : undefined"
-      :title="variant === 'swatch' ? o.label : undefined"
+      :aria-label="variant === 'swatch' && !named ? o.label : undefined"
+      :title="variant === 'swatch' && !named ? o.label : undefined"
       @click="!o.disabled && pick(o.value)"
       @keydown="onKeydown($event, o.value)"
     >
       <span
         v-if="variant === 'swatch'"
         class="wp-radio-group__swatch"
-        :style="{ background: o.color }"
+        :style="$slots.swatch ? undefined : { background: o.color }"
         aria-hidden="true"
-      />
+      ><slot name="swatch" :option="o" :checked="modelValue === o.value" /></span>
       <span v-else class="wp-radio-group__dot" aria-hidden="true" />
+      <span v-if="variant === 'swatch' && named" class="wp-radio-group__name">{{ o.label }}</span>
       <span v-if="variant !== 'swatch'" class="wp-radio-group__text">
         <span class="wp-radio-group__label"><slot name="label" :option="o">{{ o.label }}</slot></span>
         <span v-if="o.hint" class="wp-radio-group__hint">{{ o.hint }}</span>
@@ -169,6 +178,17 @@ function onKeydown(ev: KeyboardEvent, at: T): void {
   box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--wp-text) 18%, transparent);
 }
 .wp-radio-group[data-size="sm"] .wp-radio-group__swatch { width: 16px; height: 16px; }
+/* Named swatches: the label under each, the ring drawn round the swatch only. */
+.wp-radio-group[data-named] .wp-radio-group__opt {
+  flex-direction: column; align-items: center; gap: var(--wp-space-2); min-width: 52px;
+  padding: var(--wp-space-2); border-radius: var(--wp-radius-sm);
+}
+.wp-radio-group[data-named] .wp-radio-group__swatch { width: 28px; height: 28px; overflow: hidden; }
+.wp-radio-group__name { color: var(--wp-text-muted); font-size: var(--wp-text-xs); line-height: 1.2; text-align: center; }
+.wp-radio-group[data-named] .wp-radio-group__opt[data-checked] .wp-radio-group__name { color: var(--wp-text); }
+.wp-radio-group[data-variant="swatch"][data-named] .wp-radio-group__opt[data-checked] { box-shadow: none; }
+.wp-radio-group[data-named] .wp-radio-group__opt[data-checked] .wp-radio-group__swatch { box-shadow: 0 0 0 2px var(--wp-bg-1), 0 0 0 4px var(--wp-accent); }
+.wp-radio-group[data-variant="swatch"][data-named] .wp-radio-group__opt:focus-visible { box-shadow: 0 0 0 2px var(--wp-border-focus); }
 .wp-radio-group[data-variant="swatch"] .wp-radio-group__opt[data-checked] { box-shadow: 0 0 0 2px var(--wp-accent); }
 .wp-radio-group[data-variant="swatch"] .wp-radio-group__opt:focus-visible { box-shadow: 0 0 0 2px var(--wp-border-focus); }
 .wp-radio-group[data-variant="swatch"] .wp-radio-group__opt[data-checked]:focus-visible { box-shadow: 0 0 0 2px var(--wp-accent), 0 0 0 4px var(--wp-border-focus); }
