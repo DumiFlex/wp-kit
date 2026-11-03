@@ -318,6 +318,18 @@ describe("ImageGrid + Lightbox", () => {
     expect(document.querySelector(".wp-lightbox__img")).toBeNull();
   });
 
+  it("Lightbox closes on a click on any dark area (the bar's empty part, around the picture), not on the picture", async () => {
+    const w = bound(Lightbox, { open: true, images }, "index");
+    await nextTick();
+    (document.querySelector(".wp-lightbox__img") as HTMLElement).click();
+    expect(w.emitted("update:open")).toBeUndefined();
+    (document.querySelector(".wp-lightbox__bar") as HTMLElement).click();
+    expect(w.emitted("update:open")?.at(-1)).toEqual([false]);
+    await w.setProps({ open: true });
+    (document.querySelector(".wp-lightbox__figure") as HTMLElement).click();
+    expect(w.emitted("update:open")?.at(-1)).toEqual([false]);
+  });
+
   it("Lightbox with loop goes round", async () => {
     const w = bound(Lightbox, { open: true, images, index: 2, loop: true }, "index");
     await nextTick();
