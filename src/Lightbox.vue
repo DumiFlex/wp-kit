@@ -102,11 +102,15 @@ watch(() => props.open, async (v, was) => {
       :aria-label="image ? `${image.alt}, ${at + 1} of ${count}` : 'Image viewer'"
       @click.self="close"
     >
-      <div class="wp-lightbox__bar">
+      <!-- The bar spans the width: its empty part is dark area too, so it closes. -->
+      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
+      <div class="wp-lightbox__bar" @click.self="close">
         <span v-if="count > 1" class="wp-lightbox__count" aria-hidden="true">{{ at + 1 }} / {{ count }}</span>
         <Button variant="ghost" icon="times" aria-label="Close" class="wp-lightbox__close" kbd="Esc" @click="close" />
       </div>
-      <figure v-if="image" class="wp-lightbox__figure" :data-zoom="zoom || undefined">
+      <!-- Space around a small picture is dark area too; the picture and its zoom keep their clicks. -->
+      <!-- eslint-disable-next-line vuejs-accessibility/click-events-have-key-events, vuejs-accessibility/no-static-element-interactions -->
+      <figure v-if="image" class="wp-lightbox__figure" :data-zoom="zoom || undefined" @click.self="close">
         <!-- An image with no src yet (still rendering): its shape, not an empty frame. -->
         <Skeleton v-if="!image.src" class="wp-lightbox__loading" shape="block" width="min(70vw, 640px)" height="min(60vh, 480px)" label="Still loading" />
         <WpImageZoom v-else-if="zoom" v-model:zoom="level" class="wp-lightbox__zoom" :src="image.src" :alt="image.alt" size="md" minimap />
