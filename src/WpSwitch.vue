@@ -92,7 +92,9 @@ function flip(): void {
   height: var(--switch-h);
   box-sizing: border-box;
   border: 1px solid var(--wp-border-strong);
-  border-radius: var(--wp-radius-cap, 999px);
+  /* A hair under half the height, not 999px: on the ComfyUI canvas Firefox
+     draws a bordered full pill in pieces that seam at zooms like 0.64 / 0.8. */
+  border-radius: min(calc(var(--switch-h) / 2 - 1px), var(--wp-radius-cap, 999px));
   background: var(--wp-bg-3);
   transition: background var(--wp-motion-quick), border-color var(--wp-motion-quick);
 }
