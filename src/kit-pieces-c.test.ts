@@ -189,6 +189,22 @@ describe("RadioGroup", () => {
   });
 });
 
+describe("RadioGroup named swatches", () => {
+  it("writes each label under its swatch and lets the slot draw it", () => {
+    const w = mount(RadioGroup, {
+      props: { modelValue: "b", options: [{ value: "a", label: "Theme's own" }, { value: "b", label: "Violet", color: "violet" }], variant: "swatch", named: true },
+      slots: { swatch: `<template #swatch="{ option, checked }"><i class="fill" :data-v="option.value" :data-on="checked" /></template>` },
+    });
+    mounted.push(w);
+    expect(w.attributes("data-named")).toBe("");
+    expect(w.findAll(".wp-radio-group__name").map((n) => n.text())).toEqual(["Theme's own", "Violet"]);
+    const fills = w.findAll(".fill");
+    expect(fills.map((f) => [f.attributes("data-v"), f.attributes("data-on")])).toEqual([["a", "false"], ["b", "true"]]);
+    // Named: the label is visible, so no aria-label / title copy of it.
+    expect(w.findAll("[role=radio]")[0].attributes("aria-label")).toBeUndefined();
+  });
+});
+
 describe("display pieces", () => {
   it("Avatar shows initials on a stable colour, and falls back when the picture fails", async () => {
     const a = mount(Avatar, { props: { name: "Ada Lovelace" } });
@@ -242,6 +258,21 @@ describe("display pieces", () => {
     expect(rows.length).toBeLessThan(40);
     expect(rows[0].attributes("aria-setsize")).toBe("1000");
     expect(rows[0].attributes("aria-posinset")).toBe("1");
+  });
+});
+
+describe("ImageGrid natural shape", () => {
+  it("aspect auto, fixed columns, a hint and an error event", async () => {
+    const w = mount(ImageGrid, { props: { images: [{ id: "s", src: "s.png", alt: "Shot" }], aspect: "auto", columns: 1, hint: true, lightbox: false } });
+    mounted.push(w);
+    const list = w.get(".wp-image-grid__list");
+    expect(list.attributes("data-aspect")).toBe("auto");
+    expect(list.attributes("style")).toContain("repeat(1, minmax(0, 1fr))");
+    expect(w.find(".wp-image-grid__hint").exists()).toBe(true);
+    await w.get("img").trigger("error");
+    expect(w.emitted("error")?.[0]).toEqual([0]);
+    await w.get(".wp-image-grid__open").trigger("click");
+    expect(w.emitted("open")?.[0]).toEqual([0]);
   });
 });
 

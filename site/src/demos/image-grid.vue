@@ -17,6 +17,7 @@ const keep = ref<string[]>(["f-1"]);
   <div class="wp-kit__stack wp-kit__stack--wide">
     <ImageGrid :images="outputs" :min-size="110" aria-label="Outputs" />
     <ImageGrid v-model:selected="keep" :images="frames" selectable :aspect="0.75" :min-size="90" gap="sm" aria-label="Frames" />
-    <p class="wp-kit__caption">{{ keep.length }} selected</p>
+    <p class="wp-kit__caption">{{ keep.length }} selected. One screenshot at its own shape: aspect="auto", :columns="1", hint</p>
+    <ImageGrid :images="[{ id: 'shot', src: outputs[0]?.src ?? '', alt: 'A screenshot' }]" aspect="auto" :columns="1" hint aria-label="Screenshot" />
   </div>
 </template>
