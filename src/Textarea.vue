@@ -10,6 +10,10 @@ interface Props {
   error?: boolean | undefined;
   id?: string | undefined;
   ariaLabel?: string | undefined;
+  /** Mono text: templates, tag lists. */
+  mono?: boolean | undefined;
+  /** "accent" marks a value changed from its default, "warn" one that needs a look. */
+  tone?: "accent" | "warn" | undefined;
 }
 const props = withDefaults(defineProps<Props>(), { rows: 3 });
 
@@ -44,6 +48,8 @@ watch(() => props.modelValue, () => {
     :id="id"
     ref="taRef"
     class="wp-textarea"
+    :data-mono="mono || undefined"
+    :data-tone="tone"
     :rows="rows"
     :value="modelValue"
     :placeholder="placeholder"
