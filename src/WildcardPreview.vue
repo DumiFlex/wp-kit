@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// The shared preview sheet (wp-pv-* classes), loaded once for every preview.
+import "./preview.css";
 /**
  * Wildcard preview built for big pools: a stats strip, search + filters,
  * tag facets with counts, and options as table rows (chance, tags,
@@ -504,7 +506,6 @@ function isLong(o: WildcardOption): boolean {
   </div>
 </template>
 
-<style scoped src="./preview.css"></style>
 <style scoped>
 .wp-wc__split[data-facets] {
   display: grid;

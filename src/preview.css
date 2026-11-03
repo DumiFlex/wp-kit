@@ -1,7 +1,10 @@
 /* Shared chrome for the per-type payload previews (stats strip, toolbar,
-   row tables, section labels). Each preview pulls it in scoped
-   (`<style scoped src="./preview.css">`), so it styles only that piece's own
-   markup. Every selector is `.wp-pv-*`. */
+   row tables, section labels). Every preview imports it from its script
+   (`import "./preview.css"`), so a page carries ONE copy however many
+   previews it shows; pulled in scoped, each piece got its own copy (seven in
+   the community embed). Every selector is `.wp-pv-*`, so it is safe global.
+   Unlayered like button.css and menu.css: in @layer wp-extension a host's
+   unlayered reset (Tailwind's preflight) would strip its borders. */
 
 .wp-pv {
   container-type: inline-size;

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// The shared preview sheet (wp-pv-* classes), loaded once for every preview.
+import "./preview.css";
 /**
  * Constraint: counts up top, then the grouped matrix (ConstraintMatrixPreview)
  * or, for a big matrix, a searchable list of only the cells that do
@@ -226,7 +228,6 @@ function fmtFactor(f: number): string {
   </div>
 </template>
 
-<style scoped src="./preview.css"></style>
 <style scoped>
 .wp-cn-wrap {
   padding: 14px 16px 16px;

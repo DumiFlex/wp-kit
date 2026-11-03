@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// The shared preview sheet (wp-pv-* classes), loaded once for every preview.
+import "./preview.css";
 /** Fixed values as a searchable variable → value → negative table, paged so
  *  a long list stays short until asked. */
 import { computed, ref } from "vue";
@@ -181,4 +183,3 @@ function toggle(i: number): void {
   </div>
 </template>
 
-<style scoped src="./preview.css"></style>
