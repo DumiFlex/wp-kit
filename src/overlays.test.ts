@@ -5,6 +5,7 @@ import ContextMenu from "./ContextMenu.vue";
 import DropdownMenu from "./DropdownMenu.vue";
 import Popover from "./Popover.vue";
 import { vTooltip } from "./tooltip";
+import { rectAnchor } from "./floating";
 
 afterEach(() => {
   document.body.innerHTML = "";
@@ -27,6 +28,32 @@ function popoverHost() {
 }
 
 describe("Popover", () => {
+  it("places against a virtual anchor, keeps focus where it was and passes attrs to the panel", async () => {
+    const field = document.createElement("textarea");
+    document.body.appendChild(field);
+    field.focus();
+    const onEnter = vi.fn();
+    const w = mount(Popover, {
+      attachTo: document.body,
+      props: { open: true, anchor: rectAnchor({ left: 40, top: 50, width: 0, height: 16 }), autofocus: false, role: "listbox" },
+      attrs: { class: "caret-list", "data-test": "caret", onMouseenter: onEnter },
+      slots: { default: () => h("div", "item") },
+    });
+    await nextTick();
+    await nextTick();
+    const panel = document.querySelector<HTMLElement>(".wp-popover");
+    expect(panel?.classList.contains("caret-list")).toBe(true);
+    expect(panel?.dataset.test).toBe("caret");
+    expect(panel?.style.top).toBe("72px");
+    expect(document.activeElement).toBe(field);
+    panel?.dispatchEvent(new MouseEvent("mouseenter"));
+    expect(onEnter).toHaveBeenCalled();
+    window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    expect(w.emitted("update:open")?.[0]).toEqual([false]);
+    w.unmount();
+  });
+
+
   it("opens from the trigger, focuses the first control and wires aria", async () => {
     const w = mount(popoverHost(), { attachTo: document.body });
     const trig = w.find(".trig");
