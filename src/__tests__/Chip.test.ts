@@ -1,5 +1,7 @@
 import { mount } from "@vue/test-utils";
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import Chip from "../Chip.vue";
 
 describe("Chip.vue", () => {
@@ -53,5 +55,12 @@ describe("Chip.vue", () => {
     const w = mount(Chip, { props: { variant: "stat", count: "98%" }, slots: { default: "Carries over" } });
     expect(w.element.tagName).toBe("SPAN");
     expect(w.get(".wp-chip__stat-n").text()).toBe("98%");
+  });
+  it("carries its own base pill and tone rules, so it is styled on the canvas too", () => {
+    const src = readFileSync(resolve(__dirname, "../Chip.vue"), "utf8");
+    const style = src.slice(src.indexOf("<style scoped>"));
+    for (const sel of [".wp-chip {", ".wp-chip--accent", ".wp-chip--warn", ".wp-chip--danger", ".wp-chip__close {", ".wp-chip__dot"]) {
+      expect(style, sel).toContain(sel);
+    }
   });
 });

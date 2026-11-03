@@ -129,6 +129,47 @@ function onRemove(e: MouseEvent) {
 </template>
 
 <style scoped>
+/* The base pill, its tones, dot and ✕ live here too, not only in the page
+   theme (theme/tokens.css), so a Chip on the ComfyUI canvas, which never
+   loads that sheet, is styled the same. Shared tokens only. */
+.wp-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 1px 7px;
+  border: 1px solid var(--wp-border);
+  border-radius: var(--wp-radius-cap, 999px);
+  background: var(--wp-bg-3);
+  color: var(--wp-text-muted);
+  font-family: var(--wp-font-sans);
+  font-size: 10.5px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.wp-chip--accent {
+  color: var(--wp-accent-text-strong);
+  background: color-mix(in oklab, var(--wp-accent-500) 16%, transparent);
+  border-color: color-mix(in oklab, var(--wp-accent-500) 38%, transparent);
+}
+.wp-chip--success { color: var(--wp-success); background: color-mix(in oklab, var(--wp-success) 14%, transparent); border-color: color-mix(in oklab, var(--wp-success) 36%, transparent); }
+.wp-chip--warn { color: var(--wp-warn); background: color-mix(in oklab, var(--wp-warn) 14%, transparent); border-color: color-mix(in oklab, var(--wp-warn) 36%, transparent); }
+.wp-chip--danger { color: var(--wp-danger); background: color-mix(in oklab, var(--wp-danger) 14%, transparent); border-color: color-mix(in oklab, var(--wp-danger) 36%, transparent); }
+.wp-chip--info { color: var(--wp-info); background: color-mix(in oklab, var(--wp-info) 14%, transparent); border-color: color-mix(in oklab, var(--wp-info) 36%, transparent); }
+.wp-chip__dot { width: 7px; height: 7px; border-radius: var(--wp-radius-cap, 999px); background: currentColor; }
+.wp-chip__close {
+  position: relative; display: inline-grid; place-items: center;
+  width: 12px; height: 12px; margin: 0 -2px 0 1px; padding: 0;
+  border: none; border-radius: 0; background: none;
+  color: inherit; opacity: 0.65; cursor: pointer; line-height: 0;
+  transition: opacity var(--wp-motion-quick) ease;
+}
+.wp-chip__close::after { content: ""; position: absolute; inset: -4px; }
+.wp-chip__close:hover { opacity: 1; }
+.wp-chip__close:focus-visible { outline: 2px solid var(--wp-accent-500); outline-offset: 1px; border-radius: min(2px, var(--wp-radius-cap, 999px)); opacity: 1; }
+.wp-chip--color { font-weight: 500; }
+/* A bordered pill on the canvas: a radius a hair under half its height, so
+   Firefox draws it in one piece at ComfyUI's zooms (0.64, 0.8). */
+.wp-chip--xs { border-radius: min(9px, var(--wp-radius-cap, 999px)); }
+.wp-chip--sm { border-radius: min(calc(var(--wp-control-h-sm) / 2 - 1px), var(--wp-radius-cap, 999px)); }
+.wp-chip--md { border-radius: min(calc(var(--wp-control-h-md) / 2 - 1px), var(--wp-radius-cap, 999px)); }
 /* xs is the base `.wp-chip` in theme/tokens.css, held at 20px here: its
    content height was 19.2px, which put every icon half a pixel off. */
 .wp-chip--xs { box-sizing: border-box; height: 20px; }
@@ -207,7 +248,7 @@ function onRemove(e: MouseEvent) {
 }
 .wp-chip__stat-n {
   font-size: var(--wp-text-xl);
-  font-weight: var(--wp-weight-semibold);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
   line-height: 1.2;
 }
