@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/DumiFlex/wp-kit/compare/v0.13.0...v0.14.0) (2026-11-03)
+
+
+### Features
+
+* canvas controls at ComfyUI's own sizes ([#105](https://github.com/DumiFlex/wp-kit/issues/105)) ([22e6d62](https://github.com/DumiFlex/wp-kit/commit/22e6d62834d197ef4c4ce64a463fbbbe50f75610))
+
 ## [0.13.0](https://github.com/DumiFlex/wp-kit/compare/v0.12.0...v0.13.0) (2026-11-03)
 
 
