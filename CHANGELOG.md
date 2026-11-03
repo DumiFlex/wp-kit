@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/DumiFlex/wp-kit/compare/v0.10.0...v0.11.0) (2026-11-03)
+
+
+### Features
+
+* Popover takes a virtual anchor and passes attrs to its panel; Input and Textarea style themselves on the canvas ([#94](https://github.com/DumiFlex/wp-kit/issues/94)) ([d5e17ef](https://github.com/DumiFlex/wp-kit/commit/d5e17eff909e259d1ed8dbfa3b0fbc2060e9e213))
+
 ## [0.10.0](https://github.com/DumiFlex/wp-kit/compare/v0.9.0...v0.10.0) (2026-11-03)
 
 
