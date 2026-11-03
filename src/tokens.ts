@@ -58,6 +58,6 @@ export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-o", "--wp-select-line-h", 
 export const PAGE_PIECES = [
   "axis-color.ts", "kind-colour.ts", "matrix-axis.ts", "BundleMeta.vue", "ConstraintMatrixPreview.vue", "PostCard.vue", "TokenizedValue.vue",
   "Card.vue", "Chip.vue", "ChoiceCards.vue",
-  "DataTable.vue", "Drawer.vue", "EmptyState.vue", "Field.vue", "Icon.vue", "IconPicker.vue", "Input.vue",
+  "DataTable.vue", "Drawer.vue", "EmptyState.vue", "Field.vue", "Icon.vue", "Input.vue",
   "ListFilter.vue", "RelativeDate.vue", "Select.vue", "Textarea.vue", "ToastHost.vue",
 ] as const;
