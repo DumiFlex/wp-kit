@@ -64,12 +64,13 @@ function flip(): void {
 <style scoped>
 /* Two looks. track: a sliding knob, for a setting that takes effect at once.
  * chip: a labelled chip that lights up when on (Hide from prompt, Lock...).
- * Heights follow the control scale (sm 24 / md 32 / lg 40). */
+ * Heights follow the control scale (sm 24 / md 32 / lg 40). The sm track is
+ * ComfyUI's own Nodes 2.0 switch (36 x 20, 16 px knob, 24 px row). */
 .wp-switch {
   display: inline-flex;
   align-items: center;
   gap: var(--wp-space-3);
-  min-height: 20px;
+  min-height: 24px;
   flex-shrink: 0;
   color: var(--wp-text-muted);
   font: var(--wp-text-xs) / 1 var(--wp-font-sans);
@@ -80,12 +81,12 @@ function flip(): void {
 }
 .wp-switch[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
 .wp-switch__label { color: var(--wp-text-muted); }
-.wp-switch--md, .wp-switch--lg { min-height: 24px; font-size: var(--wp-text-sm); }
+.wp-switch--md, .wp-switch--lg { min-height: 32px; font-size: var(--wp-text-sm); }
 
 /* Track look */
 .wp-switch__track {
-  --switch-w: 26px;
-  --switch-h: 14px;
+  --switch-w: 36px;
+  --switch-h: 20px;
   position: relative;
   flex-shrink: 0;
   width: var(--switch-w);
@@ -98,8 +99,8 @@ function flip(): void {
   background: var(--wp-bg-3);
   transition: background var(--wp-motion-quick), border-color var(--wp-motion-quick);
 }
-.wp-switch--md .wp-switch__track { --switch-w: 32px; --switch-h: 18px; }
-.wp-switch--lg .wp-switch__track { --switch-w: 40px; --switch-h: 22px; }
+.wp-switch--md .wp-switch__track { --switch-w: 40px; --switch-h: 22px; }
+.wp-switch--lg .wp-switch__track { --switch-w: 48px; --switch-h: 26px; }
 .wp-switch__knob {
   position: absolute;
   top: 1px;

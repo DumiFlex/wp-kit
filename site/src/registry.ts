@@ -81,7 +81,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "wp-icon-button", name: "WpIconButton", group: "actions", file: "src/WpIconButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "The 20 px icon button inside a canvas row (module, injector, bundle and Model Info rows, the Context toolbar, and the Settings live preview of those rows): lock, internal, remove. tone tints the icon on hover and the whole box while pressed; pressed \"mixed\" is a bundle's \"some children\" state; variant bare is the row's fold caret. Rows are too tight for Button's 24 px sm.",
+    use: "The 20 px icon button (24 px of click) inside a canvas row (module, injector, bundle and Model Info rows, the Context toolbar, and the Settings live preview of those rows): lock, internal, remove. tone tints the icon on hover and the whole box while pressed; pressed \"mixed\" is a bundle's \"some children\" state; variant bare is the row's fold caret. Rows are too tight for Button's 24 px sm.",
     instead: "A <button class=\"wp-btn--icon-sm\"> or a hand-made caret button.",
   },
   {
@@ -175,12 +175,12 @@ export const KIT_ENTRIES: KitEntry[] = [
   // Choice
   {
     id: "checkbox", name: "Checkbox", group: "choice", file: "src/Checkbox.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
-    use: "The one checkbox, on the canvas and in the manager: tick one item, or one row in a list. A label (prop or slot) toggles on click; without one the box alone is the piece, so give it an aria-label. size sm is the 12px box of a canvas row, md 14px. indeterminate draws the mixed state for \"some selected\"; --check-on tints the checked fill (a bundle colour). Disabled turns grey with a dimmed label. field draws it as an input-height box for a yes/no filter beside dropdowns (Favorites only).",
+    use: "The one checkbox, on the canvas and in the manager: tick one item, or one row in a list. A label (prop or slot) toggles on click; without one the box alone is the piece, so give it an aria-label. size sm is the 14px box of a canvas row, md 16px (ComfyUI's own); either takes a 24px click around the box. indeterminate draws the mixed state for \"some selected\"; --check-on tints the checked fill (a bundle colour). Disabled turns grey with a dimmed label. field draws it as an input-height box for a yes/no filter beside dropdowns (Favorites only).",
     instead: "WpCheck (merged in: size=\"sm\", --check-on), the global .wp-check class on a hand-made span, or <input type=\"checkbox\"> drawn by the browser.",
   },
   {
     id: "wp-switch", name: "WpSwitch", group: "choice", file: "src/WpSwitch.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
-    use: "On or off, taking effect at once, on the canvas or in the manager (one component, so one stylesheet). The track look is a sliding knob; the chip look is a labelled chip that lights up, for a row of runtime switches (Hide from prompt, Lock pick). mixed draws a bulk switch where only some children are on.",
+    use: "On or off, taking effect at once, on the canvas or in the manager (one component, so one stylesheet). The track look is a sliding knob (sm is ComfyUI's own Nodes 2.0 switch: 36 x 20 track, 16 px knob); the chip look is a labelled chip that lights up, for a row of runtime switches (Hide from prompt, Lock pick). mixed draws a bulk switch where only some children are on.",
     instead: "Toggle (merged in: use size=\"md\" in the manager, invalid for the old error), or a button with role=\"switch\" and its own toggle--on class.",
   },
   {

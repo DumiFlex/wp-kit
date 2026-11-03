@@ -8,8 +8,9 @@
  *   <Checkbox v-model="favorites" field label="Favorites only" />
  *
  * Box: a `<button role="checkbox">`, so a wrapping `<label>` ticks it like an
- * input. Click, Space and Enter toggle. `size="sm"` is the 12px box of the
- * canvas rows' on/off mark; md is 14px. A parent can tint the checked fill
+ * input. Click, Space and Enter toggle. `size="sm"` is the 14px box of the
+ * canvas rows' on/off mark; md is 16px (ComfyUI's own box). Either takes a
+ * 24px click around it, so a lone box is as easy to hit as a native row. A parent can tint the checked fill
  * with `--check-on` (a bundle header uses its bundle colour).
  *
  * Without a label the box is the root: `class`, `title`, `data-test` and a
@@ -170,8 +171,9 @@ function toggle(): void {
 .wp-check {
   appearance: none;
   box-sizing: border-box;
-  width: 14px;
-  height: 14px;
+  position: relative;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -188,9 +190,12 @@ function toggle(): void {
   cursor: pointer;
   transition: background var(--wp-motion-quick), border-color var(--wp-motion-quick), color var(--wp-motion-quick);
 }
-.wp-check svg { width: 9px; height: 9px; display: block; pointer-events: none; }
-.wp-check--sm { width: 12px; height: 12px; border-width: 1px; border-radius: min(2px, var(--wp-radius-cap, 999px)); }
-.wp-check--sm svg { width: 7px; height: 7px; }
+.wp-check svg { width: 10px; height: 10px; display: block; pointer-events: none; }
+/* The click reaches 24 x 24 around the box (::before is the TUI look's [x]). */
+.wp-check::after { content: ""; position: absolute; inset: -4px; }
+.wp-check--sm { width: 14px; height: 14px; border-width: 1px; border-radius: min(2px, var(--wp-radius-cap, 999px)); }
+.wp-check--sm::after { inset: -5px; }
+.wp-check--sm svg { width: 8px; height: 8px; }
 .wp-check:focus-visible { outline: none; box-shadow: var(--wp-focus-ring); }
 .wp-check:where(:not(:disabled, [aria-checked="true"], [aria-checked="mixed"]):hover) { border-color: var(--wp-accent-500); }
 .wp-check:where([aria-invalid="true"]) { border-color: var(--wp-error-border); }
