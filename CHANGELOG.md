@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.0](https://github.com/DumiFlex/wp-kit/compare/v0.6.0...v0.7.0) (2026-11-03)
+
+
+### Features
+
+* IconPicker all (every PrimeIcons glyph, searchable), inline, color and allow-none ([#70](https://github.com/DumiFlex/wp-kit/issues/70)) ([a0dc837](https://github.com/DumiFlex/wp-kit/commit/a0dc83716441c8061428e69faf751ab7b52ed8ae))
+* RichText, the module payload previews and the post loading shapes move into the kit ([#71](https://github.com/DumiFlex/wp-kit/issues/71)) ([b92d62f](https://github.com/DumiFlex/wp-kit/commit/b92d62f87ecd44cb205d2265d7d56c9018e29144))
+* SelectionBar, the one bulk-action bar over a list of ticked rows ([#69](https://github.com/DumiFlex/wp-kit/issues/69)) ([13a51e2](https://github.com/DumiFlex/wp-kit/commit/13a51e22b0e27b404700dc6f3fb2f34fd912d10a))
+* SettingGroup and SettingRow, the settings page rows both apps use ([#68](https://github.com/DumiFlex/wp-kit/issues/68)) ([20f4ff8](https://github.com/DumiFlex/wp-kit/commit/20f4ff8a8c28da63fcabfd9f2c0c2bf28a4f60dd))
+
+
+### Bug Fixes
+
+* draw WorkingLine's marks on a canvas so they glide in Firefox ([#67](https://github.com/DumiFlex/wp-kit/issues/67)) ([6565f15](https://github.com/DumiFlex/wp-kit/commit/6565f1575ecb224ad9e94efdef611f5c31b12849))
+
 ## [0.6.0](https://github.com/DumiFlex/wp-kit/compare/v0.5.0...v0.6.0) (2026-11-02)
 
 
