@@ -29,8 +29,12 @@ import {
   groupHue as tagHue,
   groupLabel,
   isBucket,
+  MODE_GLYPH,
+  MODE_LABEL,
+  normalizeMode,
   orderByGroups,
   toGroups,
+  type CellMode,
 } from "./matrix-axis";
 
 const props = defineProps<{
@@ -53,27 +57,7 @@ const colGroups = computed(() => toGroups(orderedCols.value));
 const hasColBands = computed(() => colGroups.value.some((g) => !isBucket(g)));
 const hasRowGroups = computed(() => rowGroups.value.some((g) => !isBucket(g)));
 
-// `only` (schema v6, linked picks): when the source fires, targets without a
-// rule of their own in that row are excluded.
-type CnMode = "allow" | "boost" | "reduce" | "exclude" | "only";
-const MODE_GLYPH: Record<string, string> = {
-  only: "✓",
-  boost: "↑",
-  reduce: "↓",
-  exclude: "×",
-  allow: "·",
-};
-const MODE_LABEL: Record<CnMode, string> = {
-  boost: "Boost",
-  reduce: "Reduce",
-  exclude: "Exclude",
-  allow: "Neutral",
-  only: "Only",
-};
-
-function normalizeMode(raw: string | null | undefined): CnMode {
-  return raw === "exclude" || raw === "boost" || raw === "reduce" || raw === "only" ? raw : "allow";
-}
+type CnMode = CellMode;
 
 /** A row holding an `only` cell shuts out its neutral cells at runtime; the
  *  preview marks them so the link reads the same as in the extension. */
@@ -296,7 +280,7 @@ function fmtFactor(f: number): string {
           class="wp-cn-exc__mode"
           :class="`wp-cn-exc__mode--${exc.mode}`"
         >
-          <span class="wp-cn-exc__glyph">{{ MODE_GLYPH[exc.mode] }}</span>
+          <span class="wp-cn-exc__glyph">{{ MODE_GLYPH[normalizeMode(exc.mode)] }}</span>
           {{ MODE_LABEL[normalizeMode(exc.mode)] }}
         </span>
         <span

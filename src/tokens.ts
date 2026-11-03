@@ -60,4 +60,8 @@ export const PAGE_PIECES = [
   "Card.vue", "Chip.vue", "ChoiceCards.vue",
   "DataTable.vue", "Drawer.vue", "EmptyState.vue", "Field.vue", "Icon.vue", "Input.vue",
   "ListFilter.vue", "RelativeDate.vue", "Select.vue", "Textarea.vue", "ToastHost.vue",
+  // The payload previews and post loading shapes (community post pages).
+  "PayloadPreview.vue", "WildcardPreview.vue", "FixedValuesPreview.vue", "CombinePreview.vue", "DerivationPreview.vue",
+  "DerivationCondition.vue", "ConstraintPreview.vue", "BundlePreview.vue", "PreviewGroup.vue", "preview.css", "RichText.vue",
+  "PostGridSkeleton.vue", "PostDetailSkeleton.vue", "ProfileSkeleton.vue",
 ] as const;
