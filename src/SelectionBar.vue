@@ -11,16 +11,20 @@
  * `#start` sits right after the count (a filter, an option), the default slot
  * on the right before Clear. `sticky` keeps it at the top of its scroll area
  * while the list scrolls under it (`--wp-selection-bar-top` moves it below a
- * fixed header). `noun` says what is selected ("3 options selected"). Escape
+ * fixed header). `noun` says what is selected ("3 options selected");
+ * `noun-one` is its singular for a count of 1 ("1 option selected"), by
+ * default the noun without its last "s". Escape
  * inside the bar clears, like Clear; the count is read out as it changes.
  */
-import { onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import Button from "./Button.vue";
 
 const props = withDefaults(defineProps<{
   count: number;
   /** What a row is, plural ("options"); left out it says "3 selected". */
   noun?: string | undefined;
+  /** The noun for one row ("option"); defaults to `noun` without its last "s". */
+  nounOne?: string | undefined;
   /** Stick to the top of the scroll area. */
   sticky?: boolean | undefined;
   /** Hide the Clear button (the host clears another way). */
@@ -28,9 +32,16 @@ const props = withDefaults(defineProps<{
   clearLabel?: string | undefined;
   /** The toolbar's accessible name. */
   label?: string | undefined;
-}>(), { noun: undefined, clearLabel: "Clear", label: "Bulk actions" });
+}>(), { noun: undefined, nounOne: undefined, clearLabel: "Clear", label: "Bulk actions" });
 
 const emit = defineEmits<{ clear: [] }>();
+
+/** "3 options selected", "1 option selected", or "3 selected" with no noun. */
+const countText = computed(() => {
+  if (!props.noun) return `${props.count} selected`;
+  const one = props.nounOne ?? props.noun.replace(/s$/, "");
+  return `${props.count} ${props.count === 1 ? one : props.noun} selected`;
+});
 
 function onKeydown(ev: KeyboardEvent): void {
   if (ev.key !== "Escape" || props.hideClear) return;
@@ -55,7 +66,7 @@ onBeforeUnmount(() => root.value?.removeEventListener("keydown", onKeydown));
     :data-sticky="sticky || undefined"
     data-test="selection-bar"
   >
-    <span class="wp-selbar__count" aria-live="polite" data-test="selection-count">{{ count }}{{ noun ? ` ${noun}` : "" }} selected</span>
+    <span class="wp-selbar__count" aria-live="polite" data-test="selection-count">{{ countText }}</span>
     <slot name="start" />
     <span class="wp-selbar__spacer" />
     <slot />

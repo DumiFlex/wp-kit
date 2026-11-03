@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// The shared preview sheet (wp-pv-* classes), loaded once for every preview.
+import "./preview.css";
 /**
  * Rich, read-only preview of a published module or bundle payload: the
  * community post page and its embed draw it, and the manager can too.
@@ -146,7 +148,6 @@ const KNOWN = new Set(["wildcard", "fixed_values", "combine", "derivation", "con
   </p>
 </template>
 
-<style scoped src="./preview.css"></style>
 <style scoped>
 .wp-payload-raw {
   padding: 18px 24px 22px;

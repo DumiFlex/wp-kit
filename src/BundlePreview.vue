@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// The shared preview sheet (wp-pv-* classes), loaded once for every preview.
+import "./preview.css";
 /**
  * Bundle: what the bundle needs from outside vs what it sets (folded from
  * its children), then a child list beside the selected child's own full
@@ -195,7 +197,6 @@ const counts = computed(() => {
   </div>
 </template>
 
-<style scoped src="./preview.css"></style>
 <style scoped>
 .wp-bd-flow {
   display: grid;

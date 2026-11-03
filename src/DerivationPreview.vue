@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// The shared preview sheet (wp-pv-* classes), loaded once for every preview.
+import "./preview.css";
 /**
  * Derivation as rule cards: what it reads / writes / sends to negatives,
  * then per rule IF / ELSE IF / ELSE with nested AND / OR groups and every
@@ -191,7 +193,6 @@ function toggle(i: number): void {
   </div>
 </template>
 
-<style scoped src="./preview.css"></style>
 <style scoped>
 .wp-dv-io {
   display: flex;
