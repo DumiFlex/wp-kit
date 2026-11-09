@@ -469,7 +469,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "post-card", name: "PostCard", group: "pieces", file: "src/PostCard.vue", surfaces: ["manager", "community"], usedBy: ["community"],
-    use: "A community post in a grid: type stripe and chip, badges, version, slug, bundle contents, description, tags, stars, downloads and when it changed. The whole card is a link; pass the app's router link as `as`.",
+    use: "A community post in a grid: type stripe and chip, badges, version, slug, bundle contents, a few sample values (`samples`), description, tags, stars, downloads and when it changed. The whole card is a link; pass the app's router link as `as`.",
   },
   {
     id: "star-button", name: "StarButton", group: "pieces", file: "src/StarButton.vue", surfaces: ["manager", "community"], usedBy: ["community"],
