@@ -158,7 +158,9 @@ function onKeydown(ev: KeyboardEvent): void {
 .wp-segmented[data-size="lg"] .wp-segmented__opt { padding: 0 var(--wp-space-6); font-size: var(--wp-text-base); }
 .wp-segmented[data-block] { display: flex; width: 100%; align-self: stretch; }
 .wp-segmented[data-block] .wp-segmented__opt { flex: 1 1 0; }
-.wp-segmented__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+/* The option sets line-height 1; the label clips (for the ellipsis), so it
+   needs a taller line or it cuts g, p, q and y. */
+.wp-segmented__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
 .wp-segmented[data-icon-only] .wp-segmented__opt { aspect-ratio: 1; padding: 0; }
 .wp-segmented__opt:hover:not(:disabled) { color: var(--wp-text); background: var(--wp-bg-3); }
 .wp-segmented__opt[data-active="true"] {
