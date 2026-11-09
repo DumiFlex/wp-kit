@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.1](https://github.com/DumiFlex/wp-kit/compare/v0.15.0...v0.15.1) (2026-11-09)
+
+
+### Bug Fixes
+
+* **PostCard:** show sample values as one line of text ([#115](https://github.com/DumiFlex/wp-kit/issues/115)) ([ced88a1](https://github.com/DumiFlex/wp-kit/commit/ced88a1e4c54ac6c20859b9d858f30f79a4e9edf))
+
 ## [0.15.0](https://github.com/DumiFlex/wp-kit/compare/v0.14.0...v0.15.0) (2026-11-09)
 
 
