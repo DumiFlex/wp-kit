@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
  * A community post as a card: type chip, NSFW / Featured / recommended
- * badges, version, `owner/name` slug, bundle contents, description, up to
- * four tags, then stars, downloads and when it was updated. A coloured stripe
+ * badges, version, `owner/name` slug, bundle contents, a few sample values
+ * from the pack, description, up to four tags, then stars, downloads and when it was updated. A coloured stripe
  * on top says the type; a featured card is tinted, a deleted one faded.
  *
  * The whole card is one link. It renders an `<a>` by default; pass the app's
@@ -38,6 +38,8 @@ export interface PostCardData {
   deleted?: boolean | undefined;
   version?: number | null | undefined;
   bundleModules?: { count: number; names: string[] } | null | undefined;
+  /** A few values the pack rolls (its options), shown as "what it makes". */
+  samples?: string[] | undefined;
 }
 
 const props = withDefaults(defineProps<{
@@ -52,6 +54,7 @@ const type = computed(() => itemType(props.post.kind, props.post.subtype));
 const owner = computed(() => props.post.slug.split("/")[0]);
 const name = computed(() => props.post.slug.split("/").slice(1).join("/"));
 const tags = computed(() => props.post.tags ?? []);
+const samples = computed(() => (props.post.samples ?? []).filter((v) => v.trim()).slice(0, 4));
 </script>
 
 <template>
@@ -82,6 +85,10 @@ const tags = computed(() => props.post.tags ?? []);
       :count="post.bundleModules.count"
       :names="post.bundleModules.names"
     />
+
+    <ul v-if="samples.length" class="wp-post-card__samples" aria-label="Sample values">
+      <li v-for="(v, i) in samples" :key="i" class="wp-post-card__sample">{{ v }}</li>
+    </ul>
 
     <p v-if="post.description" class="wp-post-card__desc">{{ post.description }}</p>
 
@@ -184,6 +191,28 @@ const tags = computed(() => props.post.tags ?? []);
   text-wrap: pretty;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+}
+.wp-post-card__samples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.wp-post-card__sample {
+  max-width: 100%;
+  overflow: hidden;
+  padding: 3px 9px;
+  font-family: var(--wp-font-mono);
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--wp-text);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background: color-mix(in oklab, var(--post-card-c) 12%, var(--wp-bg-2));
+  border: 1px solid color-mix(in oklab, var(--post-card-c) 28%, var(--wp-border));
+  border-radius: min(6px, var(--wp-radius-cap, 999px));
 }
 .wp-post-card__tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .wp-post-card__tags .wp-chip { padding: 2px 8px; font-size: 11px; }
