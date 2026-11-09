@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.2](https://github.com/DumiFlex/wp-kit/compare/v0.15.1...v0.15.2) (2026-11-09)
+
+
+### Bug Fixes
+
+* colour picker edges and thumb drift, uncut Segmented descenders, no false more-below hint ([#119](https://github.com/DumiFlex/wp-kit/issues/119)) ([d4728bb](https://github.com/DumiFlex/wp-kit/commit/d4728bb70ae90bedc68fc61a662cc848788b41a0))
+
 ## [0.15.1](https://github.com/DumiFlex/wp-kit/compare/v0.15.0...v0.15.1) (2026-11-09)
 
 
