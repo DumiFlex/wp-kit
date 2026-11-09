@@ -413,3 +413,21 @@ describe("useGrowableField — a drag can always end", () => {
     wrap.unmount();
   });
 });
+
+describe("useGrowableField — the hint is for hidden text, not padding", () => {
+  it("stays off while only the bottom padding is out of view", () => {
+    const { api, node, wrap } = mountField();
+    node.style.paddingBottom = "8px";
+    Object.defineProperty(node, "clientHeight", { value: 98, configurable: true });
+    Object.defineProperty(node, "scrollTop", { value: 0, configurable: true });
+    // 9px past the bottom: the padding plus a pixel of rounding.
+    Object.defineProperty(node, "scrollHeight", { value: 107, configurable: true });
+    api.updateOverflowHint();
+    expect(api.hasMoreBelow.value).toBe(false);
+    // A line of text past the padding still shows it.
+    Object.defineProperty(node, "scrollHeight", { value: 130, configurable: true });
+    api.updateOverflowHint();
+    expect(api.hasMoreBelow.value).toBe(true);
+    wrap.unmount();
+  });
+});

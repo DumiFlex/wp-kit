@@ -74,8 +74,12 @@ export function useGrowableField(
   function updateOverflowHint(): void {
     const el = getEl();
     if (!el) return;
-    // 2px slack absorbs sub-pixel rounding at the exact bottom.
-    hasMoreBelow.value = el.scrollHeight - el.scrollTop - el.clientHeight > 2;
+    // Only text counts: the bottom padding scrolling out of view hides
+    // nothing, so it is allowed for (a box a few px short of its padding
+    // showed the hint under a fully visible last line). 2px slack absorbs
+    // sub-pixel rounding at the exact bottom.
+    const pad = parseFloat(getComputedStyle(el).paddingBottom) || 0;
+    hasMoreBelow.value = el.scrollHeight - el.scrollTop - el.clientHeight > pad + 2;
   }
 
   function scheduleOverflowHint(): void {

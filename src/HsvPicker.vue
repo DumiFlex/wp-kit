@@ -38,6 +38,10 @@ const emit = defineEmits<{
 const hsv = ref<Hsv>({ h: 0, s: 1, v: 1 });
 
 function syncFromProp(hex: string) {
+  // Our own emit coming back: keep the exact position. A hex has only 256
+  // steps per channel, so near black (or grey) reading it back moves the
+  // thumb away from the pointer, and the hue jumps.
+  if (hex.toLowerCase() === hsvToHex(hsv.value).toLowerCase()) return;
   const parsed = hexToHsv(hex);
   if (!parsed) return;
   // Preserve the local hue when incoming RGB is pure black/white —
@@ -58,6 +62,18 @@ const hueBg = computed(() => `hsl(${hsv.value.h}, 100%, 50%)`);
 const svEl = ref<HTMLDivElement | null>(null);
 const hueEl = ref<HTMLDivElement | null>(null);
 
+/** Where `evt` sits inside `el`'s padding box (what the gradient and the
+ *  thumb are drawn in), as 0..1 fractions; the border is not part of it. */
+function fraction(el: HTMLElement, evt: PointerEvent): { x: number; y: number } {
+  const rect = el.getBoundingClientRect();
+  const left = rect.left + el.clientLeft;
+  const top = rect.top + el.clientTop;
+  const w = el.clientWidth || rect.width;
+  const h = el.clientHeight || rect.height;
+  const clamp = (n: number) => Math.max(0, Math.min(1, n));
+  return { x: w ? clamp((evt.clientX - left) / w) : 0, y: h ? clamp((evt.clientY - top) / h) : 0 };
+}
+
 /** Document-level drag state. Only one drag can be active at a time
  *  (one mouse / one finger), so a single `activeDrag` ref tracking
  *  which surface owns the current pointer is sufficient. */
@@ -66,19 +82,16 @@ let activeDrag: "sv" | "hue" | null = null;
 function handleSvMove(evt: PointerEvent) {
   const el = svEl.value;
   if (!el) return;
-  const rect = el.getBoundingClientRect();
-  const x = Math.max(0, Math.min(rect.width, evt.clientX - rect.left));
-  const y = Math.max(0, Math.min(rect.height, evt.clientY - rect.top));
-  hsv.value = { h: hsv.value.h, s: x / rect.width, v: 1 - (y / rect.height) };
+  const { x, y } = fraction(el, evt);
+  hsv.value = { h: hsv.value.h, s: x, v: 1 - y };
   emitHex();
 }
 
 function handleHueMove(evt: PointerEvent) {
   const el = hueEl.value;
   if (!el) return;
-  const rect = el.getBoundingClientRect();
-  const x = Math.max(0, Math.min(rect.width, evt.clientX - rect.left));
-  hsv.value = { h: (x / rect.width) * 360, s: hsv.value.s, v: hsv.value.v };
+  const { x } = fraction(el, evt);
+  hsv.value = { h: x * 360, s: hsv.value.s, v: hsv.value.v };
   emitHex();
 }
 
@@ -162,6 +175,11 @@ const hueCursorStyle = computed(() => ({
     linear-gradient(to top, #000, transparent),
     linear-gradient(to right, #fff, transparent),
     var(--wp-hsv-hue, hsl(0, 100%, 50%));
+  /* The gradients are sized to the padding box; without these they repeat
+     under the see-through border: a white line down the right edge, the
+     hue along the bottom. */
+  background-repeat: no-repeat;
+  background-clip: padding-box;
 }
 .wp-hsv-picker__sv-cursor {
   position: absolute;
@@ -192,6 +210,8 @@ const hueCursorStyle = computed(() => ({
     hsl(300, 100%, 50%),
     hsl(360, 100%, 50%)
   );
+  background-repeat: no-repeat;
+  background-clip: padding-box;
 }
 .wp-hsv-picker__hue-cursor {
   position: absolute;

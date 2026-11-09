@@ -199,6 +199,9 @@ function pickNone(): void {
   border-radius: min(3px, var(--wp-radius-cap, 999px));
   /* Checks show through a see-through colour. */
   background: repeating-conic-gradient(var(--wp-bg-4) 0 25%, var(--wp-bg-1) 0 50%) 0 0 / 8px 8px;
+  /* Not under the see-through border, or the checks show round the colour
+     as a jagged edge. */
+  background-clip: padding-box;
 }
 .wp-color-field--md .wp-color-field__chip { width: 20px; height: 20px; border-radius: min(4px, var(--wp-radius-cap, 999px)); }
 .wp-color-field--compact { padding: 0 3px; }
