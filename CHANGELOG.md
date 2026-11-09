@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0](https://github.com/DumiFlex/wp-kit/compare/v0.14.0...v0.15.0) (2026-11-09)
+
+
+### Features
+
+* **post-card:** show a few sample values from the pack ([#111](https://github.com/DumiFlex/wp-kit/issues/111)) ([c01cdc2](https://github.com/DumiFlex/wp-kit/commit/c01cdc27db3c33c33c7ff59aa96b38473ac6e57e))
+
+
+### Bug Fixes
+
+* **preview:** weight multiplier wraps under the chance on narrow cards ([#110](https://github.com/DumiFlex/wp-kit/issues/110)) ([3ad37b8](https://github.com/DumiFlex/wp-kit/commit/3ad37b80c6f2cc724025b86d407ac9e383817767))
+
 ## [0.14.0](https://github.com/DumiFlex/wp-kit/compare/v0.13.0...v0.14.0) (2026-11-03)
 
 
