@@ -6,7 +6,8 @@ const cards: PostCardData[] = [
   {
     slug: "dumi/warm-palette", kind: "module", subtype: "wildcard", stars: 42, downloads: 1280,
     updatedAt: new Date(Date.now() - 2 * day).toISOString(), recommended: true, version: 3,
-    description: "Warm sunset colours, weighted toward amber and rose.", tags: ["palette", "warm", "sunset", "colour", "film"],
+    description: "Warm sunset colours, weighted toward amber and rose.",
+    samples: ["amber haze", "rose gold", "burnt orange", "dusky violet"], tags: ["palette", "warm", "sunset", "colour", "film"],
   },
   {
     slug: "aspen/sunset-kit", kind: "bundle", stars: 7, downloads: 96, featured: true, version: 2,
