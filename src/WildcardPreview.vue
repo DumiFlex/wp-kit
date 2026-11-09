@@ -405,7 +405,10 @@ function isLong(o: WildcardOption): boolean {
                   >{{ expanded.has(`${g.name}|${oidx}`) ? "Show less" : "Show all" }}</Button>
                 </td>
                 <td class="wp-wc__chance">
-                  <span>{{ totalWeight ? pct(Math.max(0, o.weight)) : "—" }}<template v-if="o.weight !== 1"> · ×{{ fmt(o.weight) }}</template></span>
+                  <span>{{ totalWeight ? pct(Math.max(0, o.weight)) : "—" }}<span
+                    v-if="o.weight !== 1"
+                    class="wp-wc__mult"
+                  ><span class="wp-wc__sep"> · </span>×{{ fmt(o.weight) }}</span></span>
                   <span
                     v-if="o.fallback"
                     class="wp-pv-fbtag"
@@ -548,6 +551,13 @@ function isLong(o: WildcardOption): boolean {
 @container (max-width: 640px) {
   .wp-wc__col-chance {
     width: 56px;
+  }
+  /* "29% · ×2" doesn't fit 56px: the weight goes on its own line. */
+  .wp-wc__mult {
+    display: block;
+  }
+  .wp-wc__sep {
+    display: none;
   }
   .wp-wc__bar {
     display: none;
