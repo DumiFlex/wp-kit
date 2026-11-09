@@ -53,7 +53,7 @@ describe("PostCard", () => {
     expect(chips[2]?.classes()).toContain("wp-chip--warn");
   });
 
-  it("shows up to four sample values, skipping blanks", () => {
+  it("shows up to four sample values on one line, skipping blanks", () => {
     const w = mount(PostCard, { props: { post: { ...post, samples: ["rim light", " ", "neon", "glow", "fog", "haze"] } } });
     expect(w.findAll(".wp-post-card__sample").map((s) => s.text())).toEqual(["rim light", "neon", "glow", "fog"]);
     expect(mount(PostCard, { props: { post } }).find(".wp-post-card__samples").exists()).toBe(false);

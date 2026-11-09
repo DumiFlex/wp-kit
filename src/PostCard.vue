@@ -86,9 +86,13 @@ const samples = computed(() => (props.post.samples ?? []).filter((v) => v.trim()
       :names="post.bundleModules.names"
     />
 
-    <ul v-if="samples.length" class="wp-post-card__samples" aria-label="Sample values">
-      <li v-for="(v, i) in samples" :key="i" class="wp-post-card__sample">{{ v }}</li>
-    </ul>
+    <p v-if="samples.length" class="wp-post-card__samples" :title="samples.join(' · ')">
+      <span class="wp-post-card__samples-k">Rolls</span>
+      <template v-for="(v, i) in samples" :key="i">
+        <span v-if="i" class="wp-post-card__samples-sep" aria-hidden="true"> · </span>
+        <span class="wp-post-card__sample">{{ v }}</span>
+      </template>
+    </p>
 
     <p v-if="post.description" class="wp-post-card__desc">{{ post.description }}</p>
 
@@ -193,27 +197,22 @@ const samples = computed(() => (props.post.samples ?? []).filter((v) => v.trim()
   -webkit-box-orient: vertical;
 }
 .wp-post-card__samples {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
   margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.wp-post-card__sample {
-  max-width: 100%;
   overflow: hidden;
-  padding: 3px 9px;
-  font-family: var(--wp-font-mono);
-  font-size: 12px;
-  line-height: 1.4;
+  font-size: 13px;
+  line-height: 1.5;
   color: var(--wp-text);
   white-space: nowrap;
   text-overflow: ellipsis;
-  background: color-mix(in oklab, var(--post-card-c) 12%, var(--wp-bg-2));
-  border: 1px solid color-mix(in oklab, var(--post-card-c) 28%, var(--wp-border));
-  border-radius: min(6px, var(--wp-radius-cap, 999px));
 }
+.wp-post-card__samples-k {
+  margin-right: 8px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wp-text-muted);
+}
+.wp-post-card__samples-sep { color: var(--wp-text-muted); }
 .wp-post-card__tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .wp-post-card__tags .wp-chip { padding: 2px 8px; font-size: 11px; }
 .wp-post-card__foot {
