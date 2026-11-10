@@ -577,7 +577,7 @@ input, textarea, select { font: inherit; }
   height: 100%;
   min-height: 0;
 }
-.wp-table-wrap--scroll { padding-bottom: var(--wp-bar-room, 0px); }
+.wp-table-wrap--scroll[data-wp-bar~="x"] { padding-bottom: var(--wp-bar-room, 0px); }
 .wp-page--fill > .wp-table-wrap--scroll {
   flex: 1 1 auto;
   min-height: 0;

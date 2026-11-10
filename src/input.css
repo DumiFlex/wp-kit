@@ -14,6 +14,8 @@
 .wp-input-group { box-sizing: border-box; }
 
 .wp-input,
+/* An overlay scrollbar (Firefox, macOS) is drawn over the text. */
+.wp-textarea[data-wp-bar~="y"] { padding-inline-end: calc(10px + var(--wp-bar-room, 0px)); }
 .wp-textarea {
   height: var(--wp-control-h-md);
   width: 100%;
@@ -29,8 +31,6 @@
 .wp-textarea {
   height: auto;
   padding: 8px 10px;
-  /* An overlay scrollbar (Firefox, macOS) is drawn over the text. */
-  padding-inline-end: calc(10px + var(--wp-bar-room, 0px));
   resize: vertical;
   min-height: var(--wp-control-h-md);
   line-height: 1.5;

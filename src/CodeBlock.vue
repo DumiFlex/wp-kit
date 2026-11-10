@@ -21,6 +21,7 @@
 import { computed, ref, watch } from "vue";
 import CopyButton from "./CopyButton.vue";
 import { vTooltip } from "./tooltip";
+import { vBarRoom } from "./overlay-scrollbars";
 import { highlight, highlightLanguage, highlightLines } from "./highlight";
 
 const props = withDefaults(defineProps<{
@@ -76,6 +77,7 @@ const name = computed(() => props.title ?? props.language ?? "Code");
       </span>
     </figcaption>
     <pre
+      v-bar-room
       class="wp-code__pre"
       tabindex="0"
       :aria-label="name"
@@ -113,7 +115,6 @@ const name = computed(() => props.title ?? props.language ?? "Code");
 .wp-code__tool:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--wp-border-focus); }
 .wp-code__pre {
   margin: 0; padding: var(--wp-space-4); overflow: auto;
-  padding-bottom: calc(var(--wp-space-4) + var(--wp-bar-room, 0px));
   color: var(--wp-text); font: 400 var(--wp-text-sm)/1.55 var(--wp-font-mono);
   white-space: pre; tab-size: 2;
   /* Code shows as written: no `===` or `<!--` ligatures. */
@@ -121,6 +122,8 @@ const name = computed(() => props.title ?? props.language ?? "Code");
 }
 .wp-code[data-size="sm"] .wp-code__pre { padding: var(--wp-space-3); font-size: var(--wp-text-xs); }
 .wp-code[data-wrap] .wp-code__pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+/* An overlay scrollbar (Firefox, macOS) is drawn over the last line otherwise. */
+.wp-code__pre[data-wp-bar~="x"] { padding-bottom: calc(var(--wp-space-4) + var(--wp-bar-room, 0px)); }
 .wp-code__pre:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--wp-border-focus); }
 .wp-code__code { font: inherit; background: none; padding: 0; color: inherit; }
 .wp-code__code--numbered { display: table; }
