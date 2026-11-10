@@ -79,6 +79,8 @@ const tint = computed(() => (props.color ? { color: props.color } : undefined));
   width: 212px;
   max-height: 276px;
   overflow-y: auto;
+  /* An overlay scrollbar (Firefox, macOS) sits over the last column otherwise. */
+  padding-inline-end: var(--wp-bar-room, 0px);
 }
 .wp-iconpick__panel[data-all] { width: 264px; }
 /* Stays at the top while the glyphs scroll under it. */

@@ -231,6 +231,7 @@ defineExpose({ place });
     max-height: calc(100vh - 16px);
     overflow: auto;
     padding: calc(var(--wp-space-3) + 1px); /* plus the 1px the ring stands in for */
+    padding-inline-end: calc(var(--wp-space-3) + 1px + var(--wp-bar-room, 0px));
     background: var(--wp-bg-2);
     color: var(--wp-text);
     /* The outline is an inset ring, not a border: these rules are layered, and

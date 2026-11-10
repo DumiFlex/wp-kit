@@ -257,7 +257,11 @@ const span = computed(() => props.columns.length + (props.selectable ? 1 : 0));
 </template>
 
 <style scoped>
-.wp-data-table { overflow: auto; }
+.wp-data-table {
+  overflow: auto;
+  /* An overlay scrollbar (Firefox, macOS) is drawn over the last row otherwise. */
+  padding-bottom: var(--wp-bar-room, 0px);
+}
 .wp-data-table__detail > td { background: var(--wp-bg-2); }
 .wp-data-table th[data-align="right"], .wp-data-table td[data-align="right"] { text-align: right; }
 .wp-data-table th[data-align="center"], .wp-data-table td[data-align="center"] { text-align: center; }
