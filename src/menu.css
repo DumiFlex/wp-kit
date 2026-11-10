@@ -13,12 +13,12 @@
  * subtitles, ticks); the sheet sets everything you see around it.
  */
 
+.wp-menu[data-wp-bar~="y"] { padding-inline-end: calc(4px + var(--wp-bar-room, 0px)); }
 .wp-menu {
   z-index: 10020; /* above every modal overlay (they run up to 10010) */
   box-sizing: border-box;
   margin: 0;
   padding: 4px;
-  padding-inline-end: calc(4px + var(--wp-bar-room, 0px));
   list-style: none;
   background: var(--wp-bg-2);
   color: var(--wp-text);

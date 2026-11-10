@@ -27,6 +27,7 @@
 import { computed, useSlots } from "vue";
 import Checkbox from "./Checkbox.vue";
 import Skeleton from "./Skeleton.vue";
+import { vBarRoom } from "./overlay-scrollbars";
 
 export interface DataColumn<R> {
   key: string;
@@ -156,7 +157,7 @@ const span = computed(() => props.columns.length + (props.selectable ? 1 : 0));
 </script>
 
 <template>
-  <div class="wp-table-wrap wp-data-table" :data-size="size">
+  <div v-bar-room class="wp-table-wrap wp-data-table" :data-size="size">
     <table
       class="wp-table"
       :class="{ 'wp-table--sticky-head': stickyHead }"
@@ -259,9 +260,9 @@ const span = computed(() => props.columns.length + (props.selectable ? 1 : 0));
 <style scoped>
 .wp-data-table {
   overflow: auto;
-  /* An overlay scrollbar (Firefox, macOS) is drawn over the last row otherwise. */
-  padding-bottom: var(--wp-bar-room, 0px);
 }
+/* An overlay scrollbar (Firefox, macOS) is drawn over the last row otherwise. */
+.wp-data-table[data-wp-bar~="x"] { padding-bottom: var(--wp-bar-room, 0px); }
 .wp-data-table__detail > td { background: var(--wp-bg-2); }
 .wp-data-table th[data-align="right"], .wp-data-table td[data-align="right"] { text-align: right; }
 .wp-data-table th[data-align="center"], .wp-data-table td[data-align="center"] { text-align: center; }

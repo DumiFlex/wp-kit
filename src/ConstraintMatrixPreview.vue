@@ -25,6 +25,7 @@
  */
 import { computed } from "vue";
 import TokenizedValue from "./TokenizedValue.vue";
+import { vBarRoom } from "./overlay-scrollbars";
 import {
   groupHue as tagHue,
   groupLabel,
@@ -110,6 +111,7 @@ function fmtFactor(f: number): string {
     <!-- Matrix grid -->
     <div
       v-if="rows.length"
+      v-bar-room
       class="wp-cn-grid-wrap"
     >
       <table class="wp-cn-table">
@@ -352,10 +354,10 @@ function fmtFactor(f: number): string {
   border: 1px solid var(--wp-border);
   border-radius: min(6px, var(--wp-radius-cap, 999px));
   padding: 0;
-  /* An overlay scrollbar (Firefox, macOS) is drawn over the last row / column otherwise. */
-  padding-bottom: var(--wp-bar-room, 0px);
-  padding-inline-end: var(--wp-bar-room, 0px);
 }
+/* An overlay scrollbar (Firefox, macOS) is drawn over the last row / column otherwise. */
+.wp-cn-grid-wrap[data-wp-bar~="x"] { padding-bottom: var(--wp-bar-room, 0px); }
+.wp-cn-grid-wrap[data-wp-bar~="y"] { padding-inline-end: var(--wp-bar-room, 0px); }
 /* `separate` + zero spacing; the 4px inter-cell gap comes from th/td padding,
    so the columns the <th> headers form line up exactly with the body <td>s. */
 .wp-cn-table {

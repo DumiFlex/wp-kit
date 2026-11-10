@@ -2,6 +2,7 @@
 import { onBeforeUnmount, ref, watch, nextTick } from "vue";
 import { placeFloating, viewportSize, type Placement } from "./floating";
 import { useFloatingChild } from "./floating-layer";
+import { vBarRoom } from "./overlay-scrollbars";
 
 export interface ContextMenuItem {
   label: string;
@@ -204,6 +205,7 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
     <ul
       v-if="visible"
       ref="menuEl"
+      v-bar-room
       class="wp-ctxmenu wp-menu"
       :style="{ left: `${pos.x}px`, top: `${pos.y}px` }"
       role="menu"

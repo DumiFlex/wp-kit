@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from "vue";
+import { vBarRoom } from "./overlay-scrollbars";
 
 interface Props {
   modelValue: string;
@@ -47,6 +48,7 @@ watch(() => props.modelValue, () => {
   <textarea
     :id="id"
     ref="taRef"
+    v-bar-room
     class="wp-textarea"
     :data-mono="mono || undefined"
     :data-tone="tone"

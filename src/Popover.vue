@@ -35,6 +35,7 @@
 import { computed, nextTick, onBeforeUnmount, ref, useId, watch } from "vue";
 import { placeFloating, roomOn, viewportSize, type Placement, type Side, type VirtualAnchor } from "./floating";
 import { provideFloatingLayer, useFloatingChild } from "./floating-layer";
+import { vBarRoom } from "./overlay-scrollbars";
 
 defineOptions({ inheritAttrs: false });
 
@@ -199,6 +200,7 @@ defineExpose({ place });
       v-if="open"
       :id="id"
       ref="panelEl"
+      v-bar-room
       class="wp-popover"
       :class="{ 'wp-menu': isMenu }"
       :data-side="pos.side"
@@ -224,6 +226,8 @@ defineExpose({ place });
 <style>
 @layer wp-extension {
   .wp-popover-anchor { display: inline-flex; }
+  /* An overlay scrollbar (Firefox, macOS) is drawn over the content otherwise. */
+  .wp-popover[data-wp-bar~="y"] { padding-inline-end: calc(var(--wp-space-3) + 1px + var(--wp-bar-room, 0px)); }
   .wp-popover {
     position: fixed;
     z-index: 10000;
@@ -231,7 +235,6 @@ defineExpose({ place });
     max-height: calc(100vh - 16px);
     overflow: auto;
     padding: calc(var(--wp-space-3) + 1px); /* plus the 1px the ring stands in for */
-    padding-inline-end: calc(var(--wp-space-3) + 1px + var(--wp-bar-room, 0px));
     background: var(--wp-bg-2);
     color: var(--wp-text);
     /* The outline is an inset ring, not a border: these rules are layered, and
