@@ -8,6 +8,7 @@
 import { computed, ref } from "vue";
 import SearchInput from "./SearchInput.vue";
 import { vTooltip } from "./tooltip";
+import { vBarRoom } from "./overlay-scrollbars";
 import { ICON_GROUPS } from "./icon-catalog";
 import { PI_ICONS } from "./pi-icons";
 
@@ -34,7 +35,7 @@ const tint = computed(() => (props.color ? { color: props.color } : undefined));
 </script>
 
 <template>
-  <div class="wp-iconpick__panel" :data-all="all || undefined" :data-test="dataTest ? `${dataTest}-panel` : undefined">
+  <div v-bar-room class="wp-iconpick__panel" :data-all="all || undefined" :data-test="dataTest ? `${dataTest}-panel` : undefined">
     <SearchInput
       v-if="all"
       v-model="query"
@@ -76,12 +77,17 @@ const tint = computed(() => (props.color ? { color: props.color } : undefined));
 
 <style scoped>
 .wp-iconpick__panel {
+  box-sizing: border-box;
   width: 212px;
-  max-height: 276px;
+  /* Tall enough for the usual groups, so only the full set or a long list scrolls. */
+  max-height: 292px;
   overflow-y: auto;
-  /* An overlay scrollbar (Firefox, macOS) sits over the last column otherwise. */
-  padding-inline-end: var(--wp-bar-room, 0px);
 }
+/* An overlay scrollbar (Firefox, macOS) sits over the last column otherwise. */
+/* The panel grows by the room rather than squeezing the grid, so the cells keep
+   their size and the list its height. */
+.wp-iconpick__panel[data-wp-bar~="y"] { width: calc(212px + var(--wp-bar-room, 0px)); padding-inline-end: var(--wp-bar-room, 0px); }
+.wp-iconpick__panel[data-all][data-wp-bar~="y"] { width: calc(264px + var(--wp-bar-room, 0px)); }
 .wp-iconpick__panel[data-all] { width: 264px; }
 /* Stays at the top while the glyphs scroll under it. */
 .wp-iconpick__search { position: sticky; top: 0; z-index: 1; margin-bottom: var(--wp-space-3); box-shadow: 0 0 0 var(--wp-space-2) var(--wp-bg-2); background: var(--wp-bg-2); }
