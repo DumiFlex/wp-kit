@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.3](https://github.com/DumiFlex/wp-kit/compare/v0.15.2...v0.15.3) (2026-11-10)
+
+
+### Bug Fixes
+
+* leave room for overlay scrollbars over popovers, menus, the icon picker, textareas and tables ([#123](https://github.com/DumiFlex/wp-kit/issues/123)) ([6b9fd03](https://github.com/DumiFlex/wp-kit/commit/6b9fd0384100cb8ab333373e94012312cf800e88))
+
 ## [0.15.2](https://github.com/DumiFlex/wp-kit/compare/v0.15.1...v0.15.2) (2026-11-09)
 
 
