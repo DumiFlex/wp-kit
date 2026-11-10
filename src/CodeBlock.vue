@@ -113,6 +113,7 @@ const name = computed(() => props.title ?? props.language ?? "Code");
 .wp-code__tool:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--wp-border-focus); }
 .wp-code__pre {
   margin: 0; padding: var(--wp-space-4); overflow: auto;
+  padding-bottom: calc(var(--wp-space-4) + var(--wp-bar-room, 0px));
   color: var(--wp-text); font: 400 var(--wp-text-sm)/1.55 var(--wp-font-mono);
   white-space: pre; tab-size: 2;
   /* Code shows as written: no `===` or `<!--` ligatures. */

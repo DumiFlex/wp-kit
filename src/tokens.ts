@@ -42,7 +42,9 @@ export const SHARED_TOKENS = [
 
 /** Read with a fallback (`var(--wp-bg-deep, var(--wp-bg))`) or kept for older
  *  hosts; a host may leave these out. */
-export const OPTIONAL_TOKENS = ["--wp-bg-deep", "--wp-bg2"] as const;
+export const OPTIONAL_TOKENS = ["--wp-bg-deep", "--wp-bg2",
+  // Room for a scrollbar drawn over the content (overlay-scrollbars.ts sets it).
+  "--wp-bar-room"] as const;
 
 /** Set by the piece itself, on its own root, not by the host. */
 export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon", "--wp-chip-c", "--wp-field-h",
