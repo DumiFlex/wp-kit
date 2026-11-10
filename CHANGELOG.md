@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.16.0](https://github.com/DumiFlex/wp-kit/compare/v0.15.4...v0.16.0) (2026-11-10)
+
+
+### Features
+
+* **tree-picker:** pick several items from a tree with search, picked chips and a folding row per parent ([#132](https://github.com/DumiFlex/wp-kit/issues/132)) ([0ae5b3f](https://github.com/DumiFlex/wp-kit/commit/0ae5b3f965b6cf226de1871e873fad8172c75dc1))
+
+
+### Bug Fixes
+
+* **input:** give plain text fields their box back ([#131](https://github.com/DumiFlex/wp-kit/issues/131)) ([6beaf0f](https://github.com/DumiFlex/wp-kit/commit/6beaf0fb26994f2c43762684af3153d6281dd79d))
+
 ## [0.15.4](https://github.com/DumiFlex/wp-kit/compare/v0.15.3...v0.15.4) (2026-11-10)
 
 
