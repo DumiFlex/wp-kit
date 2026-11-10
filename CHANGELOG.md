@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.4](https://github.com/DumiFlex/wp-kit/compare/v0.15.3...v0.15.4) (2026-11-10)
+
+
+### Bug Fixes
+
+* **scrollbars:** add bar room only while a box actually scrolls ([#127](https://github.com/DumiFlex/wp-kit/issues/127)) ([a7d33c2](https://github.com/DumiFlex/wp-kit/commit/a7d33c25886fac0d7b36a4e70e81d56297e01755))
+
 ## [0.15.3](https://github.com/DumiFlex/wp-kit/compare/v0.15.2...v0.15.3) (2026-11-10)
 
 
