@@ -124,6 +124,11 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "<input type=\"number\"> with the browser's spinner, or Input type=\"number\" (removed).",
   },
   {
+    id: "tree-picker", name: "TreePicker", group: "inputs", file: "src/TreePicker.vue", surfaces: ["manager", "community"], usedBy: [],
+    use: "Pick several items from a tree, such as a post's categories: a search box, the picks as removable chips, then one folding row per top-level item with its children as toggle chips (rows with picks start open, each counts its picks). A search lists the matches with their path. max disables the rest once that many are picked.",
+    instead: "A wall of toggle chips for every node with breadcrumb prefixes, or nested checkbox lists.",
+  },
+  {
     id: "search-input", name: "SearchInput", group: "inputs", file: "src/SearchInput.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
     use: "Every search or filter box: magnifier, text, an optional \"3 of 12\" count or key hint, and a ✕ that clears it. Escape clears it first. size sm on the canvas and in tight rows.",
     instead: "PickerSearch, Input with a search icon, or a hand-made box with its own icon and clear button.",
@@ -524,6 +529,7 @@ export const KIT_EXEMPT: Record<string, string> = {
 };
 
 export const KIT_EXAMPLES: Record<string, string> = {
+  "tree-picker": `<TreePicker v-model="slugs" :items="tree" :max="20" noun="categories" />`,
   "drag-handle": `<DragHandle />`,
   "list-row": `<ListRow :selected="tag === t" toggle icon="tag" :count="12" @click="pick(t)">portrait</ListRow>`,
   "bundle-meta": `<BundleMeta :count="3" :names="['palette', 'mood', 'style']" />`,
