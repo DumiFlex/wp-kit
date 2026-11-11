@@ -13,6 +13,11 @@ import Avatar from "@kit/Avatar.vue";
       <Avatar name="Kai Sato" size="sm" />
     </div>
     <div class="wp-kit__row">
+      <Avatar name="Dumi Flex" size="2xl" shape="square" />
+      <Avatar name="Ada Lovelace" size="xl" shape="square" />
+      <Avatar name="mira" size="xl" />
+    </div>
+    <div class="wp-kit__row">
       <Avatar name="Ada Lovelace" size="sm" decorative />
       <span>Ada Lovelace published <strong>Soft light pack</strong></span>
     </div>

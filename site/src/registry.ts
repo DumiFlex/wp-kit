@@ -269,7 +269,12 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "avatar", name: "Avatar", group: "display", file: "src/Avatar.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["community"],
-    use: "A person or bot: community authors, chat participants, history entries. Shows the picture, or initials on a colour picked from the name when there is none or it fails to load. decorative when the name is written beside it.",
+    use: "A person or bot: community authors, chat participants, history entries. Shows the picture, or initials on a colour picked from the name when there is none or it fails to load. decorative when the name is written beside it. sm/md/lg match the control heights; xl (64 px) and 2xl (96 px) are for a profile header.",
+  },
+  {
+    id: "stat", name: "Stat", group: "display", file: "src/Stat.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    use: "One number with its name: dashboard counts, moderation totals, a post's stars and downloads, a database's size. tile is a small card (icon in the corner, a delta line under the value; size=\"sm\" for a drawer); row is a label/value line for a summary list. Numbers are grouped for the locale; loading shows a Skeleton; as=\"button\" or \"a\" for a tile that opens something.",
+    instead: "A div with its own big-number and small-caps label styles per page.",
   },
   {
     id: "timeline", name: "Timeline", group: "display", file: "src/Timeline.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
@@ -613,6 +618,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "choice-cards": `<ChoiceCards v-model="look" :options="LOOKS" aria-label="Look"><template #preview="{ option }"><LookDrawing :id="option.value" /></template></ChoiceCards>`,
   "radio-group": `<RadioGroup v-model="style" :options="[{ value: 'tags', label: 'Tags', hint: 'Comma separated' }]" aria-label="Prompt style" />`,
   "avatar": `<Avatar :name="post.author" :src="post.avatar_url" size="sm" />`,
+  "stat": `<Stat label="Downloads" :value="post.download_count" icon="pi-download" delta="+12 this week" />  <Stat variant="row" label="Stars" :value="post.star_count" />`,
   "timeline": `<Timeline :items="history"><template #time="{ item }"><RelativeDate :value="item.at" /></template></Timeline>`,
   "diff-view": `<DiffView :before="old.text" :after="draft.text" />`,
   "image-grid": `<ImageGrid v-model:selected="keep" :images="outputs" selectable />`,
