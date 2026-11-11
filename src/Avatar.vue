@@ -18,7 +18,9 @@ const props = withDefaults(defineProps<{
   src?: string | null | undefined;
   /** A PrimeIcons class to draw instead of initials. */
   icon?: string | undefined;
-  size?: "sm" | "md" | "lg" | undefined;
+  /** sm/md/lg follow the control heights (24/32/40); xl (64) and 2xl (96)
+   *  are for a profile header. */
+  size?: "sm" | "md" | "lg" | "xl" | "2xl" | undefined;
   shape?: "circle" | "square" | undefined;
   /** The name is written next to it already. */
   decorative?: boolean | undefined;
@@ -76,8 +78,11 @@ const hue = computed(() => {
 }
 .wp-avatar[data-size="sm"] { --_s: var(--wp-control-h-sm); }
 .wp-avatar[data-size="lg"] { --_s: var(--wp-control-h-lg); }
+.wp-avatar[data-size="xl"] { --_s: 64px; }
+.wp-avatar[data-size="2xl"] { --_s: 96px; }
 .wp-avatar[data-shape="square"] { border-radius: var(--wp-radius); }
 .wp-avatar[data-size="sm"][data-shape="square"] { border-radius: var(--wp-radius-sm); }
+.wp-avatar:is([data-size="xl"], [data-size="2xl"])[data-shape="square"] { border-radius: var(--wp-radius-lg); }
 .wp-avatar__img { width: 100%; height: 100%; object-fit: cover; }
 .wp-avatar__icon { font-size: calc(var(--_s) * 0.45); }
 </style>
