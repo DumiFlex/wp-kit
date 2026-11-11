@@ -14,6 +14,8 @@ const inserted = ref<string | null>(null);
       <IconPicker v-model="pickedIcon" aria-label="Category icon" />
       <IconPicker v-model="noIcon" aria-label="Empty category icon" />
       <IconPicker v-model="pickedIcon" compact aria-label="Compact category icon" />
+      <IconPicker v-model="pickedIcon" size="sm" aria-label="Small category icon" />
+      <IconPicker v-model="pickedIcon" size="sm" compact aria-label="Small square category icon" />
     </div>
     <p class="wp-kit__caption">all: every PrimeIcons glyph with a search box, tinted by color</p>
     <div class="wp-kit__row">

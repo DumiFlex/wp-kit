@@ -269,7 +269,12 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "avatar", name: "Avatar", group: "display", file: "src/Avatar.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["community"],
-    use: "A person or bot: community authors, chat participants, history entries. Shows the picture, or initials on a colour picked from the name when there is none or it fails to load. decorative when the name is written beside it.",
+    use: "A person or bot: community authors, chat participants, history entries. Shows the picture, or initials on a colour picked from the name when there is none or it fails to load. decorative when the name is written beside it. sm/md/lg match the control heights; xl (64 px) and 2xl (96 px) are for a profile header.",
+  },
+  {
+    id: "stat", name: "Stat", group: "display", file: "src/Stat.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    use: "One number with its name: dashboard counts, moderation totals, a post's stars and downloads, a database's size. tile is a small card (icon in the corner, a delta line under the value; size=\"sm\" for a drawer); row is a label/value line for a summary list. Numbers are grouped for the locale; loading shows a Skeleton; as=\"button\" or \"a\" for a tile that opens something.",
+    instead: "A div with its own big-number and small-caps label styles per page.",
   },
   {
     id: "timeline", name: "Timeline", group: "display", file: "src/Timeline.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
@@ -371,7 +376,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   // Overlays
   {
     id: "modal", name: "Modal", group: "overlays", file: "src/Modal.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
-    use: "The one dialog, in the manager, on the canvas and on the community site: a title, body and footer buttons on ModalShell, so keys pressed in it never reach ComfyUI's shortcuts. Escape, the × and the backdrop close it (close-on-backdrop=\"false\" for a form that would lose work); Tab stays inside and focus goes back on close. size sm / md / lg; a custom #header puts :id=\"titleId\" on its heading; keydown gives every key pressed inside.",
+    use: "The one dialog, in the manager, on the canvas and on the community site: a title, body and footer buttons on ModalShell, so keys pressed in it never reach ComfyUI's shortcuts. Escape, the × and the backdrop close it (close-on-backdrop=\"false\" for a form that would lose work); Tab stays inside and focus goes back on close. size sm / md / lg; accent (a CSS colour) tints the header and colours icon, and header slot content reads it as --wp-modal-accent (an edit window's kind chip); flush drops the body padding; a custom #header puts :id=\"titleId\" on its heading; keydown gives every key pressed inside.",
     instead: "A div with role=\"dialog\" and its own backdrop, or ModalShell plus a hand-made frame.",
   },
   {
@@ -434,7 +439,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "icon-picker", name: "IconPicker", group: "pieces", file: "src/IconPicker.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Pick an icon: from the curated set for a category or bundle, or with all from every PrimeIcons glyph with a search box (a note's icon). The closed picker names the icon (or says Choose icon); compact drops the name for a table cell; color tints the glyphs; inline draws the list itself, no trigger, for a panel in an editor; allow-none=false drops No icon. The list opens in a kit Popover.",
+    use: "Pick an icon: from the curated set for a category or bundle, or with all from every PrimeIcons glyph with a search box (a note's icon). The closed picker names the icon (or says Choose icon); compact drops the name for a table cell; size=\"sm\" is the 24 px field, and sm + compact is a square with no caret that sits beside a compact ColorField; color tints the glyphs; inline draws the list itself, no trigger, for a panel in an editor; allow-none=false drops No icon. The list opens in a kit Popover.",
     instead: "NoteIconGrid and other hand-made icon grids with their own search box.",
   },
   {
@@ -607,12 +612,13 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "sortable-list": `<SortableList v-model="rules" :item-key="(r) => r.id" :item-label="(r) => r.name" label="Rules"><template #item="{ item }">{{ item.name }}</template></SortableList>`,
   "progress": `<ProgressBar :value="done" :max="total" label="Testing seeds" show-value />`,
   "skeleton": `<Skeleton shape="row" :lines="4" label="Loading modules" />`,
-  "icon-picker": `<IconPicker v-model="icon" aria-label="Category icon" />\n<IconPicker v-model="note.icon" all :color="note.color" aria-label="Note icon" />\n<IconPicker :model-value="null" all inline :allow-none="false" @update:model-value="insertIcon" />`,
+  "icon-picker": `<IconPicker v-model="icon" aria-label="Category icon" />\n<IconPicker v-model="label.icon" size="sm" compact aria-label="Group icon" />\n<IconPicker v-model="note.icon" all :color="note.color" aria-label="Note icon" />\n<IconPicker :model-value="null" all inline :allow-none="false" @update:model-value="insertIcon" />`,
   "combobox": `<Combobox v-model="cats" multiple :options="categories" aria-label="Categories" />`,
   "date-picker": `<DatePicker v-model="since" :max="today" clearable aria-label="Changed since" />`,
   "choice-cards": `<ChoiceCards v-model="look" :options="LOOKS" aria-label="Look"><template #preview="{ option }"><LookDrawing :id="option.value" /></template></ChoiceCards>`,
   "radio-group": `<RadioGroup v-model="style" :options="[{ value: 'tags', label: 'Tags', hint: 'Comma separated' }]" aria-label="Prompt style" />`,
   "avatar": `<Avatar :name="post.author" :src="post.avatar_url" size="sm" />`,
+  "stat": `<Stat label="Downloads" :value="post.download_count" icon="pi-download" delta="+12 this week" />  <Stat variant="row" label="Stars" :value="post.star_count" />`,
   "timeline": `<Timeline :items="history"><template #time="{ item }"><RelativeDate :value="item.at" /></template></Timeline>`,
   "diff-view": `<DiffView :before="old.text" :after="draft.text" />`,
   "image-grid": `<ImageGrid v-model:selected="keep" :images="outputs" selectable />`,
