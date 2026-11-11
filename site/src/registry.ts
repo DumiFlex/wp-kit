@@ -371,7 +371,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   // Overlays
   {
     id: "modal", name: "Modal", group: "overlays", file: "src/Modal.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
-    use: "The one dialog, in the manager, on the canvas and on the community site: a title, body and footer buttons on ModalShell, so keys pressed in it never reach ComfyUI's shortcuts. Escape, the × and the backdrop close it (close-on-backdrop=\"false\" for a form that would lose work); Tab stays inside and focus goes back on close. size sm / md / lg; a custom #header puts :id=\"titleId\" on its heading; keydown gives every key pressed inside.",
+    use: "The one dialog, in the manager, on the canvas and on the community site: a title, body and footer buttons on ModalShell, so keys pressed in it never reach ComfyUI's shortcuts. Escape, the × and the backdrop close it (close-on-backdrop=\"false\" for a form that would lose work); Tab stays inside and focus goes back on close. size sm / md / lg; accent (a CSS colour) tints the header and colours icon, and header slot content reads it as --wp-modal-accent (an edit window's kind chip); flush drops the body padding; a custom #header puts :id=\"titleId\" on its heading; keydown gives every key pressed inside.",
     instead: "A div with role=\"dialog\" and its own backdrop, or ModalShell plus a hand-made frame.",
   },
   {
