@@ -1,6 +1,6 @@
 {
   "name": "@dumiflex/wp-kit",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "description": "Vue 3 component kit shared by the Wildcard Pipeline manager, canvas and community site.",
   "keywords": [
     "vue",

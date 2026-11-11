@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.17.0](https://github.com/DumiFlex/wp-kit/compare/v0.16.0...v0.17.0) (2026-11-11)
+
+
+### Features
+
+* **icon-picker:** size sm, and a compact sm square like ColorField ([#136](https://github.com/DumiFlex/wp-kit/issues/136)) ([6bf0fe5](https://github.com/DumiFlex/wp-kit/commit/6bf0fe5e315b88cde6f138bb8f1b33e9bbea3d2a))
+* **modal:** accent header tint, icon and flush body for edit windows ([#138](https://github.com/DumiFlex/wp-kit/issues/138)) ([f344f2f](https://github.com/DumiFlex/wp-kit/commit/f344f2fb991154b6eb06bc41287ce8cf22c81f2c))
+* **stat:** add a Stat piece, and xl/2xl Avatar sizes for profile headers ([#137](https://github.com/DumiFlex/wp-kit/issues/137)) ([bfa4712](https://github.com/DumiFlex/wp-kit/commit/bfa47121d586ee0ce3937389758ed8834532761b))
+
 ## [0.16.0](https://github.com/DumiFlex/wp-kit/compare/v0.15.4...v0.16.0) (2026-11-10)
 
 
