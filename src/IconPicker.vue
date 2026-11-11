@@ -7,7 +7,9 @@
  *   <IconPicker :model-value="null" all inline :allow-none="false" @update:model-value="insert" />
  *
  * The closed picker shows the glyph and its name (`compact`: the glyph
- * alone, for a table cell). The list opens in the kit Popover, so it follows
+ * alone, for a table cell). `size` follows the 24/32 control scale (`md` by
+ * default); a `compact` `sm` picker is a small square with no caret, the
+ * same as a compact `ColorField` next to it. The list opens in the kit Popover, so it follows
  * the trigger on scroll, flips to stay on screen and closes on Escape or a
  * click outside with focus back on the trigger. `inline` draws the list
  * itself, with no trigger (a panel in an editor). Without `all` the list is
@@ -39,8 +41,10 @@ const props = withDefaults(
     color?: string | undefined;
     /** Offer "No icon" (null). */
     allowNone?: boolean | undefined;
+    /** Trigger height on the control scale: `sm` 24 px, `md` 32 px. */
+    size?: "sm" | "md" | undefined;
   }>(),
-  { ariaLabel: "Pick an icon", dataTest: undefined, compact: false, all: false, inline: false, color: undefined, allowNone: true },
+  { ariaLabel: "Pick an icon", dataTest: undefined, compact: false, all: false, inline: false, color: undefined, allowNone: true, size: "md" },
 );
 
 const emit = defineEmits<{ "update:modelValue": [v: string | null] }>();
@@ -72,7 +76,7 @@ function pick(name: string | null): void {
         v-bind="triggerProps"
         type="button"
         class="wp-iconpick__trigger"
-        :class="{ 'wp-iconpick__trigger--compact': compact }"
+        :class="[`wp-iconpick__trigger--${size}`, { 'wp-iconpick__trigger--compact': compact }]"
         :aria-label="`${ariaLabel}: ${current ? currentName : 'none'}`"
         :data-test="dataTest"
       >
@@ -89,7 +93,7 @@ function pick(name: string | null): void {
           :class="{ 'wp-iconpick__name--empty': !current }"
           aria-hidden="true"
         >{{ currentName }}</span>
-        <i class="pi pi-chevron-down wp-iconpick__caret" aria-hidden="true" />
+        <i v-if="!(compact && size === 'sm')" class="pi pi-chevron-down wp-iconpick__caret" aria-hidden="true" />
       </button>
     </template>
     <IconPickerPanel :current="current" :all="all" :color="color" :allow-none="allowNone" :data-test="dataTest" @pick="pick" />
@@ -116,8 +120,26 @@ function pick(name: string | null): void {
 .wp-iconpick__trigger:hover { border-color: var(--wp-border-strong); }
 .wp-iconpick__trigger:focus-visible { outline: none; border-color: var(--wp-accent-500); box-shadow: var(--wp-focus-ring); }
 .wp-iconpick__trigger--compact { min-width: 0; padding: 0 var(--wp-space-3); }
+.wp-iconpick__trigger--sm {
+  height: var(--wp-control-h-sm, 24px);
+  min-width: 120px;
+  padding: 0 var(--wp-space-3) 0 var(--wp-space-2);
+  font-size: 12px;
+}
+/* A small square like a compact ColorField: the glyph and nothing else. */
+.wp-iconpick__trigger--sm.wp-iconpick__trigger--compact { min-width: 0; padding: 0 3px; gap: 0; }
+/* No icon in the square: ColorField's red None slash, not a dash. */
+.wp-iconpick__trigger--sm.wp-iconpick__trigger--compact .wp-iconpick__slot { position: relative; }
+.wp-iconpick__trigger--sm.wp-iconpick__trigger--compact .wp-iconpick__none {
+  position: absolute;
+  inset: 0;
+  color: transparent;
+  background: linear-gradient(to top right, transparent calc(50% - 1px), var(--wp-danger) 50%, transparent calc(50% + 1px));
+}
 .wp-iconpick__name {
   flex: 1; min-width: 0; text-align: left;
+  /* One fixed line box, so the name sits level with the glyph's square. */
+  line-height: 16px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .wp-iconpick__name--empty { color: var(--wp-text-dim); }

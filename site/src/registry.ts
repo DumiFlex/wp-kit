@@ -434,7 +434,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "icon-picker", name: "IconPicker", group: "pieces", file: "src/IconPicker.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Pick an icon: from the curated set for a category or bundle, or with all from every PrimeIcons glyph with a search box (a note's icon). The closed picker names the icon (or says Choose icon); compact drops the name for a table cell; color tints the glyphs; inline draws the list itself, no trigger, for a panel in an editor; allow-none=false drops No icon. The list opens in a kit Popover.",
+    use: "Pick an icon: from the curated set for a category or bundle, or with all from every PrimeIcons glyph with a search box (a note's icon). The closed picker names the icon (or says Choose icon); compact drops the name for a table cell; size=\"sm\" is the 24 px field, and sm + compact is a square with no caret that sits beside a compact ColorField; color tints the glyphs; inline draws the list itself, no trigger, for a panel in an editor; allow-none=false drops No icon. The list opens in a kit Popover.",
     instead: "NoteIconGrid and other hand-made icon grids with their own search box.",
   },
   {
@@ -607,7 +607,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "sortable-list": `<SortableList v-model="rules" :item-key="(r) => r.id" :item-label="(r) => r.name" label="Rules"><template #item="{ item }">{{ item.name }}</template></SortableList>`,
   "progress": `<ProgressBar :value="done" :max="total" label="Testing seeds" show-value />`,
   "skeleton": `<Skeleton shape="row" :lines="4" label="Loading modules" />`,
-  "icon-picker": `<IconPicker v-model="icon" aria-label="Category icon" />\n<IconPicker v-model="note.icon" all :color="note.color" aria-label="Note icon" />\n<IconPicker :model-value="null" all inline :allow-none="false" @update:model-value="insertIcon" />`,
+  "icon-picker": `<IconPicker v-model="icon" aria-label="Category icon" />\n<IconPicker v-model="label.icon" size="sm" compact aria-label="Group icon" />\n<IconPicker v-model="note.icon" all :color="note.color" aria-label="Note icon" />\n<IconPicker :model-value="null" all inline :allow-none="false" @update:model-value="insertIcon" />`,
   "combobox": `<Combobox v-model="cats" multiple :options="categories" aria-label="Categories" />`,
   "date-picker": `<DatePicker v-model="since" :max="today" clearable aria-label="Changed since" />`,
   "choice-cards": `<ChoiceCards v-model="look" :options="LOOKS" aria-label="Look"><template #preview="{ option }"><LookDrawing :id="option.value" /></template></ChoiceCards>`,

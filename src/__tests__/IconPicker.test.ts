@@ -27,6 +27,20 @@ describe("IconPicker", () => {
     expect(w.find(".wp-iconpick__empty").text()).toContain("zzzz");
   });
 
+  it("size sm is the small field; compact sm is a square with no caret", () => {
+    const sm = mount(IconPicker, { props: { modelValue: "sun", size: "sm" } });
+    expect(sm.find(".wp-iconpick__trigger").classes()).toContain("wp-iconpick__trigger--sm");
+    expect(sm.find(".wp-iconpick__name").text()).toBe("Sun");
+    expect(sm.find(".wp-iconpick__caret").exists()).toBe(true);
+    const square = mount(IconPicker, { props: { modelValue: null, size: "sm", compact: true } });
+    expect(square.find(".wp-iconpick__name").exists()).toBe(false);
+    expect(square.find(".wp-iconpick__caret").exists()).toBe(false);
+    expect(square.find(".wp-iconpick__none").exists()).toBe(true);
+    const md = mount(IconPicker, { props: { modelValue: "sun", compact: true } });
+    expect(md.find(".wp-iconpick__trigger").classes()).toContain("wp-iconpick__trigger--md");
+    expect(md.find(".wp-iconpick__caret").exists()).toBe(true);
+  });
+
   it("tints the glyphs with color, and is one element for a parent's class", () => {
     const w = mount(IconPicker, { props: { modelValue: null, inline: true, all: true, color: "red" }, attrs: { class: "mine" } });
     expect(w.element.classList.contains("mine")).toBe(true);
