@@ -89,4 +89,28 @@ describe("Modal.vue", () => {
     wrap.unmount();
     opener.remove();
   });
+  it("accent tints the header, shows the icon and hands the colour to the header slot", () => {
+    const wrap = mount(Modal, {
+      props: { open: true, title: "Hair colour", accent: "rgb(1, 2, 3)", icon: "sparkles" },
+      slots: { default: "<p>x</p>" },
+      attachTo: document.body,
+    });
+    const dialog = document.body.querySelector<HTMLElement>(".wp-modal");
+    expect(dialog?.classList.contains("wp-modal--accent")).toBe(true);
+    expect(dialog?.style.getPropertyValue("--wp-modal-accent")).toBe("rgb(1, 2, 3)");
+    expect(document.body.querySelector(".wp-modal__icon.pi-sparkles")).not.toBeNull();
+    wrap.unmount();
+  });
+
+  it("no accent: a plain header with no icon; flush drops the body padding", () => {
+    const wrap = mount(Modal, {
+      props: { open: true, title: "Plain", flush: true },
+      slots: { default: "<p>x</p>" },
+      attachTo: document.body,
+    });
+    expect(document.body.querySelector(".wp-modal--accent")).toBeNull();
+    expect(document.body.querySelector(".wp-modal__icon")).toBeNull();
+    expect(document.body.querySelector(".wp-modal__body--flush")).not.toBeNull();
+    wrap.unmount();
+  });
 });

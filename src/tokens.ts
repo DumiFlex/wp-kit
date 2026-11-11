@@ -47,7 +47,7 @@ export const OPTIONAL_TOKENS = ["--wp-bg-deep", "--wp-bg2",
   "--wp-bar-room"] as const;
 
 /** Set by the piece itself, on its own root, not by the host. */
-export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon", "--wp-chip-c", "--wp-field-h",
+export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-modal-accent", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon", "--wp-chip-c", "--wp-field-h",
   // WorkingLine's marks and word (registered properties it animates).
   "--wp-wl-t", "--wp-wl-k", "--wp-wl-x", "--wp-wl-f", "--wp-wl-r", "--wp-wl-s", "--wp-wl-o", "--wp-wl-wo", "--wp-wl-wb",
   "--wp-wl-dx", "--wp-wl-dy", "--wp-wl-big", "--wp-wl-a", "--wp-wl-b",
