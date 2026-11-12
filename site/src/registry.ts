@@ -391,8 +391,8 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "popover", name: "Popover", group: "overlays", file: "src/Popover.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "A panel anchored to a button: a colour picker, a filter, a small form. It flips to stay on screen, follows on scroll and closes on Escape or a click outside. Every floating panel builds on it. One panel shared by many triggers (the cells of a rule grid) passes the clicked element as anchor instead of a trigger slot. A list that follows the text caret, or a card opened at a point, passes a virtual anchor (rectAnchor in floating.ts). Attributes go on the panel, so a hover card can stay open while the pointer is on it.",
-    instead: "A Teleport with its own placement maths and outside-click handler, including caret-following autocomplete lists and hover cards.",
+    use: "A panel anchored to a button: a colour picker, a filter, a small form. It flips to stay on screen, follows on scroll and closes on Escape or a click outside. Every floating panel builds on it. One panel shared by many triggers (the cells of a rule grid) passes the clicked element as anchor instead of a trigger slot. A list that follows the text caret, or a card opened at a point, passes a virtual anchor (rectAnchor in floating.ts). trigger=\"hover\" makes it a hover card: it opens after openDelay (280 ms), stays open while the pointer crosses into the card and closes closeDelay (160 ms) after it leaves; a click still toggles it and it doesn't take focus. With an anchor element the hover listeners go on that element.",
+    instead: "A Teleport with its own placement maths and outside-click handler, including caret-following autocomplete lists, and hover cards with their own open and close timers.",
   },
   {
     id: "dropdown-menu", name: "DropdownMenu", group: "overlays", file: "src/DropdownMenu.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["community"],

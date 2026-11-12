@@ -5,6 +5,7 @@ import Checkbox from "@kit/Checkbox.vue";
 import Popover from "@kit/Popover.vue";
 
 const open = ref(false);
+const card = ref(false);
 const kinds = ref({ wildcard: true, fixed: true, derivation: false });
 </script>
 
@@ -18,5 +19,11 @@ const kinds = ref({ wildcard: true, fixed: true, derivation: false });
       <Checkbox v-model="kinds.fixed" label="Fixed values" />
       <Checkbox v-model="kinds.derivation" label="Derivations" />
     </div>
+  </Popover>
+  <Popover v-model:open="card" trigger="hover" label="Reference">
+    <template #trigger="{ props }">
+      <Button v-bind="props" variant="ghost" icon="pi-sparkles">@{3f9a1c2e}</Button>
+    </template>
+    <p class="wp-kit__menu-col">Hair colour: a wildcard with 12 options. Hover card: it opens on hover or focus and stays open while the pointer is on it.</p>
   </Popover>
 </template>

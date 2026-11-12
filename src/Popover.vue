@@ -26,6 +26,19 @@
  * Attributes (`class`, `data-test`, `@mouseenter` …) go on the panel, so a
  * hover card can keep itself open while the pointer is over it.
  *
+ * `trigger="hover"` makes it a hover card: it opens after `openDelay` ms
+ * with the pointer (or focus) on the trigger, and closes `closeDelay` ms
+ * after the pointer leaves both the trigger and the card, so the pointer can
+ * cross the gap into the card. A click still toggles it (touch screens), and
+ * Escape and a click outside still close it. A hover card doesn't take focus.
+ * With an `anchor` element the same listeners go on that element; with a
+ * virtual anchor the caller opens it and the card's own hover keeps it open.
+ *
+ *   <Popover v-model:open="open" trigger="hover" label="Reference">
+ *     <template #trigger="{ props }"><Chip v-bind="props">@{a1b2c3d4}</Chip></template>
+ *     …card…
+ *   </Popover>
+ *
  * `variant="menu"` draws the panel as a menu (`menu.css`, the look Select's
  * list, ContextMenu and Combobox share): tighter padding, 4px from the
  * trigger, above modals, and it closes once its trigger scrolls out of view.
@@ -57,7 +70,13 @@ const props = withDefaults(defineProps<{
   variant?: "panel" | "menu" | undefined;
   /** Tallest the panel grows, in px, before it scrolls. */
   maxHeight?: number | undefined;
-}>(), { placement: "bottom-start", autofocus: true, role: "dialog", anchor: null, variant: "panel" });
+  /** "hover" opens it as a hover card (see above). */
+  trigger?: "click" | "hover" | undefined;
+  /** Hover card: ms with the pointer on the trigger before it opens. */
+  openDelay?: number | undefined;
+  /** Hover card: ms after the pointer leaves before it closes. */
+  closeDelay?: number | undefined;
+}>(), { placement: "bottom-start", autofocus: undefined, role: "dialog", anchor: null, variant: "panel", trigger: "click", openDelay: 280, closeDelay: 160 });
 
 const emit = defineEmits<{ (e: "update:open", v: boolean): void }>();
 
@@ -86,7 +105,38 @@ function anchorElement(): HTMLElement | null {
 }
 
 function setOpen(v: boolean): void {
+  clearHoverTimer();
   if (v !== props.open) emit("update:open", v);
+}
+
+const isHover = computed(() => props.trigger === "hover");
+/** A hover card leaves focus where it is unless asked otherwise. */
+const takesFocus = computed(() => props.autofocus ?? !isHover.value);
+
+let hoverTimer: ReturnType<typeof setTimeout> | undefined;
+function clearHoverTimer(): void {
+  if (hoverTimer !== undefined) clearTimeout(hoverTimer);
+  hoverTimer = undefined;
+}
+/** Pointer or focus came onto the trigger or the card. */
+function hoverIn(): void {
+  if (!isHover.value) return;
+  clearHoverTimer();
+  if (props.open) return;
+  hoverTimer = setTimeout(() => { hoverTimer = undefined; setOpen(true); }, props.openDelay);
+}
+/** Pointer or focus left the trigger or the card. */
+function hoverOut(): void {
+  if (!isHover.value) return;
+  clearHoverTimer();
+  if (!props.open) return;
+  hoverTimer = setTimeout(() => { hoverTimer = undefined; setOpen(false); }, props.closeDelay);
+}
+/** Focus moving between the trigger's own children isn't leaving it. */
+function focusOut(ev: FocusEvent): void {
+  const to = ev.relatedTarget;
+  if (to instanceof Node && ((ev.currentTarget as Node | null)?.contains(to) || panelEl.value?.contains(to))) return;
+  hoverOut();
 }
 
 const triggerProps = computed(() => ({
@@ -140,6 +190,19 @@ function onScroll(ev: Event): void {
 
 // A Select list, menu or Popover opened from inside this panel is part of it.
 const layer = provideFloatingLayer();
+
+// A hover card on an `anchor` element listens on that element.
+function hoverListen(el: HTMLElement, on: boolean): void {
+  const m = on ? "addEventListener" : "removeEventListener";
+  el[m]("mouseenter", hoverIn);
+  el[m]("mouseleave", hoverOut);
+  el[m]("focusin", hoverIn);
+  el[m]("focusout", focusOut as EventListener);
+}
+watch(() => (isHover.value ? anchorElement() : null), (el, old) => {
+  if (old) hoverListen(old, false);
+  if (el) hoverListen(el, true);
+}, { immediate: true });
 // And this panel is part of a Popover it was opened from.
 useFloatingChild(() => (props.open ? panelEl.value : null));
 
@@ -178,7 +241,7 @@ watch(() => props.open, async (v) => {
   if (!v) return;
   await nextTick();
   place();
-  if (props.autofocus && panelEl.value && !panelEl.value.contains(document.activeElement)) {
+  if (takesFocus.value && panelEl.value && !panelEl.value.contains(document.activeElement)) {
     (panelEl.value.querySelector<HTMLElement>(FOCUSABLE) ?? panelEl.value).focus();
   }
 }, { immediate: true });
@@ -186,16 +249,34 @@ watch(() => props.open, async (v) => {
 // A shared panel moving to another trigger re-places without closing.
 watch(() => props.anchor, () => { if (props.open) void nextTick(place); });
 
-onBeforeUnmount(() => { if (typeof window !== "undefined") listen(false); });
+onBeforeUnmount(() => {
+  clearHoverTimer();
+  const el = anchorElement();
+  if (el) hoverListen(el, false);
+  if (typeof window !== "undefined") listen(false);
+});
 
 defineExpose({ place });
 </script>
 
 <template>
-  <span v-if="$slots.trigger" ref="anchorEl" class="wp-popover-anchor">
+  <!-- Hover-card listeners only watch the pointer and focus; the trigger
+       inside is the control and keeps its own click and keys. -->
+  <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
+  <span
+    v-if="$slots.trigger"
+    ref="anchorEl"
+    class="wp-popover-anchor"
+    @mouseenter="hoverIn"
+    @mouseleave="hoverOut"
+    @focusin="hoverIn"
+    @focusout="focusOut"
+  >
     <slot name="trigger" :props="triggerProps" :open="open" />
   </span>
   <Teleport to="body">
+    <!-- The panel has its role; the hover listeners keep a hover card open. -->
+    <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
     <div
       v-if="open"
       :id="id"
@@ -215,6 +296,10 @@ defineExpose({ place });
         minWidth: pos.minWidth ? `${pos.minWidth}px` : undefined,
         maxHeight: pos.maxHeight !== undefined && Number.isFinite(pos.maxHeight) ? `${pos.maxHeight}px` : undefined,
       }"
+      @mouseenter="hoverIn"
+      @mouseleave="hoverOut"
+      @focusin="hoverIn"
+      @focusout="focusOut"
     >
       <slot :close="() => setOpen(false)" />
     </div>
