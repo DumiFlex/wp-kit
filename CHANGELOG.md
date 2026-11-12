@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.18.0](https://github.com/DumiFlex/wp-kit/compare/v0.17.0...v0.18.0) (2026-11-12)
+
+
+### Features
+
+* **modal:** accent="brand" lays the brand-gradient header wash ([#142](https://github.com/DumiFlex/wp-kit/issues/142)) ([6b8468e](https://github.com/DumiFlex/wp-kit/commit/6b8468eee0bea3ddd69631f10b316d8f77f5d004))
+* **modal:** size full, the work-window size for pickers and editors ([#144](https://github.com/DumiFlex/wp-kit/issues/144)) ([7ed3140](https://github.com/DumiFlex/wp-kit/commit/7ed3140d41309feef82a52326dc2574697f6a368))
+
 ## [0.17.0](https://github.com/DumiFlex/wp-kit/compare/v0.16.0...v0.17.0) (2026-11-11)
 
 
