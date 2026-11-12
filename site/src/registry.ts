@@ -361,7 +361,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "banner", name: "Banner", group: "feedback", file: "src/Banner.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "A message that stays on the page until it no longer applies: a draft to restore, a failed load, out-of-date items. Tone sets the colour and icon; add actions and a close button when they help.",
+    use: "A message that stays on the page until it no longer applies: a draft to restore, a failed load, out-of-date items. Tone sets the colour and icon; add actions and a close button when they help. animate drops it in as it appears (a draft or stale notice shown while you watch), instead of a Transition around it.",
     instead: "A tinted <div> with its own icon, colours and Dismiss button.",
   },
   {
@@ -376,7 +376,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "motion-css", name: "Entrance classes (motion.css)", group: "feedback", file: "src/motion.css", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves.",
+    use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves. wp-flash is a one-shot ring for the row that just changed (colour from --wp-flash-color).",
     instead: "A keyframe of opacity or transform in each component.",
   },
   // Overlays
