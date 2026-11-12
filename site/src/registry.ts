@@ -86,8 +86,8 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "copy-button", name: "CopyButton", group: "actions", file: "src/CopyButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Copy text to the clipboard. The icon turns into a check (or a cross when the copy fails) and says so to screen readers, so no toast is needed. Works on plain-http pages too.",
-    instead: "A button that calls navigator.clipboard and shows its own message.",
+    use: "Copy text to the clipboard. The icon turns into a check (or a cross when the copy fails) and says so to screen readers, so no toast is needed. Works on plain-http pages too. A place that draws its own button (a row icon button, a Copy debug text button, one per message) uses useCopied(): copy(text, key?) copies and copied / is(key) show Copied for the same 1.6 s.",
+    instead: "A button that calls navigator.clipboard and shows its own message, or a copied ref with its own setTimeout.",
   },
   {
     id: "toolbar", name: "Toolbar", group: "actions", file: "src/Toolbar.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
