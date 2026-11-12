@@ -125,4 +125,13 @@ describe("Modal.vue", () => {
     expect(document.body.querySelector(".wp-modal__body--flush")).not.toBeNull();
     wrap.unmount();
   });
+  it("size full is the work window size", () => {
+    const wrap = mount(Modal, {
+      props: { open: true, title: "Pick", size: "full" },
+      slots: { default: "<p>x</p>" },
+      attachTo: document.body,
+    });
+    expect(document.body.querySelector(".wp-modal")?.classList.contains("wp-modal--full")).toBe(true);
+    wrap.unmount();
+  });
 });
