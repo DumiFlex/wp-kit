@@ -81,8 +81,8 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "wp-icon-button", name: "WpIconButton", group: "actions", file: "src/WpIconButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "The 20 px icon button (24 px of click) inside a canvas row (module, injector, bundle and Model Info rows, the Context toolbar, and the Settings live preview of those rows): lock, internal, remove. tone tints the icon on hover and the whole box while pressed; pressed \"mixed\" is a bundle's \"some children\" state; variant bare is the row's fold caret. Rows are too tight for Button's 24 px sm.",
-    instead: "A <button class=\"wp-btn--icon-sm\"> or a hand-made caret button.",
+    use: "The 20 px icon button (24 px of click) inside a canvas row (module, injector, bundle and Model Info rows, the Context toolbar, and the Settings live preview of those rows): lock, internal, remove. tone tints the icon on hover and the whole box while pressed; pressed \"mixed\" is a bundle's \"some children\" state; open makes it the fold caret (one chevron that turns, aria-expanded, no box; label names what it folds); variant bare gives any other glyph that look. Rows are too tight for Button's 24 px sm.",
+    instead: "A <button class=\"wp-btn--icon-sm\">, or a caret that swaps pi-caret-right / pi-chevron-down by hand.",
   },
   {
     id: "copy-button", name: "CopyButton", group: "actions", file: "src/CopyButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
