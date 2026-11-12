@@ -325,8 +325,13 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "sortable-list", name: "SortableList", group: "layout", file: "src/SortableList.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Rows you put in order: drag the grip (a line shows where it lands, Escape cancels), or from the keyboard Space picks up, the arrows move, Space drops; Alt+↑/↓ moves one step. Each move is said to screen readers.",
+    use: "Rows you put in order: drag the grip (the row dims, the row it lands beside opens a gap with a line, the rows slide into place and the moved one pulses; Escape cancels), or from the keyboard Space picks up, the arrows move, Space drops; Alt+↑/↓ moves one step. Each move is said to screen readers. A grouped list decides drops itself with drop-line (an inset line inside a group) and @drop (row + before/after/end; end-zone leaves room below the last row).",
     instead: "HTML drag and drop with its own handle, drop line and no keyboard.",
+  },
+  {
+    id: "row-drag", name: "Row drag (useRowDrag + row-drag.css)", group: "layout", file: "src/row-drag.ts", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    use: "The drag SortableList is built on, for row lists with their own markup (a node's rows, a module list): the browser's drag, a target found over the whole list (it holds still while the gap opens), a gap with a glowing line, then the rows slide into place and the moved row pulses. candidate limits where a row may land (its own kind), accept decides and styles the line. Pull row-drag.css in scoped beside the rows.",
+    instead: "Each list's own dragover maths, gap classes and FLIP.",
   },
   {
     id: "virtual-list", name: "VirtualList", group: "layout", file: "src/VirtualList.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
@@ -580,6 +585,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "toast-card": `<ToastCard tone="success" summary="Saved Hair colour" action-label="Undo" @action="undo" @dismiss="close" />`,
   "loading-mark": `<LoadingMark block>Loading bundle…</LoadingMark>`,
   "working-line": `<WorkingLine :word="word" :word-key="phase" :time="elapsed" tempo="mid" variant="orbit" />`,
+  "row-drag": `const drag = useRowDrag({ list, onDrop: (from, t) => move(from, t) });\n<div ref="list" @dragover="drag.over" @drop="drag.drop">\n  <div v-for="r in rows" :data-drag-key="r.id" draggable="true" :class="drag.classes(r.id)" @dragstart="drag.start($event, r.id)" @dragend="drag.end">…</div>\n</div>`,
   "motion-css": `import "@dumiflex/wp-kit/motion.css";\n<span class="wp-enter-pop">👍</span>\n<div class="wp-enter-drop wp-attention">Search the web?</div>`,
   "modal": `<Modal v-model:open="open" title="Rename"><template #footer>…</template></Modal>`,
   "modal-shell": `<ModalShell :visible="open" @close="open = false"><div class="my-dialog">…</div></ModalShell>`,

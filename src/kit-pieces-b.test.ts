@@ -21,7 +21,7 @@ import Toolbar from "./Toolbar.vue";
 import { acceptList, dragItemMaybeAccepted, fileAccepted, formatBytes } from "./drop-zone";
 import { pageItems } from "./pagination";
 import { keyStep, keyToMark, percentOf, snap, snapToMarks, valueAt } from "./slider-math";
-import { dropIndex, moveItem } from "./sortable";
+import { dropIndex, dropTarget, moveItem, targetIndex } from "./sortable";
 
 const mounted: { unmount: () => void }[] = [];
 
@@ -70,6 +70,19 @@ describe("pure helpers", () => {
     expect(keyStep("PageDown", 1, 0, 2, 0.05)).toBe(0.5);
     expect(keyStep("End", 1, 0, 2, 0.05)).toBe(2);
     expect(keyStep("a", 1, 0, 2, 0.05)).toBeNull();
+  });
+
+  it("sortable finds the row and edge a drop lands on", () => {
+    const b = [{ top: 0, bottom: 20 }, { top: 22, bottom: 42 }];
+    expect(dropTarget(5, b)).toEqual({ over: 0, edge: "before" });
+    expect(dropTarget(15, b)).toEqual({ over: 0, edge: "after" });
+    expect(dropTarget(21, b)).toEqual({ over: 1, edge: "before" });
+    expect(dropTarget(50, b)).toEqual({ over: 1, edge: "end" });
+    expect(dropTarget(5, [])).toBeNull();
+    expect(targetIndex(0, { over: 2, edge: "after" })).toBe(2);
+    expect(targetIndex(2, { over: 0, edge: "before" })).toBe(0);
+    expect(targetIndex(1, { over: 0, edge: "after" })).toBe(1);
+    expect(targetIndex(0, { over: 2, edge: "end" })).toBe(2);
   });
 
   it("sortable moves an item and finds where a drag lands", () => {
@@ -577,17 +590,108 @@ describe("SortableList", () => {
     expect(w.emitted("move")?.at(-1)).toEqual([{ from: 2, to: 1 }]);
   });
 
-  it("drags with the pointer to where the line shows", async () => {
-    const w = bound(SortableList, { modelValue: rows, ...opts });
-    const lis = w.findAll(".wp-sortable__row");
-    lis.forEach((li: { element: Element }, i: number) => {
+  /** jsdom has no DragEvent: a plain event with clientY and a fake dataTransfer. */
+  async function dnd(el: Element, type: string, clientY = 0): Promise<Event> {
+    const ev = new Event(type, { bubbles: true, cancelable: true });
+    const dt = { setData: () => undefined, effectAllowed: "", dropEffect: "" };
+    Object.defineProperty(ev, "dataTransfer", { value: dt });
+    Object.defineProperty(ev, "clientY", { value: clientY });
+    el.dispatchEvent(ev);
+    await nextTick();
+    return ev;
+  }
+  function boxes(w: { findAll: (s: string) => { element: Element }[] }): void {
+    w.findAll(".wp-sortable__row").forEach((li, i) => {
       li.element.getBoundingClientRect = () => ({ top: i * 20, bottom: i * 20 + 20, height: 20, left: 0, right: 100, width: 100, x: 0, y: i * 20, toJSON: () => ({}) });
     });
-    const g = w.findAll(".wp-sortable__grip")[0];
-    await point(g, "pointerdown", { clientY: 10 });
-    await point(g, "pointermove", { clientY: 55 });
-    expect(w.find(".wp-sortable__line").exists()).toBe(true);
-    await point(g, "pointerup", { clientY: 55 });
+  }
+
+  it("drags from the grip: the target opens a gap and the drop moves the row", async () => {
+    const w = bound(SortableList, { modelValue: rows, ...opts });
+    boxes(w);
+    const li = () => w.findAll(".wp-sortable__row");
+    await point(w.findAll(".wp-sortable__grip")[0], "pointerdown", { clientY: 10 });
+    expect(li()[0].attributes("draggable")).toBe("true");
+    await dnd(li()[0].element, "dragstart");
+    expect(li()[0].classes()).toContain("wp-rowdrag--dragging");
+    const over = await dnd(w.find("ul").element, "dragover", 55);
+    expect(over.defaultPrevented).toBe(true);
+    expect(li()[2].classes()).toContain("wp-rowdrag--after");
+    await dnd(w.find("ul").element, "drop", 55);
     expect(names(w)).toEqual(["Beta", "Gamma", "Alpha"]);
+    expect(w.emitted("drop")?.at(-1)).toEqual([{ from: 0, over: 2, edge: "after", to: 2 }]);
+    expect(li()[2].classes()).not.toContain("wp-rowdrag--dragging");
+  });
+
+  it("starts no drag outside the grip and shows no line for a drop that changes nothing", async () => {
+    const w = bound(SortableList, { modelValue: rows, ...opts });
+    boxes(w);
+    const li = () => w.findAll(".wp-sortable__row");
+    const ev = await dnd(li()[1].element, "dragstart");
+    expect(ev.defaultPrevented).toBe(true);
+    await point(w.findAll(".wp-sortable__grip")[1], "pointerdown", { clientY: 30 });
+    await dnd(li()[1].element, "dragstart");
+    await dnd(w.find("ul").element, "dragover", 5);
+    expect(li()[0].classes()).toContain("wp-rowdrag--before");
+    // After Alpha, or on Beta itself, is where Beta already is: no line.
+    await dnd(w.find("ul").element, "dragover", 15);
+    expect(w.findAll(".wp-rowdrag--before, .wp-rowdrag--after, .wp-rowdrag--end")).toHaveLength(0);
+    await dnd(w.find("ul").element, "dragover", 25);
+    expect(w.findAll(".wp-rowdrag--before, .wp-rowdrag--after, .wp-rowdrag--end")).toHaveLength(0);
+    await dnd(li()[1].element, "dragend");
+    expect(li()[1].classes()).not.toContain("wp-rowdrag--dragging");
+  });
+
+  it("lets drop-line allow a same-place drop, style its line and refuse others", async () => {
+    const dropLine = (t: { over: number; edge: string }, noOp: boolean) =>
+      t.edge === "end" ? { inset: 12, color: "red" } : t.over === 0 ? false : noOp ? undefined : true;
+    const w = bound(SortableList, { modelValue: rows, ...opts, dropLine, endZone: true });
+    boxes(w);
+    const li = () => w.findAll(".wp-sortable__row");
+    await point(w.findAll(".wp-sortable__grip")[2], "pointerdown", { clientY: 50 });
+    await dnd(li()[2].element, "dragstart");
+    expect(w.find(".wp-sortable").attributes("data-end-zone")).toBe("true");
+    await dnd(w.find("ul").element, "dragover", 5);
+    expect(w.findAll(".wp-rowdrag--before")).toHaveLength(0);
+    await dnd(w.find("ul").element, "dragover", 70);
+    expect(li()[2].classes()).toContain("wp-rowdrag--end");
+    expect(li()[2].attributes("style")).toContain("--wp-rowdrag-inset: 12px");
+    await dnd(w.find("ul").element, "drop", 70);
+    expect(w.emitted("drop")?.at(-1)).toEqual([{ from: 2, over: 2, edge: "end", to: 2 }]);
+    expect(w.emitted("move")).toBeUndefined();
+  });
+});
+
+describe("useRowDrag", () => {
+  it("takes a foreign drag it recognises and finds its target over the whole list", async () => {
+    const { useRowDrag } = await import("./row-drag");
+    const list = document.createElement("div");
+    for (const k of ["a", "b"]) {
+      const el = document.createElement("div");
+      el.dataset.dragKey = k;
+      const i = k === "a" ? 0 : 1;
+      el.getBoundingClientRect = () => ({ top: i * 20, bottom: i * 20 + 20, height: 20, left: 0, right: 10, width: 10, x: 0, y: 0, toJSON: () => ({}) });
+      list.appendChild(el);
+    }
+    const dropped: unknown[] = [];
+    const drag = useRowDrag({ list: { value: list } as never, foreign: () => "x", onDrop: (from, t) => dropped.push([from, t]) });
+    const ev = (type: string, y: number) => {
+      const e = new Event(type, { cancelable: true });
+      Object.defineProperty(e, "clientY", { value: y });
+      return e as DragEvent;
+    };
+    drag.over(ev("dragover", 35));
+    expect(drag.classes("b")["wp-rowdrag--after"]).toBe(true);
+    drag.drop(ev("drop", 35));
+    expect(dropped).toEqual([["x", { key: "b", index: 1, edge: "after" }]]);
+    expect(drag.target.value).toBeNull();
+  });
+
+  it("leaves a drag alone when it isn't ours", async () => {
+    const { useRowDrag } = await import("./row-drag");
+    const drag = useRowDrag({ list: { value: document.createElement("div") } as never, onDrop: () => undefined });
+    const e = new Event("dragover", { cancelable: true }) as DragEvent;
+    drag.over(e);
+    expect(e.defaultPrevented).toBe(false);
   });
 });
