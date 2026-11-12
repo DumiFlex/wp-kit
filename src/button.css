@@ -100,9 +100,14 @@
   background: transparent;
   border-color: transparent;
   color: var(--wp-accent-text-strong);
-  text-decoration: underline;
 }
-.wp-btn--link:focus-visible { box-shadow: none; text-decoration: underline; }
+/* Only the words are underlined, never the icon beside them; a hand-written
+ * `.wp-btn` link with no label box underlines itself. */
+.wp-btn--link:hover .wp-btn__label,
+.wp-btn--link:not(:has(.wp-btn__label)):hover { text-decoration: underline; }
+.wp-btn--link:focus-visible { box-shadow: none; }
+.wp-btn--link:focus-visible .wp-btn__label,
+.wp-btn--link:not(:has(.wp-btn__label)):focus-visible { text-decoration: underline; }
 
 .wp-btn--danger { color: var(--wp-danger); }
 .wp-btn--danger:hover {
@@ -172,6 +177,7 @@
 .wp-btn--outline:is(:disabled:not([aria-busy="true"]), [aria-disabled="true"]):hover { background: transparent; border-color: var(--wp-border-strong); }
 .wp-btn--danger:is(:disabled:not([aria-busy="true"]), [aria-disabled="true"]):hover { background: var(--wp-bg-3); border-color: var(--wp-border); color: var(--wp-danger); }
 .wp-btn--link:is(:disabled:not([aria-busy="true"]), [aria-disabled="true"]):hover { color: var(--wp-accent-text); text-decoration: none; }
+.wp-btn--link:is(:disabled:not([aria-busy="true"]), [aria-disabled="true"]):hover .wp-btn__label { text-decoration: none; }
 
 /* Loading keeps the button's own colours; only the cursor says "wait". */
 .wp-btn[aria-busy="true"] { cursor: progress; transform: none; }
