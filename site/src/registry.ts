@@ -169,7 +169,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "combobox", name: "Combobox", group: "inputs", file: "src/Combobox.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "A select you can type in, for long lists: models, LoRAs, categories, variables. Typing filters, the arrows light an option, Enter takes it. multiple keeps the picks as chips and the list open, with a tick on each pick. Use WpSelect for a few fixed choices and TagInput when people may type their own words.",
+    use: "A select you can type in, for long lists: models, LoRAs, categories, variables. Typing filters, the arrows light an option, Enter takes it. multiple keeps the picks as chips and the list open, with a tick on each pick. Use WpSelect for a few fixed choices and TagInput when people may type their own words. Its arrow-key lit row is useListNav (useListNav.ts), which TagInput shares; an app's own caret autocomplete or palette uses it too.",
     instead: "A search box over a hand-made list, or a native <select> nobody can type in.",
   },
   {
