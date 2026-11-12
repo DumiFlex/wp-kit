@@ -244,13 +244,14 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "A <pre> with its own copy button, or none.",
   },
   {
-    id: "icon", name: "Icon", group: "display", file: "src/Icon.vue", surfaces: ["manager", "community"], usedBy: ["extension"],
+    id: "icon", name: "Icon", group: "display", file: "src/Icon.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
     use: "Every icon. Use the ICON_SM, ICON_MD and ICON_LG sizes. Icons are decoration: the button or text next to them carries the meaning.",
     instead: "An inline <svg> pasted into a component.",
   },
   {
-    id: "empty-state", name: "EmptyState", group: "display", file: "src/EmptyState.vue", surfaces: ["manager", "community"], usedBy: ["extension"],
-    use: "A page or list with nothing in it yet: say what goes here and offer the one action that fills it. size page (an empty list page), panel (the default, in a card or panel) or inline (one row).",
+    id: "empty-state", name: "EmptyState", group: "display", file: "src/EmptyState.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
+    use: "A page or list with nothing in it yet: say what goes here and offer the one action that fills it. size page (an empty list page), panel (the default, in a card or panel) or inline (one row). It reads only the shared tokens, so a node's empty tab or list on the canvas uses size inline too.",
+    instead: "An icon, a line and a hint drawn by hand in a node (wp-dbg-empty, wp-asm-empty …).",
   },
   {
     id: "image-zoom", name: "WpImageZoom", group: "display", file: "src/WpImageZoom.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
