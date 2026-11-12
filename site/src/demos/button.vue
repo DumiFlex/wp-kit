@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import Button from "@kit/Button.vue";
+import Chip from "@kit/Chip.vue";
 
 const favs = ref(true);
 </script>
@@ -24,6 +25,17 @@ const favs = ref(true);
       <Button size="sm" icon="pi-cog" aria-label="Small settings" />
       <Button icon="pi-cog" aria-label="Medium settings" />
       <Button size="lg" icon="pi-cog" aria-label="Large settings" />
+    </div>
+    <p class="wp-kit__muted">A block button that opens a window: label left, its state in #end, a chevron right.</p>
+    <div class="wp-kit__stack" style="max-width: 300px">
+      <Button size="sm" block icon="pi-list" icon-right="pi-chevron-right">
+        Per-iteration seeds
+        <template #end><Chip tone="accent">2 locked</Chip><Chip>1 bypassed</Chip></template>
+      </Button>
+      <Button size="sm" block icon="pi-ban" icon-right="pi-chevron-right">
+        Blocklist
+        <template #end><Chip>12 entries · plain</Chip></template>
+      </Button>
     </div>
     <p class="wp-kit__muted">Loading keeps its colours; disabled fades.</p>
     <div class="wp-kit__row">

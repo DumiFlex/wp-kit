@@ -139,3 +139,24 @@ describe("Button — canvas and link uses (WpButton and CloseButton were folded 
     expect(w.emitted("click")).toHaveLength(1);
   });
 });
+
+describe("Button #end", () => {
+  it("puts the end slot after the label and marks the split layout", () => {
+    const w = mount(Button, {
+      props: { block: true, iconRight: "chevron-right" },
+      slots: { default: "Per-iteration seeds", end: '<span class="cnt">2 locked</span>' },
+    });
+    const b = w.find("button");
+    expect(b.classes()).toContain("wp-btn--split");
+    const kids = [...b.element.children].map((e) => e.className);
+    expect(kids.indexOf("wp-btn__label")).toBeLessThan(kids.indexOf("wp-btn__end"));
+    expect(b.find(".wp-btn__end .cnt").text()).toBe("2 locked");
+    expect(b.find(".wp-btn__icon-right").exists()).toBe(true);
+  });
+
+  it("without an end slot nothing changes", () => {
+    const w = mount(Button, { slots: { default: "Save" } });
+    expect(w.find("button").classes()).not.toContain("wp-btn--split");
+    expect(w.find(".wp-btn__end").exists()).toBe(false);
+  });
+});

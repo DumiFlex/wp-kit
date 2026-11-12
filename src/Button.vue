@@ -31,6 +31,16 @@
  * Loading keeps the variant's colours, swaps the lead icon for the sparkle,
  * sets aria-busy and ignores clicks.
  *
+ * A block button that opens something (a window, a list) puts its state on
+ * the right in `#end` (counts as Chips, a short note) and its chevron in
+ * `iconRight`: the label then sits on the left and stretches, cut off with
+ * an ellipsis before the end part, which never shrinks.
+ *
+ *   <Button size="sm" block icon="pi-list" icon-right="pi-chevron-right">
+ *     Per-iteration seeds
+ *     <template #end><Chip size="xs" tone="accent">2 locked</Chip></template>
+ *   </Button>
+ *
  * `as="a"` draws a link that looks like a button (pass `href`, `target`…);
  * disabled then sets aria-disabled and takes it out of the tab order.
  *
@@ -85,6 +95,7 @@ const emit = defineEmits<{ click: [evt: MouseEvent] }>();
 
 const slots = useSlots();
 const iconOnly = computed(() => !slots.default);
+const split = computed(() => Boolean(slots.end) && !iconOnly.value);
 const isLink = computed(() => props.as === "a");
 const off = computed(() => Boolean(props.disabled || props.loading));
 
@@ -94,6 +105,7 @@ const classes = computed(() => [
   `wp-btn--${props.size}`,
   iconOnly.value && "wp-btn--icon",
   props.block && "wp-btn--block",
+  split.value && "wp-btn--split",
 ]);
 
 const markSize = computed(() => (props.size === "lg" ? 16 : props.size === "md" ? 14 : 12));
@@ -125,7 +137,8 @@ function onClick(e: MouseEvent): void {
     <LoadingMark v-if="loading" variant="sparkle" mono :size="markSize" decorative />
     <Icon v-else-if="icon" :name="icon" />
     <span v-if="!iconOnly" class="wp-btn__label"><slot /></span>
-    <Icon v-if="iconRight" :name="iconRight" />
+    <span v-if="split" class="wp-btn__end"><slot name="end" /></span>
+    <Icon v-if="iconRight" :name="iconRight" class="wp-btn__icon-right" />
   </component>
 </template>
 

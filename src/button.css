@@ -133,6 +133,12 @@
 
 .wp-btn--block { display: flex; width: 100%; }
 
+/* Label on the left, state (#end) and chevron on the right. */
+.wp-btn--split { justify-content: flex-start; }
+.wp-btn--split .wp-btn__label { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: start; }
+.wp-btn__end { display: inline-flex; flex: none; align-items: center; gap: 4px; }
+.wp-btn--split .wp-btn__icon-right { flex: none; color: var(--wp-text-dim); }
+
 /* Pressed: a toggle that is on (favourites only, filters open). */
 .wp-btn[aria-pressed="true"] {
   background: color-mix(in srgb, var(--wp-accent) 14%, transparent);
