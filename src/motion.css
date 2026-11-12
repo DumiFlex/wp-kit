@@ -11,6 +11,12 @@
  *                     something.
  *   .wp-attention     a soft accent ring that pulses three times (after
  *                     .wp-enter-drop when both are set).
+ *   .wp-flash         one ring and glow that fades out (900 ms): "this is
+ *                     the row that just changed" (a dropped row, a value a
+ *                     run wrote, the field a link jumped to). Its colour is
+ *                     --wp-flash-color (the accent by default). Remove and
+ *                     re-add the class (or re-key the element) to flash
+ *                     again.
  *
  * The moving element keeps its own position: set --wp-enter-x for an extra
  * horizontal shift (a chip centred with -50%), and it goes into the same
@@ -47,6 +53,7 @@
     animation: wp-enter-drop 0.5s ease-out;
   }
   .wp-attention { animation: wp-attention 2.4s ease-in-out 3; }
+  .wp-flash { animation: wp-flash 900ms ease-out; }
   .wp-enter-drop.wp-attention {
     animation: wp-enter-drop 0.5s ease-out, wp-attention 2.4s ease-in-out 0.5s 3;
   }
@@ -66,8 +73,16 @@
   }
   @keyframes wp-enter-drop { from { --wp-enter-o: 0; --wp-enter-y: -6px; } }
   @keyframes wp-attention { 50% { box-shadow: 0 0 0 6px var(--wp-accent-glow); } }
+  @keyframes wp-flash {
+    0% { box-shadow: 0 0 0 0 var(--wp-flash-color, var(--wp-accent)), 0 0 0 0 transparent; }
+    35% {
+      box-shadow: 0 0 0 3px var(--wp-flash-color, var(--wp-accent)),
+        0 0 16px color-mix(in srgb, var(--wp-flash-color, var(--wp-accent)) 45%, transparent);
+    }
+    100% { box-shadow: 0 0 0 0 transparent, 0 0 0 0 transparent; }
+  }
 
   @media (prefers-reduced-motion: reduce) {
-    .wp-enter-fade, .wp-enter-pop, .wp-enter-rise, .wp-enter-drop, .wp-attention { animation: none; }
+    .wp-enter-fade, .wp-enter-pop, .wp-enter-rise, .wp-enter-drop, .wp-attention, .wp-flash { animation: none; }
   }
 }

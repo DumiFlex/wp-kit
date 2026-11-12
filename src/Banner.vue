@@ -39,6 +39,8 @@ const props = withDefaults(defineProps<{
   dismissLabel?: string | undefined;
   /** Part of the page, not news: `role="note"` instead of a live region. */
   note?: boolean | undefined;
+  /** Drop in as it appears (a draft or stale notice shown while you watch). */
+  animate?: boolean | undefined;
 }>(), { tone: "info", size: "md", icon: undefined, dismissLabel: "Dismiss" });
 
 const emit = defineEmits<{ (e: "dismiss"): void }>();
@@ -50,6 +52,7 @@ const iconClass = computed(() => props.icon ?? TONE_ICON[props.tone]);
 <template>
   <div
     class="wp-banner"
+    :data-animate="animate || undefined"
     :data-tone="tone"
     :data-size="size"
     :role="note ? 'note' : tone === 'danger' ? 'alert' : 'status'"
@@ -71,6 +74,19 @@ const iconClass = computed(() => props.icon ?? TONE_ICON[props.tone]);
 </template>
 
 <style scoped>
+/* `animate`: a short drop-in on mount. It moves registered properties, not
+   opacity / transform themselves, so the text stays sharp (see motion.css). */
+@property --wp-banner-o { syntax: "<number>"; inherits: false; initial-value: 1; }
+@property --wp-banner-y { syntax: "<length>"; inherits: false; initial-value: 0px; }
+.wp-banner[data-animate] {
+  opacity: var(--wp-banner-o);
+  transform: translateY(var(--wp-banner-y));
+  animation: wp-banner-in 180ms ease-out;
+}
+@keyframes wp-banner-in { from { --wp-banner-o: 0; --wp-banner-y: -4px; } }
+@media (prefers-reduced-motion: reduce) {
+  .wp-banner[data-animate] { animation: none; }
+}
 .wp-banner {
   --_banner-tone: var(--wp-info);
   display: flex;

@@ -8,6 +8,7 @@
  */
 import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import Badge from "@kit/Badge.vue";
+import Banner from "@kit/Banner.vue";
 import Button from "@kit/Button.vue";
 import LoadingMark from "@kit/LoadingMark.vue";
 import Modal from "@kit/Modal.vue";
@@ -65,6 +66,8 @@ function showToast(): void {
   toast.push({ severity: "success", summary: "Saved Hair colour" });
 }
 const popOpen = ref(false);
+const flashKey = ref(0);
+const bannerKey = ref(0);
 const modalOpen = ref(false);
 const spinning = ref(true);
 
@@ -175,6 +178,31 @@ const STEPS = [
         </figcaption>
       </figure>
 
+      <figure class="wp-motion__tile">
+        <div class="wp-motion__stage wp-motion__stage--col">
+          <div :key="`a${flashKey}`" class="wp-motion__flash-row" :class="{ 'wp-flash': flashKey > 0 }">Hair colour</div>
+          <div :key="`b${flashKey}`" class="wp-motion__flash-row" :class="{ 'wp-flash': flashKey > 0 }" style="--wp-flash-color: var(--wp-kind-combine)">Outfit (a combine)</div>
+        </div>
+        <div class="wp-motion__bar">
+          <Button size="sm" icon="pi-bolt" data-test="motion-flash" @click="flashKey++">Flash</Button>
+        </div>
+        <figcaption>
+          <b>Flash</b> wp-flash: one ring and glow on the row that just changed (a drop, a value a run wrote). --wp-flash-color picks the colour.
+        </figcaption>
+      </figure>
+
+      <figure class="wp-motion__tile">
+        <div class="wp-motion__stage wp-motion__stage--col">
+          <Banner :key="bannerKey" animate tone="warn" size="sm" title="Unsaved draft">Restored from 2 minutes ago.</Banner>
+        </div>
+        <div class="wp-motion__bar">
+          <Button size="sm" icon="pi-replay" data-test="motion-banner" @click="bannerKey++">Show again</Button>
+        </div>
+        <figcaption>
+          <b>Banner entrance</b> Banner animate drops a notice in as it appears.
+        </figcaption>
+      </figure>
+
       <figure class="wp-motion__tile wp-motion__tile--wide">
         <div class="wp-motion__stage">
           <LoadingMark :size="64" variant="logo" label="Loading, 64 px" />
@@ -274,6 +302,7 @@ const STEPS = [
 .wp-motion__stage--col { flex-direction: column; align-items: stretch; gap: var(--wp-space-3); }
 .wp-motion__tile figcaption { font-size: var(--wp-text-sm); color: var(--wp-text-muted); }
 .wp-motion__tile figcaption b { color: var(--wp-text); font-weight: 600; margin-right: 6px; }
+.wp-motion__flash-row { padding: var(--wp-space-3) var(--wp-space-4); border: 1px solid var(--wp-border); border-radius: var(--wp-radius); background: var(--wp-bg-2); font-size: var(--wp-text-sm); }
 .wp-motion__pop { margin: 0; max-width: 220px; font-size: var(--wp-text-sm); }
 .wp-motion__ai-grid {
   display: grid; grid-template-columns: 64px repeat(3, minmax(0, 1fr)); gap: var(--wp-space-4) var(--wp-space-6);
