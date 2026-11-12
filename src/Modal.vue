@@ -15,6 +15,7 @@
  * keys go there, not on a window listener. ConfirmModal is built on it.
  *
  * `accent` (any CSS colour, e.g. `var(--wp-kind-wildcard)`) tints the header
+ * (`"brand"` lays a soft wash of the brand gradient instead, as the pickers have)
  * with that colour and shows `icon` in it; header slot content can read it as
  * `--wp-modal-accent` (a chip naming what is edited). `flush` drops the body's
  * padding for content made of its own padded sections.
@@ -30,9 +31,10 @@ import { useDialogFocus } from "./useDialogFocus";
 const props = withDefaults(defineProps<{
   open: boolean;
   title?: string | undefined;
-  size?: "sm" | "md" | "lg" | undefined;
+  /** `full` is a work window (95% of the view, 1280px at most, a fixed 90vh tall) for pickers and editors. */
+  size?: "sm" | "md" | "lg" | "full" | undefined;
   closeOnBackdrop?: boolean | undefined;
-  /** A CSS colour that tints the header and colours `icon`. */
+  /** A CSS colour that tints the header and colours `icon`; `"brand"` for the brand-gradient wash. */
   accent?: string | undefined;
   /** PrimeIcons name (without `pi-`) shown at the header's start. */
   icon?: string | undefined;
@@ -88,8 +90,8 @@ function onKeydown(ev: KeyboardEvent): void {
     <div
       ref="dialog"
       class="wp-modal"
-      :class="[`wp-modal--${size}`, { 'wp-modal--accent': !!accent }]"
-      :style="accent ? { '--wp-modal-accent': accent } : undefined"
+      :class="[`wp-modal--${size}`, { 'wp-modal--accent': !!accent && accent !== 'brand', 'wp-modal--brand': accent === 'brand' }]"
+      :style="accent ? { '--wp-modal-accent': accent === 'brand' ? 'var(--wp-accent)' : accent } : undefined"
       tabindex="-1"
       data-test="modal"
     >
@@ -131,6 +133,8 @@ function onKeydown(ev: KeyboardEvent): void {
 .wp-modal--sm { max-width: 380px; }
 .wp-modal--md { max-width: 560px; }
 .wp-modal--lg { max-width: 880px; }
+/* One size whatever the content, so switching views never moves the window. */
+.wp-modal--full { max-width: min(1280px, 95vw); height: 90vh; max-height: 90vh; }
 .wp-modal__head {
   display: flex;
   align-items: center;
@@ -145,6 +149,12 @@ function onKeydown(ev: KeyboardEvent): void {
     color-mix(in srgb, var(--wp-modal-accent) 18%, var(--wp-bg-2)) 0%,
     var(--wp-bg-2) 100%
   );
+}
+/* The brand wash: the gradient under an 85% veil of the page colour. */
+.wp-modal--brand .wp-modal__head {
+  background:
+    linear-gradient(color-mix(in srgb, var(--wp-bg) 85%, transparent), color-mix(in srgb, var(--wp-bg) 85%, transparent)),
+    var(--wp-brand-gradient);
 }
 .wp-modal__icon { flex: none; width: 24px; text-align: center; font-size: 18px; color: var(--wp-modal-accent, var(--wp-accent)); }
 .wp-modal__title { flex: 1; margin: 0; font-size: var(--wp-text-md); font-weight: 600; color: var(--wp-text); }

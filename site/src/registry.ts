@@ -401,7 +401,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "modal-shell", name: "ModalShell", group: "overlays", file: "src/ModalShell.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "The backdrop, open/close motion, Escape and the key shield (keys pressed in a dialog never reach ComfyUI's shortcuts) under every dialog. Modal is built on it; reach for it alone only for a dialog with its own frame (a full-screen picker). close says why: escape or backdrop.",
+    use: "The backdrop, open/close motion, Escape and the key shield (keys pressed in a dialog never reach ComfyUI's shortcuts) under every dialog. Modal is built on it; reach for it alone only for a dialog with its own frame (a full-screen picker is Modal size `full`). close says why: escape or backdrop.",
   },
   {
     id: "confirm-modal", name: "ConfirmModal", group: "overlays", file: "src/ConfirmModal.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],

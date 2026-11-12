@@ -8,6 +8,8 @@ import Modal from "@kit/Modal.vue";
 const name = ref("Hair colour");
 const modalOpen = ref(false);
 const editOpen = ref(false);
+const pickOpen = ref(false);
+const fullOpen = ref(false);
 </script>
 
 <template>
@@ -33,6 +35,17 @@ const editOpen = ref(false);
       <Button @click="editOpen = false">Cancel</Button>
       <Button variant="primary" @click="editOpen = false">Save</Button>
     </template>
+  </Modal>
+  <Button @click="pickOpen = true">Open a picker</Button>
+  <Modal v-model:open="pickOpen" title="Browse templates" size="md" accent="brand" icon="folder-open">
+    <p>`accent="brand"` gives the header a soft wash of the brand gradient.</p>
+    <template #footer>
+      <Button @click="pickOpen = false">Cancel</Button>
+    </template>
+  </Modal>
+  <Button @click="fullOpen = true">Open a work window</Button>
+  <Modal v-model:open="fullOpen" title="Pick images" size="full" accent="var(--wp-accent)" icon="filter">
+    <p>`size="full"` keeps one size in every view, for pickers and editors that fill the screen.</p>
   </Modal>
 </template>
 
