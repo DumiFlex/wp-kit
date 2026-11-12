@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.19.0](https://github.com/DumiFlex/wp-kit/compare/v0.18.1...v0.19.0) (2026-11-12)
+
+
+### Features
+
+* **button:** an end slot for a block button's state ([#158](https://github.com/DumiFlex/wp-kit/issues/158)) ([3a1c584](https://github.com/DumiFlex/wp-kit/commit/3a1c584b2711d372a653086fca794ba4f02f1edd))
+* **copy:** useCopied for buttons that copy on their own ([#153](https://github.com/DumiFlex/wp-kit/issues/153)) ([2612dc7](https://github.com/DumiFlex/wp-kit/commit/2612dc79bba488d11dc5263f6a811866ef6bad67))
+* **empty-state:** EmptyState and Icon work on the canvas ([#156](https://github.com/DumiFlex/wp-kit/issues/156)) ([dae230d](https://github.com/DumiFlex/wp-kit/commit/dae230d7b066caefe90075eb8fc19defd09cb72d))
+* **icon-button:** WpIconButton open, one fold caret that turns ([#157](https://github.com/DumiFlex/wp-kit/issues/157)) ([d12b29e](https://github.com/DumiFlex/wp-kit/commit/d12b29e6da52d9bb8ce10fde9876d64ec6ec781d))
+* **kinds:** axis, matrix and kind helpers run on the canvas, more kind icons ([#155](https://github.com/DumiFlex/wp-kit/issues/155)) ([8b1dd45](https://github.com/DumiFlex/wp-kit/commit/8b1dd45f4cc18c0f9a716b453017ad75c08f9439))
+* **list-nav:** useListNav for lists walked from a text box ([#154](https://github.com/DumiFlex/wp-kit/issues/154)) ([3be092f](https://github.com/DumiFlex/wp-kit/commit/3be092f184b11858299e8731fb62ea13483bbd46))
+* **motion:** wp-flash for the row that just changed, Banner animate ([#159](https://github.com/DumiFlex/wp-kit/issues/159)) ([b8b4664](https://github.com/DumiFlex/wp-kit/commit/b8b4664eb4b394a7a2d28549d6950880b2f04405))
+* **popover:** hover cards with open and close delays ([#152](https://github.com/DumiFlex/wp-kit/issues/152)) ([8f2e624](https://github.com/DumiFlex/wp-kit/commit/8f2e6241b0d6af80e5c19fec4e577c7360c53cff))
+* **sortable:** drag like the Context Injector, shared as useRowDrag ([#151](https://github.com/DumiFlex/wp-kit/issues/151)) ([427ce5e](https://github.com/DumiFlex/wp-kit/commit/427ce5e682a99855c591ffa8e8ef665929604ff7))
+
 ## [0.18.1](https://github.com/DumiFlex/wp-kit/compare/v0.18.0...v0.18.1) (2026-11-12)
 
 
