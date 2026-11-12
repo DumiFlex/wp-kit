@@ -17,8 +17,8 @@
  *
  *   <CopyButton :text="row.id" :label="`Copy ID ${row.id}`" class="wp-id">{{ row.id }}</CopyButton>
  */
-import { computed, onBeforeUnmount, ref, useSlots } from "vue";
-import { copyText } from "./clipboard";
+import { computed, useSlots } from "vue";
+import { useCopied } from "./useCopied";
 import { vTooltip } from "./tooltip";
 
 const props = withDefaults(defineProps<{
@@ -38,9 +38,9 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{ (e: "copied", text: string): void; (e: "failed"): void }>();
 
 const slots = useSlots();
-const state = ref<"idle" | "copied" | "failed">("idle");
-let timer: ReturnType<typeof setTimeout> | undefined;
-const RESET_MS = 1600;
+const copy = useCopied();
+const state = computed<"idle" | "copied" | "failed">(() =>
+  copy.copied.value ? "copied" : copy.failed.value ? "failed" : "idle");
 
 const shown = computed(() =>
   state.value === "copied" ? "Copied" : state.value === "failed" ? "Couldn't copy" : props.label);
@@ -50,20 +50,13 @@ const icon = computed(() =>
 async function onClick(): Promise<void> {
   if (props.disabled) return;
   let value = "";
-  try {
+  const ok = await copy.copy(async () => {
     value = typeof props.text === "function" ? await props.text() : props.text;
-  } catch {
-    value = "";
-  }
-  const ok = value !== "" && await copyText(value);
-  state.value = ok ? "copied" : "failed";
+    return value;
+  });
   if (ok) emit("copied", value);
   else emit("failed");
-  clearTimeout(timer);
-  timer = setTimeout(() => { state.value = "idle"; }, RESET_MS);
 }
-
-onBeforeUnmount(() => clearTimeout(timer));
 </script>
 
 <template>
