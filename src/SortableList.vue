@@ -7,8 +7,9 @@
  *     <template #item="{ item }">…the row…</template>
  *   </SortableList>
  *
- * Mouse, pen and touch: drag the grip; a line shows where the row lands and
- * Escape cancels. Keyboard (on the grip): Space or Enter picks the row up,
+ * Mouse, pen and touch: drag the grip; the other rows slide aside to show
+ * where it lands (with a line there too) and Escape cancels. Distances are
+ * in the list's own pixels, so it follows the pointer on a zoomed canvas. Keyboard (on the grip): Space or Enter picks the row up,
  * the arrows move it, Space or Enter drops it, Escape puts it back; Alt+↑ /
  * Alt+↓ move it one step without picking it up. Each step is said in a
  * polite live line ("Hair moved to 2 of 5"). Only the grip starts a drag,
@@ -45,6 +46,11 @@ let mids: number[] = [];
 let tops: number[] = [];
 let bottoms: number[] = [];
 let listTop = 0;
+/** Screen px per list px (a zoomed ComfyUI canvas scales the widget). */
+let scale = 1;
+/** How far the other rows slide to make room: the dragged row plus a gap,
+ *  in list px. */
+let room = 0;
 
 /** Keyboard pick-up: the row held and the order before it was picked up. */
 const held = shallowRef<{ key: string | number; before: T[] } | null>(null);
@@ -82,7 +88,14 @@ function onPointerDown(ev: PointerEvent, i: number): void {
   mids = rs.map((r) => r.top + r.height / 2);
   tops = rs.map((r) => r.top);
   bottoms = rs.map((r) => r.bottom);
-  listTop = listEl.value?.getBoundingClientRect().top ?? 0;
+  const box = listEl.value?.getBoundingClientRect();
+  listTop = box?.top ?? 0;
+  const local = listEl.value?.offsetHeight ?? 0;
+  scale = box && local > 0 && box.height > 0 ? box.height / local : 1;
+  const next = i + 1 < tops.length ? tops[i + 1] : undefined;
+  const prev = i > 0 ? bottoms[i - 1] : undefined;
+  const gap = next !== undefined ? next - (bottoms[i] ?? 0) : prev !== undefined ? (tops[i] ?? 0) - prev : 0;
+  room = ((bottoms[i] ?? 0) - (tops[i] ?? 0) + Math.max(0, gap)) / scale;
   drag.value = { from: i, to: i, startY: ev.clientY, dy: 0, line: -1 };
   (ev.currentTarget as HTMLElement).setPointerCapture?.(ev.pointerId);
   window.addEventListener("keydown", onDragKey, true);
@@ -92,14 +105,25 @@ function lineFor(from: number, to: number): number {
   if (to === from) return -1;
   // Insert before original row k (skipping the dragged one), or after the last.
   const k = to < from ? to : to + 1;
-  return (k < tops.length ? tops[k] : bottoms[bottoms.length - 1]) - listTop;
+  return ((k < tops.length ? tops[k] : bottoms[bottoms.length - 1]) - listTop) / scale;
+}
+
+/** Row `j`'s slide while a row is dragged: the rows between where it was and
+ *  where it would land move one place to fill its spot. */
+function slide(j: number): string | undefined {
+  const d = drag.value;
+  if (!d) return undefined;
+  if (j === d.from) return `translateY(${d.dy}px)`;
+  if (d.to > d.from && j > d.from && j <= d.to) return `translateY(${-room}px)`;
+  if (d.to < d.from && j >= d.to && j < d.from) return `translateY(${room}px)`;
+  return undefined;
 }
 
 function onPointerMove(ev: PointerEvent): void {
   const d = drag.value;
   if (!d) return;
   const to = dropIndex(ev.clientY, mids, d.from);
-  drag.value = { ...d, dy: ev.clientY - d.startY, to, line: lineFor(d.from, to) };
+  drag.value = { ...d, dy: (ev.clientY - d.startY) / scale, to, line: lineFor(d.from, to) };
 }
 
 function endDrag(ev: PointerEvent | null, keep: boolean): void {
@@ -197,7 +221,7 @@ function onGripBlur(i: number): void {
         class="wp-sortable__row"
         :data-dragged="drag?.from === i || undefined"
         :data-held="held?.key === itemKey(item) || undefined"
-        :style="drag?.from === i ? { transform: `translateY(${drag.dy}px)` } : undefined"
+        :style="drag ? { transform: slide(i) } : undefined"
       >
         <button
           type="button"
@@ -215,7 +239,7 @@ function onGripBlur(i: number): void {
         ><i class="pi pi-bars" aria-hidden="true" /></button>
         <div class="wp-sortable__body"><slot name="item" :item="item" :index="i" /></div>
       </li>
-      <li v-if="drag && drag.line >= 0" class="wp-sortable__line" :style="{ top: `${drag.line}px` }" aria-hidden="true" />
+      <li v-if="drag && drag.line >= 0" class="wp-sortable__line" :style="{ top: `${drag.line + (drag.to > drag.from ? -room : room) / 2}px` }" aria-hidden="true" />
     </ul>
     <span :id="helpId" class="wp-sortable__sr">Space or Enter picks it up, the arrows move it, Space drops it, Escape puts it back. Alt and an arrow moves it one step.</span>
     <span class="wp-sortable__sr" aria-live="polite">{{ said }}</span>
@@ -230,7 +254,14 @@ function onGripBlur(i: number): void {
   display: flex; align-items: center; gap: var(--wp-space-2); min-width: 0;
   border-radius: var(--wp-radius); background: var(--wp-bg-1);
 }
+/* The other rows slide aside while one is dragged; the dragged row follows
+ * the pointer with no delay. */
+.wp-sortable[data-dragging] .wp-sortable__row { transition: transform 140ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  .wp-sortable[data-dragging] .wp-sortable__row { transition: none; }
+}
 .wp-sortable__row[data-dragged] {
+  transition: none;
   position: relative; z-index: 2; opacity: 0.92; box-shadow: var(--wp-shadow-md);
   outline: 1px solid var(--wp-border-strong); pointer-events: none;
 }
