@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.1](https://github.com/DumiFlex/wp-kit/compare/v0.18.0...v0.18.1) (2026-11-12)
+
+
+### Bug Fixes
+
+* **sortable:** rows slide aside while dragging and follow the pointer on a zoomed canvas ([#147](https://github.com/DumiFlex/wp-kit/issues/147)) ([e777dc1](https://github.com/DumiFlex/wp-kit/commit/e777dc1043e45d9dff966acb773410db5643fbd1))
+
 ## [0.18.0](https://github.com/DumiFlex/wp-kit/compare/v0.17.0...v0.18.0) (2026-11-12)
 
 
