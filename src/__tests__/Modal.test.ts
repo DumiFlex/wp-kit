@@ -102,6 +102,18 @@ describe("Modal.vue", () => {
     wrap.unmount();
   });
 
+  it("accent brand lays the brand wash and hands the accent colour to the header slot", () => {
+    const wrap = mount(Modal, {
+      props: { open: true, title: "Browse templates", accent: "brand", icon: "folder-open" },
+      slots: { default: "<p>x</p>" },
+      attachTo: document.body,
+    });
+    const dialog = document.body.querySelector<HTMLElement>(".wp-modal");
+    expect(dialog?.classList.contains("wp-modal--brand")).toBe(true);
+    expect(dialog?.classList.contains("wp-modal--accent")).toBe(false);
+    expect(dialog?.style.getPropertyValue("--wp-modal-accent")).toBe("var(--wp-accent)");
+    wrap.unmount();
+  });
   it("no accent: a plain header with no icon; flush drops the body padding", () => {
     const wrap = mount(Modal, {
       props: { open: true, title: "Plain", flush: true },
