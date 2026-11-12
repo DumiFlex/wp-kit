@@ -28,21 +28,36 @@ export function kindColour(type: ItemType): string {
   return COLOURS[type];
 }
 
-/** The PrimeIcons name (for Icon / ListRow `icon`) of each item type: the
- *  same icons the extension's kind-icons map uses. */
-const ICONS: Record<ItemType, string> = {
+/** The PrimeIcons name (for Icon / ListRow `icon`) of each item type, and
+ *  of the other things that set variables or show in a library list. */
+const ICONS: Record<ItemType | SourceKind, string> = {
   wildcard: "sparkles",
   fixed_values: "tag",
   combine: "link",
   derivation: "arrow-right-arrow-left",
   constraint: "filter",
   bundle: "box",
+  template: "file-edit",
+  category: "bookmark",
+  injector: "sign-in",
+  loop: "replay",
+  model: "microchip",
+  toggle: "check-square",
 };
+
+/** Not module types, but they set variables (Injector, Context Loop, Model
+ *  Info, Toggles) or sit in library lists (templates, categories). */
+export type SourceKind = "template" | "category" | "injector" | "loop" | "model" | "toggle";
 
 /** The icon of a type read from a payload (any string): `circle` for a type
  *  the kit doesn't know. */
 export function kindIcon(type: string): string {
   return (ICONS as Record<string, string>)[type] ?? "circle";
+}
+
+/** The same icon as a PrimeIcons class (`pi pi-sparkles`), for an `<i>`. */
+export function kindIconClass(type: string): string {
+  return `pi pi-${kindIcon(type)}`;
 }
 
 /** A payload's type string as a module subtype, or null when it isn't one. */

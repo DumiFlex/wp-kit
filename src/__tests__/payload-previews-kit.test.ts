@@ -10,7 +10,7 @@ import BundlePreview from "../BundlePreview.vue";
 import PostGridSkeleton from "../PostGridSkeleton.vue";
 import PostDetailSkeleton from "../PostDetailSkeleton.vue";
 import ProfileSkeleton from "../ProfileSkeleton.vue";
-import { kindIcon, moduleSubtype } from "../kind-colour";
+import { kindIcon, kindIconClass, moduleSubtype } from "../kind-colour";
 import { MODE_GLYPH, MODE_LABEL, normalizeMode } from "../matrix-axis";
 
 const refMap: ReadonlyMap<string, string> = new Map([["aaaa1111", "Palette"]]);
@@ -87,7 +87,9 @@ describe("kind and mode helpers", () => {
   it("names an icon per type, circle for an unknown one", () => {
     expect(kindIcon("wildcard")).toBe("sparkles");
     expect(kindIcon("bundle")).toBe("box");
-    expect(kindIcon("loop")).toBe("circle");
+    expect(kindIcon("loop")).toBe("replay");
+    expect(kindIcon("nonsense")).toBe("circle");
+    expect(kindIconClass("toggle")).toBe("pi pi-check-square");
     expect(moduleSubtype("combine")).toBe("combine");
     expect(moduleSubtype("bundle")).toBeNull();
   });
