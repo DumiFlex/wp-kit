@@ -9,6 +9,7 @@ const name = ref("Hair colour");
 const modalOpen = ref(false);
 const editOpen = ref(false);
 const pickOpen = ref(false);
+const fullOpen = ref(false);
 </script>
 
 <template>
@@ -41,6 +42,10 @@ const pickOpen = ref(false);
     <template #footer>
       <Button @click="pickOpen = false">Cancel</Button>
     </template>
+  </Modal>
+  <Button @click="fullOpen = true">Open a work window</Button>
+  <Modal v-model:open="fullOpen" title="Pick images" size="full" accent="var(--wp-accent)" icon="filter">
+    <p>`size="full"` keeps one size in every view, for pickers and editors that fill the screen.</p>
   </Modal>
 </template>
 
