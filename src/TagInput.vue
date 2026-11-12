@@ -16,6 +16,7 @@
  */
 import { computed, nextTick, ref, useId } from "vue";
 import Popover from "./Popover.vue";
+import { useListNav } from "./useListNav";
 
 const props = withDefaults(defineProps<{
   modelValue: string[];
@@ -46,7 +47,6 @@ const inputEl = ref<HTMLInputElement | null>(null);
 const query = ref("");
 /** The list may show: the box has focus and nobody closed the list since the last key. */
 const wanted = ref(false);
-const active = ref(-1);
 const said = ref("");
 
 const clean = (t: string): string => (props.normalize ? props.normalize(t) : t.trim());
@@ -61,7 +61,9 @@ const matches = computed(() => {
   return [...hit.filter((s) => s.toLowerCase().startsWith(q)), ...hit.filter((s) => !s.toLowerCase().startsWith(q))].slice(0, props.limit);
 });
 const open = computed(() => wanted.value && !full.value && !props.disabled && matches.value.length > 0);
-const activeId = computed(() => (open.value && active.value >= 0 ? `${listId}-${active.value}` : undefined));
+const nav = useListNav({ count: () => matches.value.length, idPrefix: listId });
+const active = nav.active;
+const activeId = computed(() => (open.value ? nav.activeId.value : undefined));
 
 function announce(text: string): void {
   said.value = "";
@@ -131,12 +133,12 @@ function onKeydown(ev: KeyboardEvent): void {
       if (!matches.value.length) return;
       ev.preventDefault();
       if (!wanted.value) { wanted.value = true; active.value = 0; return; }
-      active.value = (active.value + 1) % matches.value.length;
+      nav.step(1);
       return;
     case "ArrowUp":
       if (!matches.value.length) return;
       ev.preventDefault();
-      active.value = active.value <= 0 ? matches.value.length - 1 : active.value - 1;
+      nav.step(-1);
       return;
     case "Backspace":
       if (query.value === "" && props.modelValue.length) {

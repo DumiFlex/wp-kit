@@ -72,7 +72,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   // Actions
   {
     id: "button", name: "Button", group: "actions", file: "src/Button.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension", "community"],
-    use: "Every button, in the manager, on the canvas (size sm) and on the community site. Primary for the one main action on a surface, secondary by default, ghost for quiet toolbar actions, danger for deletes, link for inline actions, add for the dashed \"Add a row\" button at the end of a list (with block for full width). Leave out the text for an icon button and give it an aria-label, which is also its tooltip; hint sets a tooltip on a labelled button and kbd adds its key chip. The close × is a ghost icon button: icon=\"times\" aria-label=\"Close\". as=\"a\" draws a link that looks like a button. pressed makes it a toggle. Sizes sm 24 / md 32 / lg 40; outline is a neutral bordered ghost; loading keeps its colours with the sparkle in the label colour; disabled fades.",
+    use: "Every button, in the manager, on the canvas (size sm) and on the community site. Primary for the one main action on a surface, secondary by default, ghost for quiet toolbar actions, danger for deletes, link for inline actions, add for the dashed \"Add a row\" button at the end of a list (with block for full width). Leave out the text for an icon button and give it an aria-label, which is also its tooltip; hint sets a tooltip on a labelled button and kbd adds its key chip. The close × is a ghost icon button: icon=\"times\" aria-label=\"Close\". as=\"a\" draws a link that looks like a button. pressed makes it a toggle. Sizes sm 24 / md 32 / lg 40; outline is a neutral bordered ghost; loading keeps its colours with the sparkle in the label colour; disabled fades. A block button that opens a window puts its state in #end (counts as Chips) and a chevron in iconRight: the label sits left and stretches.",
     instead: "WpButton and CloseButton (folded in: size=\"sm\" on the canvas; variant=\"ghost\" icon=\"times\" for close), a <button> with its own class and colours, or a hand-made × button.",
   },
   {
@@ -81,13 +81,13 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "wp-icon-button", name: "WpIconButton", group: "actions", file: "src/WpIconButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "The 20 px icon button (24 px of click) inside a canvas row (module, injector, bundle and Model Info rows, the Context toolbar, and the Settings live preview of those rows): lock, internal, remove. tone tints the icon on hover and the whole box while pressed; pressed \"mixed\" is a bundle's \"some children\" state; variant bare is the row's fold caret. Rows are too tight for Button's 24 px sm.",
-    instead: "A <button class=\"wp-btn--icon-sm\"> or a hand-made caret button.",
+    use: "The 20 px icon button (24 px of click) inside a canvas row (module, injector, bundle and Model Info rows, the Context toolbar, and the Settings live preview of those rows): lock, internal, remove. tone tints the icon on hover and the whole box while pressed; pressed \"mixed\" is a bundle's \"some children\" state; open makes it the fold caret (one chevron that turns, aria-expanded, no box; label names what it folds); variant bare gives any other glyph that look. Rows are too tight for Button's 24 px sm.",
+    instead: "A <button class=\"wp-btn--icon-sm\">, or a caret that swaps pi-caret-right / pi-chevron-down by hand.",
   },
   {
     id: "copy-button", name: "CopyButton", group: "actions", file: "src/CopyButton.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Copy text to the clipboard. The icon turns into a check (or a cross when the copy fails) and says so to screen readers, so no toast is needed. Works on plain-http pages too.",
-    instead: "A button that calls navigator.clipboard and shows its own message.",
+    use: "Copy text to the clipboard. The icon turns into a check (or a cross when the copy fails) and says so to screen readers, so no toast is needed. Works on plain-http pages too. A place that draws its own button (a row icon button, a Copy debug text button, one per message) uses useCopied(): copy(text, key?) copies and copied / is(key) show Copied for the same 1.6 s.",
+    instead: "A button that calls navigator.clipboard and shows its own message, or a copied ref with its own setTimeout.",
   },
   {
     id: "toolbar", name: "Toolbar", group: "actions", file: "src/Toolbar.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
@@ -169,7 +169,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "combobox", name: "Combobox", group: "inputs", file: "src/Combobox.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "A select you can type in, for long lists: models, LoRAs, categories, variables. Typing filters, the arrows light an option, Enter takes it. multiple keeps the picks as chips and the list open, with a tick on each pick. Use WpSelect for a few fixed choices and TagInput when people may type their own words.",
+    use: "A select you can type in, for long lists: models, LoRAs, categories, variables. Typing filters, the arrows light an option, Enter takes it. multiple keeps the picks as chips and the list open, with a tick on each pick. Use WpSelect for a few fixed choices and TagInput when people may type their own words. Its arrow-key lit row is useListNav (useListNav.ts), which TagInput shares; an app's own caret autocomplete or palette uses it too.",
     instead: "A search box over a hand-made list, or a native <select> nobody can type in.",
   },
   {
@@ -244,13 +244,14 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "A <pre> with its own copy button, or none.",
   },
   {
-    id: "icon", name: "Icon", group: "display", file: "src/Icon.vue", surfaces: ["manager", "community"], usedBy: ["extension"],
+    id: "icon", name: "Icon", group: "display", file: "src/Icon.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
     use: "Every icon. Use the ICON_SM, ICON_MD and ICON_LG sizes. Icons are decoration: the button or text next to them carries the meaning.",
     instead: "An inline <svg> pasted into a component.",
   },
   {
-    id: "empty-state", name: "EmptyState", group: "display", file: "src/EmptyState.vue", surfaces: ["manager", "community"], usedBy: ["extension"],
-    use: "A page or list with nothing in it yet: say what goes here and offer the one action that fills it. size page (an empty list page), panel (the default, in a card or panel) or inline (one row).",
+    id: "empty-state", name: "EmptyState", group: "display", file: "src/EmptyState.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
+    use: "A page or list with nothing in it yet: say what goes here and offer the one action that fills it. size page (an empty list page), panel (the default, in a card or panel) or inline (one row). It reads only the shared tokens, so a node's empty tab or list on the canvas uses size inline too.",
+    instead: "An icon, a line and a hint drawn by hand in a node (wp-dbg-empty, wp-asm-empty …).",
   },
   {
     id: "image-zoom", name: "WpImageZoom", group: "display", file: "src/WpImageZoom.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
@@ -325,8 +326,13 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "sortable-list", name: "SortableList", group: "layout", file: "src/SortableList.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Rows you put in order: drag the grip (a line shows where it lands, Escape cancels), or from the keyboard Space picks up, the arrows move, Space drops; Alt+↑/↓ moves one step. Each move is said to screen readers.",
+    use: "Rows you put in order: drag the grip (the row dims, the row it lands beside opens a gap with a line, the rows slide into place and the moved one pulses; Escape cancels), or from the keyboard Space picks up, the arrows move, Space drops; Alt+↑/↓ moves one step. Each move is said to screen readers. A grouped list decides drops itself with drop-line (an inset line inside a group) and @drop (row + before/after/end; end-zone leaves room below the last row).",
     instead: "HTML drag and drop with its own handle, drop line and no keyboard.",
+  },
+  {
+    id: "row-drag", name: "Row drag (useRowDrag + row-drag.css)", group: "layout", file: "src/row-drag.ts", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    use: "The drag SortableList is built on, for row lists with their own markup (a node's rows, a module list): the browser's drag, a target found over the whole list (it holds still while the gap opens), a gap with a glowing line, then the rows slide into place and the moved row pulses. candidate limits where a row may land (its own kind), accept decides and styles the line. Pull row-drag.css in scoped beside the rows.",
+    instead: "Each list's own dragover maths, gap classes and FLIP.",
   },
   {
     id: "virtual-list", name: "VirtualList", group: "layout", file: "src/VirtualList.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
@@ -355,7 +361,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "banner", name: "Banner", group: "feedback", file: "src/Banner.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "A message that stays on the page until it no longer applies: a draft to restore, a failed load, out-of-date items. Tone sets the colour and icon; add actions and a close button when they help.",
+    use: "A message that stays on the page until it no longer applies: a draft to restore, a failed load, out-of-date items. Tone sets the colour and icon; add actions and a close button when they help. animate drops it in as it appears (a draft or stale notice shown while you watch), instead of a Transition around it.",
     instead: "A tinted <div> with its own icon, colours and Dismiss button.",
   },
   {
@@ -370,7 +376,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "motion-css", name: "Entrance classes (motion.css)", group: "feedback", file: "src/motion.css", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves.",
+    use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves. wp-flash is a one-shot ring for the row that just changed (colour from --wp-flash-color).",
     instead: "A keyframe of opacity or transform in each component.",
   },
   // Overlays
@@ -386,8 +392,8 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "popover", name: "Popover", group: "overlays", file: "src/Popover.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "A panel anchored to a button: a colour picker, a filter, a small form. It flips to stay on screen, follows on scroll and closes on Escape or a click outside. Every floating panel builds on it. One panel shared by many triggers (the cells of a rule grid) passes the clicked element as anchor instead of a trigger slot. A list that follows the text caret, or a card opened at a point, passes a virtual anchor (rectAnchor in floating.ts). Attributes go on the panel, so a hover card can stay open while the pointer is on it.",
-    instead: "A Teleport with its own placement maths and outside-click handler, including caret-following autocomplete lists and hover cards.",
+    use: "A panel anchored to a button: a colour picker, a filter, a small form. It flips to stay on screen, follows on scroll and closes on Escape or a click outside. Every floating panel builds on it. One panel shared by many triggers (the cells of a rule grid) passes the clicked element as anchor instead of a trigger slot. A list that follows the text caret, or a card opened at a point, passes a virtual anchor (rectAnchor in floating.ts). trigger=\"hover\" makes it a hover card: it opens after openDelay (280 ms), stays open while the pointer crosses into the card and closes closeDelay (160 ms) after it leaves; a click still toggles it and it doesn't take focus. With an anchor element the hover listeners go on that element.",
+    instead: "A Teleport with its own placement maths and outside-click handler, including caret-following autocomplete lists, and hover cards with their own open and close timers.",
   },
   {
     id: "dropdown-menu", name: "DropdownMenu", group: "overlays", file: "src/DropdownMenu.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["community"],
@@ -580,6 +586,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "toast-card": `<ToastCard tone="success" summary="Saved Hair colour" action-label="Undo" @action="undo" @dismiss="close" />`,
   "loading-mark": `<LoadingMark block>Loading bundle…</LoadingMark>`,
   "working-line": `<WorkingLine :word="word" :word-key="phase" :time="elapsed" tempo="mid" variant="orbit" />`,
+  "row-drag": `const drag = useRowDrag({ list, onDrop: (from, t) => move(from, t) });\n<div ref="list" @dragover="drag.over" @drop="drag.drop">\n  <div v-for="r in rows" :data-drag-key="r.id" draggable="true" :class="drag.classes(r.id)" @dragstart="drag.start($event, r.id)" @dragend="drag.end">…</div>\n</div>`,
   "motion-css": `import "@dumiflex/wp-kit/motion.css";\n<span class="wp-enter-pop">👍</span>\n<div class="wp-enter-drop wp-attention">Search the web?</div>`,
   "modal": `<Modal v-model:open="open" title="Rename"><template #footer>…</template></Modal>`,
   "modal-shell": `<ModalShell :visible="open" @close="open = false"><div class="my-dialog">…</div></ModalShell>`,

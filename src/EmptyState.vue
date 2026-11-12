@@ -33,6 +33,9 @@ const ICON_PX = { page: 40, panel: 26, inline: 16 } as const;
   </div>
 </template>
 
+<!-- Reads only the shared tokens, so it works on the canvas too (a node's
+     empty tab or list: size="inline"). Line heights are the theme's own
+     values written out, since the canvas has no --wp-line-* scale. -->
 <style scoped>
 .wp-empty {
   display: flex;
@@ -88,18 +91,18 @@ const ICON_PX = { page: 40, panel: 26, inline: 16 } as const;
   margin: 0;
   color: var(--wp-text);
   font-size: var(--wp-text-md);
-  line-height: var(--wp-line-md, 1.4);
-  font-weight: var(--wp-weight-semibold);
+  line-height: 20px;
+  font-weight: 600;
 }
 .wp-empty--page .wp-empty__headline {
   font-size: var(--wp-text-lg);
-  line-height: var(--wp-line-lg);
+  line-height: 22px;
 }
 .wp-empty--inline .wp-empty__headline { font-size: var(--wp-text-base); }
 .wp-empty__body {
   margin: 0;
   font-size: var(--wp-text-sm);
-  line-height: var(--wp-line-sm);
+  line-height: 16px;
   color: var(--wp-text-muted);
   max-width: 360px;
 }

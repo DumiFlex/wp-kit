@@ -7,16 +7,30 @@
  *     <template #item="{ item }">…the row…</template>
  *   </SortableList>
  *
- * Mouse, pen and touch: drag the grip; the other rows slide aside to show
- * where it lands (with a line there too) and Escape cancels. Distances are
- * in the list's own pixels, so it follows the pointer on a zoomed canvas. Keyboard (on the grip): Space or Enter picks the row up,
- * the arrows move it, Space or Enter drops it, Escape puts it back; Alt+↑ /
- * Alt+↓ move it one step without picking it up. Each step is said in a
- * polite live line ("Hair moved to 2 of 5"). Only the grip starts a drag,
- * so text and controls in the row work as usual.
+ * Mouse and pen: drag the grip. It is the Context Injector's drag, shared
+ * through `useRowDrag` (row-drag.ts + row-drag.css): the browser's ghost
+ * follows the pointer (right on a zoomed canvas too), the row dims, the row
+ * it lands beside opens a gap with a line, and after the drop the rows slide
+ * into place and the moved row pulses. Escape cancels.
+ *
+ * Grouped lists decide drops themselves: `drop-line` says whether a target
+ * is a drop and how its line looks (an inset line inside a group), and
+ * `@drop` gets the row and edge (`before` / `after` / `end`, below the last
+ * row; `end-zone` leaves room there while dragging). Without them a drop
+ * that changes nothing shows no line.
+ *
+ * Keyboard (on the grip): Space or Enter picks the row up, the arrows move
+ * it, Space or Enter drops it, Escape puts it back; Alt+↑ / Alt+↓ move it
+ * one step without picking it up. Each step is said in a polite live line
+ * ("Hair moved to 2 of 5"). Only the grip starts a drag, so text and
+ * controls in the row work as usual.
  */
 import { computed, nextTick, onBeforeUnmount, ref, shallowRef, useId } from "vue";
-import { dropIndex, moveItem } from "./sortable";
+import { moveItem, targetIndex, type DropEdge } from "./sortable";
+import { useRowDrag, type RowDropLine } from "./row-drag";
+
+/** A drop target as SortableList reports it: the row it lands beside. */
+export interface SortableDrop { from: number; over: number; edge: DropEdge; to: number }
 
 const props = withDefaults(defineProps<{
   modelValue: T[];
@@ -28,11 +42,17 @@ const props = withDefaults(defineProps<{
   label: string;
   disabled?: boolean | undefined;
   size?: "sm" | "md" | undefined;
+  /** Whether a target is a drop and how its line looks (`inset` px, `color`).
+   *  `false` hides it; `undefined` hides only a drop that changes nothing. */
+  dropLine?: ((t: Omit<SortableDrop, "to">, noOp: boolean) => RowDropLine | boolean | undefined) | undefined;
+  /** Leave room below the last row while dragging, for an `end` drop. */
+  endZone?: boolean | undefined;
 }>(), { size: "md" });
 
 const emit = defineEmits<{
   (e: "update:modelValue", v: T[]): void;
   (e: "move", m: { from: number; to: number }): void;
+  (e: "drop", d: SortableDrop): void;
 }>();
 
 const uid = useId();
@@ -40,23 +60,13 @@ const helpId = `wp-sortable-help-${uid}`;
 const listEl = ref<HTMLElement | null>(null);
 const said = ref("");
 
-/** Pointer drag: which row, where it started, where it would land. */
-const drag = ref<{ from: number; to: number; startY: number; dy: number; line: number } | null>(null);
-let mids: number[] = [];
-let tops: number[] = [];
-let bottoms: number[] = [];
-let listTop = 0;
-/** Screen px per list px (a zoomed ComfyUI canvas scales the widget). */
-let scale = 1;
-/** How far the other rows slide to make room: the dragged row plus a gap,
- *  in list px. */
-let room = 0;
-
 /** Keyboard pick-up: the row held and the order before it was picked up. */
 const held = shallowRef<{ key: string | number; before: T[] } | null>(null);
 
 const nameOf = (item: T, i: number): string => props.itemLabel?.(item, i) ?? `Item ${i + 1}`;
 const total = computed(() => props.modelValue.length);
+const keyStr = (item: T): string => String(props.itemKey(item));
+const indexOf = (key: string): number => props.modelValue.findIndex((it) => keyStr(it) === key);
 
 function announce(text: string): void {
   said.value = "";
@@ -80,74 +90,52 @@ function commit(from: number, to: number): void {
   emit("move", { from, to });
 }
 
-// ── Pointer ─────────────────────────────────────────────────────────────
-function onPointerDown(ev: PointerEvent, i: number): void {
+// ── Pointer (the browser's drag) ────────────────────────────────────────
+const drag = useRowDrag({
+  list: listEl,
+  rowSelector: ":scope > .wp-sortable__row",
+  dataType: "text/x-wp-sortable",
+  accept: (from, t, noOp) => props.dropLine?.({ from: indexOf(from), over: t.index, edge: t.edge }, noOp),
+  onDrop: (fromKey, t) => {
+    const from = indexOf(fromKey);
+    if (from < 0) return;
+    const to = targetIndex(from, { over: t.index, edge: t.edge });
+    const item = props.modelValue[from];
+    emit("drop", { from, over: t.index, edge: t.edge, to });
+    if (to !== from) {
+      commit(from, to);
+      announce(`${nameOf(item, from)} moved to ${to + 1} of ${total.value}`);
+    }
+  },
+});
+
+/** The row whose grip is pressed: only it may start a drag, so text and
+ *  controls in a row select and click as usual. */
+const armed = ref<string | null>(null);
+function disarm(): void {
+  armed.value = null;
+  window.removeEventListener("pointerup", disarm, true);
+}
+function arm(ev: PointerEvent, item: T): void {
   if (props.disabled || ev.button !== 0 || held.value) return;
-  ev.preventDefault();
-  const rs = rows().map((r) => r.getBoundingClientRect());
-  mids = rs.map((r) => r.top + r.height / 2);
-  tops = rs.map((r) => r.top);
-  bottoms = rs.map((r) => r.bottom);
-  const box = listEl.value?.getBoundingClientRect();
-  listTop = box?.top ?? 0;
-  const local = listEl.value?.offsetHeight ?? 0;
-  scale = box && local > 0 && box.height > 0 ? box.height / local : 1;
-  const next = i + 1 < tops.length ? tops[i + 1] : undefined;
-  const prev = i > 0 ? bottoms[i - 1] : undefined;
-  const gap = next !== undefined ? next - (bottoms[i] ?? 0) : prev !== undefined ? (tops[i] ?? 0) - prev : 0;
-  room = ((bottoms[i] ?? 0) - (tops[i] ?? 0) + Math.max(0, gap)) / scale;
-  drag.value = { from: i, to: i, startY: ev.clientY, dy: 0, line: -1 };
-  (ev.currentTarget as HTMLElement).setPointerCapture?.(ev.pointerId);
-  window.addEventListener("keydown", onDragKey, true);
+  armed.value = keyStr(item);
+  window.addEventListener("pointerup", disarm, true);
 }
+onBeforeUnmount(disarm);
 
-function lineFor(from: number, to: number): number {
-  if (to === from) return -1;
-  // Insert before original row k (skipping the dragged one), or after the last.
-  const k = to < from ? to : to + 1;
-  return ((k < tops.length ? tops[k] : bottoms[bottoms.length - 1]) - listTop) / scale;
-}
-
-/** Row `j`'s slide while a row is dragged: the rows between where it was and
- *  where it would land move one place to fill its spot. */
-function slide(j: number): string | undefined {
-  const d = drag.value;
-  if (!d) return undefined;
-  if (j === d.from) return `translateY(${d.dy}px)`;
-  if (d.to > d.from && j > d.from && j <= d.to) return `translateY(${-room}px)`;
-  if (d.to < d.from && j >= d.to && j < d.from) return `translateY(${room}px)`;
-  return undefined;
-}
-
-function onPointerMove(ev: PointerEvent): void {
-  const d = drag.value;
-  if (!d) return;
-  const to = dropIndex(ev.clientY, mids, d.from);
-  drag.value = { ...d, dy: (ev.clientY - d.startY) / scale, to, line: lineFor(d.from, to) };
-}
-
-function endDrag(ev: PointerEvent | null, keep: boolean): void {
-  const d = drag.value;
-  if (!d) return;
-  drag.value = null;
-  window.removeEventListener("keydown", onDragKey, true);
-  if (ev) (ev.currentTarget as HTMLElement | null)?.releasePointerCapture?.(ev.pointerId);
-  if (keep && d.to !== d.from) {
-    const item = props.modelValue[d.from];
-    commit(d.from, d.to);
-    announce(`${nameOf(item, d.from)} moved to ${d.to + 1} of ${total.value}`);
+function onDragStart(ev: DragEvent, item: T): void {
+  const key = keyStr(item);
+  if (armed.value !== key) {
+    ev.preventDefault();
+    return;
   }
+  ev.stopPropagation();
+  drag.start(ev, key);
 }
 
-// A list removed mid-drag must not leave its Escape listener on the window.
-onBeforeUnmount(() => window.removeEventListener("keydown", onDragKey, true));
-
-function onDragKey(ev: KeyboardEvent): void {
-  if (ev.key !== "Escape") return;
-  ev.preventDefault();
-  ev.stopPropagation();
-  endDrag(null, false);
-  announce("Move cancelled");
+function onDragEnd(): void {
+  drag.end();
+  disarm();
 }
 
 // ── Keyboard ────────────────────────────────────────────────────────────
@@ -213,39 +201,44 @@ function onGripBlur(i: number): void {
 </script>
 
 <template>
-  <div class="wp-sortable" :data-size="size" :data-dragging="drag ? 'true' : undefined">
-    <ul ref="listEl" class="wp-sortable__list" :aria-label="label">
+  <div class="wp-sortable" :data-size="size" :data-dragging="drag.dragging.value !== null ? 'true' : undefined" :data-end-zone="endZone || undefined">
+    <ul ref="listEl" class="wp-sortable__list" :aria-label="label" @dragover="drag.over" @drop="drag.drop">
+      <!-- The row is the drag source (the browser's ghost shows the whole row);
+           only its grip arms it, and the grip has the keyboard moves. -->
+      <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
       <li
         v-for="(item, i) in modelValue"
         :key="itemKey(item)"
         class="wp-sortable__row"
-        :data-dragged="drag?.from === i || undefined"
+        :class="drag.classes(keyStr(item))"
+        :style="drag.lineStyle(keyStr(item))"
+        :data-drag-key="keyStr(item)"
         :data-held="held?.key === itemKey(item) || undefined"
-        :style="drag ? { transform: slide(i) } : undefined"
+        :draggable="armed === keyStr(item) ? 'true' : undefined"
+        @dragstart="onDragStart($event, item)"
+        @dragend="onDragEnd"
       >
-        <button
-          type="button"
+        <span
+          role="button"
           class="wp-sortable__grip"
+          tabindex="0"
           :aria-label="`Move ${nameOf(item, i)}`"
           :aria-describedby="helpId"
           :aria-pressed="held?.key === itemKey(item)"
-          :disabled="disabled"
-          @pointerdown="onPointerDown($event, i)"
-          @pointermove="onPointerMove"
-          @pointerup="endDrag($event, true)"
-          @pointercancel="endDrag($event, false)"
+          :aria-disabled="disabled || undefined"
+          @pointerdown="arm($event, item)"
           @keydown="onGripKey($event, i)"
           @blur="onGripBlur(i)"
-        ><i class="pi pi-bars" aria-hidden="true" /></button>
+        ><i class="pi pi-bars" aria-hidden="true" /></span>
         <div class="wp-sortable__body"><slot name="item" :item="item" :index="i" /></div>
       </li>
-      <li v-if="drag && drag.line >= 0" class="wp-sortable__line" :style="{ top: `${drag.line + (drag.to > drag.from ? -room : room) / 2}px` }" aria-hidden="true" />
     </ul>
     <span :id="helpId" class="wp-sortable__sr">Space or Enter picks it up, the arrows move it, Space drops it, Escape puts it back. Alt and an arrow moves it one step.</span>
     <span class="wp-sortable__sr" aria-live="polite">{{ said }}</span>
   </div>
 </template>
 
+<style scoped src="./row-drag.css"></style>
 <style scoped>
 .wp-sortable { position: relative; min-width: 0; }
 .wp-sortable__list { position: relative; display: flex; flex-direction: column; gap: var(--wp-space-2); margin: 0; padding: 0; list-style: none; }
@@ -254,36 +247,24 @@ function onGripBlur(i: number): void {
   display: flex; align-items: center; gap: var(--wp-space-2); min-width: 0;
   border-radius: var(--wp-radius); background: var(--wp-bg-1);
 }
-/* The other rows slide aside while one is dragged; the dragged row follows
- * the pointer with no delay. */
-.wp-sortable[data-dragging] .wp-sortable__row { transition: transform 140ms ease; }
-@media (prefers-reduced-motion: reduce) {
-  .wp-sortable[data-dragging] .wp-sortable__row { transition: none; }
-}
-.wp-sortable__row[data-dragged] {
-  transition: none;
-  position: relative; z-index: 2; opacity: 0.92; box-shadow: var(--wp-shadow-md);
-  outline: 1px solid var(--wp-border-strong); pointer-events: none;
-}
 .wp-sortable__row[data-held] { outline: 1.5px dashed var(--wp-accent); outline-offset: 1px; }
 .wp-sortable__grip {
   display: inline-grid; place-items: center; flex: none; align-self: stretch;
   width: 24px; min-height: 24px; margin: 0; padding: 0; border: 0; border-radius: var(--wp-radius-sm);
-  background: transparent; color: var(--wp-text-dim); cursor: grab; touch-action: none;
+  background: transparent; color: var(--wp-text-dim); cursor: grab; user-select: none;
 }
 .wp-sortable[data-size="sm"] .wp-sortable__grip { width: 20px; min-height: 20px; }
 .wp-sortable__grip .pi { font-size: 12px; }
 .wp-sortable[data-size="sm"] .wp-sortable__grip .pi { font-size: 10px; }
-.wp-sortable__grip:hover:not(:disabled) { color: var(--wp-text); background: var(--wp-row-hover); }
+.wp-sortable__grip:hover:not([aria-disabled="true"]) { color: var(--wp-text); background: var(--wp-row-hover); }
 .wp-sortable__grip:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--wp-border-focus); }
 .wp-sortable__grip[aria-pressed="true"] { color: var(--wp-accent-text); }
-.wp-sortable__grip:disabled { cursor: not-allowed; opacity: 0.45; }
+.wp-sortable__grip[aria-disabled="true"] { cursor: not-allowed; opacity: 0.45; }
 .wp-sortable[data-dragging] .wp-sortable__grip { cursor: grabbing; }
 .wp-sortable__body { flex: 1; min-width: 0; }
-.wp-sortable__line {
-  position: absolute; left: 0; right: 0; height: 2px; margin-top: -1px; border-radius: min(1px, var(--wp-radius-cap, 999px));
-  background: var(--wp-accent); box-shadow: 0 0 0 2px var(--wp-accent-glow); pointer-events: none;
-}
+/* Room below the last row while dragging, for a drop below it. */
+.wp-sortable[data-end-zone] .wp-sortable__list { transition: padding-bottom var(--wp-motion-fade, 180ms) ease; }
+.wp-sortable[data-end-zone][data-dragging] .wp-sortable__list { padding-bottom: 18px; }
 .wp-sortable__sr {
   position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden;
   clip: rect(0 0 0 0); white-space: nowrap; border: 0;

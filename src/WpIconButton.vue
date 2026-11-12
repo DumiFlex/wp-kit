@@ -7,19 +7,23 @@
  *
  *   <WpIconButton icon="pi-trash" label="Remove module" tone="danger" @click="remove" />
  *   <WpIconButton icon="pi-lock" label="Lock seed" tone="warn" :pressed="locked" />
- *   <WpIconButton variant="bare" :icon="open ? 'pi-caret-down' : 'pi-caret-right'" label="Collapse" />
+ *   <WpIconButton :open="open" label="Hair colour options" @click="open = !open" />
  *
  * - `tone` tints the icon on hover, and the whole button while `pressed`.
  * - `pressed` makes it a toggle (`aria-pressed`); `"mixed"` is the bundle
  *   master toggle's "some children" state (dashed, half tint).
- * - `variant="bare"` is the row's fold caret: no box, drawn 14 px wide but
- *   still 20 px to click.
+ * - `open` makes it a fold caret: one chevron that points right when
+ *   folded and turns down when open, with `aria-expanded`, drawn bare
+ *   (no box, 14 px wide, still 20 px to click). Name what it folds in
+ *   `label`; `icon` is ignored. `variant="bare"` alone is the same look
+ *   for any other glyph.
  * - `label` names it for screen readers and is its tooltip, unless `hint`
  *   gives a longer one.
  */
+import { computed } from "vue";
 import { vTooltip } from "./tooltip";
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   /** PrimeIcons class, e.g. `pi-trash`. Leave it out to draw a short
    *  glyph from the slot instead (the loop's Σ toggle). */
   icon?: string | undefined;
@@ -30,24 +34,33 @@ withDefaults(defineProps<{
   pressed?: boolean | "mixed" | undefined;
   variant?: "quiet" | "bare" | undefined;
   disabled?: boolean | undefined;
-}>(), { icon: undefined, hint: undefined, tone: "neutral", pressed: undefined, variant: "quiet" });
+  /** A fold caret: true when the thing it folds is open. */
+  open?: boolean | undefined;
+}>(), { icon: undefined, hint: undefined, tone: "neutral", pressed: undefined, variant: undefined, open: undefined });
 
 const emit = defineEmits<{ click: [evt: MouseEvent] }>();
+
+const isCaret = computed(() => props.open !== undefined);
+const look = computed(() => props.variant ?? (isCaret.value ? "bare" : "quiet"));
+const glyph = computed(() => (isCaret.value ? "pi-chevron-right" : props.icon));
+const tip = computed(() => props.hint ?? (isCaret.value ? `${props.open ? "Collapse" : "Expand"} ${props.label}` : props.label));
 </script>
 
 <template>
   <button
-    v-tooltip="hint ?? label"
+    v-tooltip="tip"
     type="button"
     class="wp-icon-btn"
     :data-tone="tone"
-    :data-variant="variant"
+    :data-variant="look"
+    :data-caret="isCaret || undefined"
     :aria-label="label"
     :aria-pressed="pressed"
+    :aria-expanded="open"
     :disabled="disabled"
     @click="emit('click', $event)"
   >
-    <i v-if="icon" class="pi" :class="icon" aria-hidden="true" />
+    <i v-if="glyph" class="pi" :class="glyph" aria-hidden="true" />
     <span v-else class="wp-icon-btn__glyph" aria-hidden="true"><slot /></span>
   </button>
 </template>
@@ -106,7 +119,10 @@ const emit = defineEmits<{ click: [evt: MouseEvent] }>();
 }
 .wp-icon-btn[data-variant="bare"] .pi { font-size: 10px; }
 .wp-icon-btn[data-variant="bare"]:hover:not(:disabled) { background: none; color: var(--wp-text); }
+/* The fold caret turns instead of swapping glyphs. */
+.wp-icon-btn[data-caret] .pi { transition: transform var(--wp-motion-swap) var(--wp-motion-curve-collapse); }
+.wp-icon-btn[data-caret][aria-expanded="true"] .pi { transform: rotate(90deg); }
 @media (prefers-reduced-motion: reduce) {
-  .wp-icon-btn { transition: none; }
+  .wp-icon-btn, .wp-icon-btn[data-caret] .pi { transition: none; }
 }
 </style>

@@ -17,6 +17,7 @@
  */
 import { computed, nextTick, ref, useId, watch } from "vue";
 import Popover from "./Popover.vue";
+import { useListNav } from "./useListNav";
 
 export interface ComboOption<V> { value: V; label: string; hint?: string; disabled?: boolean }
 
@@ -50,7 +51,6 @@ const inputEl = ref<HTMLInputElement | null>(null);
 const query = ref("");
 const typing = ref(false);
 const wanted = ref(false);
-const active = ref(-1);
 const said = ref("");
 
 const picks = computed<T[]>(() => {
@@ -69,7 +69,9 @@ const matches = computed(() => {
     .slice(0, props.limit);
 });
 const open = computed(() => wanted.value && !props.disabled);
-const activeId = computed(() => (open.value && active.value >= 0 ? `${listId}-${active.value}` : undefined));
+const nav = useListNav({ count: () => matches.value.length, disabled: (i) => !!matches.value[i]?.disabled, idPrefix: listId });
+const active = nav.active;
+const activeId = computed(() => (open.value ? nav.activeId.value : undefined));
 
 // The text field shows the single pick's label while you are not typing.
 watch(single, (l) => { if (!typing.value) query.value = l; }, { immediate: true });
@@ -112,18 +114,6 @@ function clear(): void {
   inputEl.value?.focus();
 }
 
-function step(dir: 1 | -1): void {
-  const n = matches.value.length;
-  if (!n) return;
-  let i = active.value;
-  for (let k = 0; k < n; k++) {
-    i = i < 0 ? (dir > 0 ? 0 : n - 1) : (i + dir + n) % n;
-    if (!matches.value[i].disabled) break;
-  }
-  active.value = i;
-  void nextTick(() => document.getElementById(`${listId}-${i}`)?.scrollIntoView?.({ block: "nearest" }));
-}
-
 function onKeydown(ev: KeyboardEvent): void {
   if (props.disabled) return;
   switch (ev.key) {
@@ -131,7 +121,7 @@ function onKeydown(ev: KeyboardEvent): void {
     case "ArrowUp":
       ev.preventDefault();
       if (!wanted.value) { wanted.value = true; if (ev.altKey) return; }
-      step(ev.key === "ArrowDown" ? 1 : -1);
+      nav.step(ev.key === "ArrowDown" ? 1 : -1);
       return;
     case "Enter": {
       const o = open.value && active.value >= 0 ? matches.value[active.value] : undefined;
@@ -156,7 +146,7 @@ function onKeydown(ev: KeyboardEvent): void {
 function onInput(): void {
   typing.value = true;
   wanted.value = true;
-  active.value = matches.value.findIndex((o) => !o.disabled);
+  nav.first();
 }
 
 function onBlur(): void {

@@ -44,13 +44,19 @@ export const SHARED_TOKENS = [
  *  hosts; a host may leave these out. */
 export const OPTIONAL_TOKENS = ["--wp-bg-deep", "--wp-bg2",
   // Room for a scrollbar drawn over the content (overlay-scrollbars.ts sets it).
-  "--wp-bar-room"] as const;
+  "--wp-bar-room",
+  // Read by the axis, matrix and kind helpers, which now run on the canvas
+  // too (its theme defines them); the community script embed may not.
+  "--wp-text3", "--wp-status-modified", "--wp-bundle-default",
+  "--wp-constraint-source", "--wp-constraint-target"] as const;
 
 /** Set by the piece itself, on its own root, not by the host. */
-export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-modal-accent", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon", "--wp-chip-c", "--wp-field-h",
+export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-flash-color", "--wp-banner-o", "--wp-banner-y", "--wp-modal-accent", "--wp-lm-o", "--wp-select-line-h", "--wp-list-row-depth", "--wp-list-row-icon", "--wp-chip-c", "--wp-field-h",
   // WorkingLine's marks and word (registered properties it animates).
   "--wp-wl-t", "--wp-wl-k", "--wp-wl-x", "--wp-wl-f", "--wp-wl-r", "--wp-wl-s", "--wp-wl-o", "--wp-wl-wo", "--wp-wl-wb",
   "--wp-wl-dx", "--wp-wl-dy", "--wp-wl-big", "--wp-wl-a", "--wp-wl-b",
+  // row-drag.css: the drop gap and its line.
+  "--wp-rowdrag-gap", "--wp-rowdrag-inset", "--wp-rowdrag-color",
   // motion.css entrances.
   "--wp-enter-o", "--wp-enter-s", "--wp-enter-y", "--wp-enter-x",
   // SelectionBar: where a sticky bar stops under a fixed header.
@@ -58,9 +64,9 @@ export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-modal-accent", "--wp-lm-o", "
 
 /** Pieces that need a page with src/theme/ loaded (not the canvas). */
 export const PAGE_PIECES = [
-  "axis-color.ts", "kind-colour.ts", "matrix-axis.ts", "BundleMeta.vue", "ConstraintMatrixPreview.vue", "PostCard.vue", "TokenizedValue.vue",
+  "BundleMeta.vue", "ConstraintMatrixPreview.vue", "PostCard.vue", "TokenizedValue.vue",
   "Card.vue", "ChoiceCards.vue",
-  "DataTable.vue", "Drawer.vue", "EmptyState.vue", "Field.vue", "Icon.vue",
+  "DataTable.vue", "Drawer.vue", "Field.vue",
   "ListFilter.vue", "RelativeDate.vue", "Select.vue", "ToastHost.vue",
   // The payload previews and post loading shapes (community post pages).
   "PayloadPreview.vue", "WildcardPreview.vue", "FixedValuesPreview.vue", "CombinePreview.vue", "DerivationPreview.vue",

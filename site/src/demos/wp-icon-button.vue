@@ -19,9 +19,9 @@ const open = ref(true);
       <WpIconButton icon="pi-trash" tone="danger" label="Remove (disabled)" disabled />
     </div>
     <div class="wp-kit__canvas">
-      <p class="wp-kit__caption">In a row: fold caret (bare), then the actions</p>
+      <p class="wp-kit__caption">In a row: fold caret (:open), then the actions</p>
       <div class="wp-kit__row">
-        <WpIconButton variant="bare" :icon="open ? 'pi-caret-down' : 'pi-caret-right'" :label="open ? 'Collapse' : 'Expand'" @click="open = !open" />
+        <WpIconButton :open="open" label="Hair colour" @click="open = !open" />
         <span>Hair colour</span>
         <WpIconButton icon="pi-lock" tone="warn" :pressed="locked" label="Lock seed" @click="locked = !locked" />
         <WpIconButton icon="pi-globe" tone="accent" :pressed="internal" label="Mark internal" @click="internal = !internal" />
