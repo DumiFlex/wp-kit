@@ -695,3 +695,19 @@ describe("useRowDrag", () => {
     expect(e.defaultPrevented).toBe(false);
   });
 });
+
+describe("useRowDrag locate", () => {
+  it("uses the consumer's own hit test", async () => {
+    const { useRowDrag } = await import("./row-drag");
+    const drag = useRowDrag({
+      list: { value: document.createElement("div") } as never,
+      foreign: () => "x",
+      locate: () => ({ key: "frame-1", index: 0, edge: "end" }),
+      accept: () => ({ inset: 16 }),
+      onDrop: () => undefined,
+    });
+    drag.over(new Event("dragover", { cancelable: true }) as DragEvent);
+    expect(drag.target.value).toMatchObject({ key: "frame-1", edge: "end", line: { inset: 16 } });
+    expect(drag.lineStyle("frame-1")).toEqual({ "--wp-rowdrag-inset": "16px" });
+  });
+});

@@ -44,6 +44,10 @@ export interface RowDragOptions {
   onDrop: (from: string, t: RowDropTarget) => void;
   /** The drag's data type, so other drop zones can tell it apart. */
   dataType?: string | undefined;
+  /** Your own hit test, for lists whose targets aren't one flat run of
+   *  rows (rows inside frames, drop bars): return the target under the
+   *  pointer, or null. It replaces the default; `accept` still runs. */
+  locate?: ((ev: DragEvent, from: string) => RowDropTarget | null) | undefined;
   /** A drag that started somewhere else (another node's list): return its
    *  key to take it here, or null to leave it. dataTransfer's data can't be
    *  read during dragover, so tell it by its types or your own store. */
@@ -108,13 +112,18 @@ export function useRowDrag(opts: RowDragOptions): RowDrag {
     ev.preventDefault();
     if (ev.dataTransfer) ev.dataTransfer.dropEffect = "move";
     const els = rows().filter((el) => !opts.candidate || opts.candidate(el, from));
-    const t = dropTarget(ev.clientY, els.map((el) => el.getBoundingClientRect()));
-    const el = t ? els[t.over] : undefined;
-    const key = el ? keyOf(el) : null;
-    if (!t || !el || key === null) { target.value = null; return; }
-    const at: RowDropTarget = { key, index: t.over, edge: t.edge };
+    let at: RowDropTarget | null;
+    if (opts.locate) at = opts.locate(ev, from);
+    else {
+      const t = dropTarget(ev.clientY, els.map((el) => el.getBoundingClientRect()));
+      const el = t ? els[t.over] : undefined;
+      const key = el ? keyOf(el) : null;
+      at = t && key !== null ? { key, index: t.over, edge: t.edge } : null;
+    }
+    if (!at) { target.value = null; return; }
+    const key = at.key;
     const fromIdx = els.findIndex((e) => keyOf(e) === from);
-    const noOp = fromIdx >= 0 && (key === from || targetIndex(fromIdx, t) === fromIdx);
+    const noOp = fromIdx >= 0 && (key === from || targetIndex(fromIdx, { over: at.index, edge: at.edge }) === fromIdx);
     const ok = opts.accept?.(from, at, noOp);
     if (ok === false || (ok === undefined && noOp)) { target.value = null; return; }
     const line = typeof ok === "object" ? ok : {};
