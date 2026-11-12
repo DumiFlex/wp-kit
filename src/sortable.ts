@@ -10,6 +10,31 @@ export function moveItem<T>(list: readonly T[], from: number, to: number): T[] {
   return out;
 }
 
+/** Which side of row `over` a drop lands on; `end` is below the last row. */
+export type DropEdge = "before" | "after" | "end";
+export interface DropTarget { over: number; edge: DropEdge }
+
+/**
+ * Where the pointer points: before a row while it is over the row's top half
+ * (or the gap above it), after it over the bottom half, and `end` below the
+ * last row. `boxes` are the rows' tops and bottoms in list order.
+ */
+export function dropTarget(y: number, boxes: readonly { top: number; bottom: number }[]): DropTarget | null {
+  for (let i = 0; i < boxes.length; i++) {
+    const b = boxes[i];
+    if (!b) continue;
+    if (y <= (b.top + b.bottom) / 2) return { over: i, edge: "before" };
+    if (y < b.bottom) return { over: i, edge: "after" };
+  }
+  return boxes.length ? { over: boxes.length - 1, edge: "end" } : null;
+}
+
+/** The index the dragged row `from` ends up at for a drop target. */
+export function targetIndex(from: number, t: DropTarget): number {
+  const at = t.edge === "before" ? t.over : t.over + 1;
+  return at > from ? at - 1 : at;
+}
+
 /**
  * The index the dragged row ends up at: the number of OTHER rows whose
  * middle is above the pointer. `mids` are the rows' vertical middles in

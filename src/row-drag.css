@@ -1,0 +1,59 @@
+/* Row drag — the look of useRowDrag (row-drag.ts): the dragged row dims,
+ * the row it lands beside opens a gap with a glowing line in it, and the
+ * row that just landed pulses. The Context Injector's look, shared so every
+ * reorderable list feels the same. Pull it in scoped beside the rows
+ * (`<style scoped src="@/kit/row-drag.css">` or an @import in a scoped
+ * block), like Button does with button.css. Reads only shared tokens.
+ *
+ * A consumer can set on the target row (useRowDrag's lineStyle does):
+ *   --wp-rowdrag-inset  the line's left inset (a row inside a group)
+ *   --wp-rowdrag-color  the line's colour (default the accent)
+ *   --wp-rowdrag-gap    how far the gap opens (default 14px)
+ */
+.wp-rowdrag-row,
+[data-drag-key] {
+  position: relative;
+  transition: margin-top var(--wp-motion-fade, 180ms) var(--wp-motion-curve-flip, ease),
+    margin-bottom var(--wp-motion-fade, 180ms) var(--wp-motion-curve-flip, ease);
+}
+.wp-rowdrag--dragging { opacity: 0.4; }
+.wp-rowdrag--before { margin-top: var(--wp-rowdrag-gap, 14px); }
+.wp-rowdrag--after,
+.wp-rowdrag--end { margin-bottom: var(--wp-rowdrag-gap, 14px); }
+.wp-rowdrag--before::before,
+.wp-rowdrag--after::after,
+.wp-rowdrag--end::after {
+  content: "";
+  position: absolute;
+  left: var(--wp-rowdrag-inset, 0px);
+  right: 0;
+  z-index: 3;
+  height: 3px;
+  background: var(--wp-rowdrag-color, var(--wp-accent));
+  border-radius: min(2px, var(--wp-radius-cap, 999px));
+  box-shadow: 0 0 8px var(--wp-rowdrag-color, var(--wp-accent));
+  pointer-events: none;
+  animation: wp-rowdrag-line-in var(--wp-motion-quick, 120ms) ease-out;
+}
+/* Mid-gap: half the gap plus half the line. */
+.wp-rowdrag--before::before { top: calc(var(--wp-rowdrag-gap, 14px) / -2 - 1.5px); }
+.wp-rowdrag--after::after,
+.wp-rowdrag--end::after { bottom: calc(var(--wp-rowdrag-gap, 14px) / -2 - 1.5px); }
+@keyframes wp-rowdrag-line-in {
+  from { opacity: 0; transform: scaleX(0.6); }
+  to { opacity: 1; transform: scaleX(1); }
+}
+.wp-rowdrag--pulse { animation: wp-rowdrag-pulse 420ms ease-out; }
+@keyframes wp-rowdrag-pulse {
+  0% { box-shadow: 0 0 0 0 var(--wp-accent), 0 0 0 0 transparent; }
+  35% { box-shadow: 0 0 0 3px var(--wp-accent), 0 0 16px var(--wp-accent-glow); }
+  100% { box-shadow: 0 0 0 0 transparent, 0 0 0 0 transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .wp-rowdrag-row,
+  [data-drag-key] { transition: none; }
+  .wp-rowdrag--before::before,
+  .wp-rowdrag--after::after,
+  .wp-rowdrag--end::after,
+  .wp-rowdrag--pulse { animation: none; }
+}
