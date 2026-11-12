@@ -62,7 +62,7 @@ export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-modal-accent", "--wp-lm-o", "
 export const PAGE_PIECES = [
   "axis-color.ts", "kind-colour.ts", "matrix-axis.ts", "BundleMeta.vue", "ConstraintMatrixPreview.vue", "PostCard.vue", "TokenizedValue.vue",
   "Card.vue", "ChoiceCards.vue",
-  "DataTable.vue", "Drawer.vue", "EmptyState.vue", "Field.vue", "Icon.vue",
+  "DataTable.vue", "Drawer.vue", "Field.vue",
   "ListFilter.vue", "RelativeDate.vue", "Select.vue", "ToastHost.vue",
   // The payload previews and post loading shapes (community post pages).
   "PayloadPreview.vue", "WildcardPreview.vue", "FixedValuesPreview.vue", "CombinePreview.vue", "DerivationPreview.vue",
