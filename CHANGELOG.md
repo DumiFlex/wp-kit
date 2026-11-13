@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.20.0](https://github.com/DumiFlex/wp-kit/compare/v0.19.0...v0.20.0) (2026-11-13)
+
+
+### Features
+
+* **diff-view:** compare by tags and colour marks on the before text ([#164](https://github.com/DumiFlex/wp-kit/issues/164)) ([6b9e990](https://github.com/DumiFlex/wp-kit/commit/6b9e9901e242d9a2f27d6d3e882a35533f031b06))
+
+
+### Bug Fixes
+
+* **button:** a link button underlines only its words, not its icon ([#163](https://github.com/DumiFlex/wp-kit/issues/163)) ([f616c09](https://github.com/DumiFlex/wp-kit/commit/f616c09740cf96b2851c4a14cf618c80fa71ea19))
+
 ## [0.19.0](https://github.com/DumiFlex/wp-kit/compare/v0.18.1...v0.19.0) (2026-11-12)
 
 
