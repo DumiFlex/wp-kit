@@ -284,7 +284,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "diff-view", name: "DiffView", group: "display", file: "src/DiffView.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
-    use: "What changed between two texts, by words (an option, a template) or by lines (a pack, JSON). Removed is struck through on red, added is on green, and screen readers hear \"removed\"/\"added\". layout=\"split\" puts Before and After side by side.",
+    use: "What changed between two texts, by words (an option, a template), by tags (a prompt's comma list: a rewritten tag reads as one out, one in) or by lines (a pack, JSON). Removed is struck through on red, added is on green, and screen readers hear \"removed\"/\"added\". layout=\"split\" puts Before and After side by side. marks colour ranges of the before text in a third colour (tone info/accent/success/warn/danger, or any CSS colour, with a hover label) for what a change hinged on.",
     instead: "Two text boxes next to each other, or colour alone marking the change.",
   },
   {

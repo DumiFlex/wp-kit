@@ -60,7 +60,9 @@ export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-flash-color", "--wp-banner-o"
   // motion.css entrances.
   "--wp-enter-o", "--wp-enter-s", "--wp-enter-y", "--wp-enter-x",
   // SelectionBar: where a sticky bar stops under a fixed header.
-  "--wp-selection-bar-top"] as const;
+  "--wp-selection-bar-top",
+  // DiffView: a mark's colour.
+  "--wp-diff-mark"] as const;
 
 /** Pieces that need a page with src/theme/ loaded (not the canvas). */
 export const PAGE_PIECES = [
