@@ -12,7 +12,7 @@ import Timeline from "./Timeline.vue";
 import VirtualList from "./VirtualList.vue";
 import VisuallyHidden from "./VisuallyHidden.vue";
 import { addDays, addMonths, compareYmd, monthGrid, parseYmd, toYmd } from "./calendar";
-import { diffText, diffTokens, tokenize } from "./diff";
+import { applyMarks, diffText, diffTokens, markColor, tagKey, tokenize } from "./diff";
 
 const mounted: { unmount: () => void }[] = [];
 
@@ -76,6 +76,45 @@ describe("diff helpers", () => {
     const side = (k: "del" | "add") => parts.filter((p) => p.kind !== k).map((p) => p.text).join("");
     expect(side("add")).toBe("auburn hair, rim light");
     expect(side("del")).toBe("silver hair, rim light");
+  });
+
+  it("tags mode compares whole tags and keeps each side's spelling of a kept tag", () => {
+    expect(tokenize("a, (b:1.2),c", "tags")).toEqual(["a, ", "(b:1.2),", "c"]);
+    expect(tagKey(" rim light , ")).toBe("rim light");
+    const parts = diffText("best,  ((silver hair)), rim light ,x", "best, (silver hair:1.21), rim light, x", "tags");
+    expect(parts.map((p) => p.kind)).toEqual(["same", "del", "add", "same", "same"]);
+    expect(parts[1].text).toBe("((silver hair)), ");
+    expect(parts[2].text).toBe("(silver hair:1.21), ");
+    expect(parts[3]).toEqual({ kind: "same", text: "rim light ,", after: "rim light, " });
+    expect(parts[4]).toEqual({ kind: "same", text: "x" });
+    expect(parts.filter((p) => p.kind !== "add").map((p) => p.text).join("")).toBe("best,  ((silver hair)), rim light ,x");
+    expect(parts.filter((p) => p.kind !== "del").map((p) => p.after ?? p.text).join("")).toBe("best, (silver hair:1.21), rim light, x");
+  });
+
+  it("marks split parts at their edges in before-text positions", () => {
+    const parts = diffText("blue eyes, red, Blue Eyes", "blue eyes, red", "tags");
+    const marked = applyMarks(parts, [{ start: 0, end: 9, label: "kept" }, { start: 21, end: 25, tone: "#f0f" }]);
+    expect(marked.map((p) => [p.kind, p.text, p.mark?.label ?? p.mark?.tone ?? null])).toEqual([
+      ["same", "blue eyes", "kept"],
+      ["same", ", ", null],
+      ["same", "red, ", null],
+      ["del", "Blue ", null],
+      ["del", "Eyes", "#f0f"],
+    ]);
+    expect(applyMarks(parts, [])).toBe(parts);
+  });
+
+  it("marks a same part spelled differently after as a whole", () => {
+    const parts = diffText("a ,b", "a, b", "tags");
+    const marked = applyMarks(parts, [{ start: 0, end: 1 }]);
+    expect(marked).toHaveLength(2);
+    expect(marked[0]).toEqual({ kind: "same", text: "a ,", after: "a, ", mark: { start: 0, end: 1 } });
+  });
+
+  it("markColor maps tones to tokens and passes other colours through", () => {
+    expect(markColor(undefined)).toBe("var(--wp-info)");
+    expect(markColor("warn")).toBe("var(--wp-warn)");
+    expect(markColor("rebeccapurple")).toBe("rebeccapurple");
   });
 
   it("falls back to all removed, all added past the limit", () => {
