@@ -18,7 +18,7 @@
  */
 import { ref, type Ref } from "vue";
 import { MOTION_CURVE_FLIP, MOTION_FLIP_MS, MOTION_PULSE_MS, shouldAnimate } from "./flip";
-import { dropTarget, targetIndex, type DropEdge } from "./sortable";
+import { dropTarget, inDropGap, targetIndex, type DropEdge } from "./sortable";
 
 /** Where a drop lands: next to the row `key` (`index` among the candidate
  *  rows), on its `edge`; `end` is below the last row. */
@@ -106,6 +106,20 @@ export function useRowDrag(opts: RowDragOptions): RowDrag {
     return dragging.value ?? opts.foreign?.(ev) ?? null;
   }
 
+  /** The current target while the pointer rests in the gap it opened (on
+   *  its line), so aiming at the line never moves the drop elsewhere. */
+  function heldTarget(y: number, els: HTMLElement[]): RowDropTarget | null {
+    const t = target.value;
+    const el = t ? els[t.index] : undefined;
+    if (!t || !el || keyOf(el) !== t.key) return null;
+    const box = el.getBoundingClientRect();
+    // Margins are CSS pixels; the box is on screen (a zoomed canvas scales it).
+    const scale = el.offsetHeight > 0 ? box.height / el.offsetHeight : 1;
+    const cs = getComputedStyle(el);
+    const gap = (parseFloat(t.edge === "before" ? cs.marginTop : cs.marginBottom) || 0) * scale;
+    return inDropGap(y, box, t.edge, gap) ? { key: t.key, index: t.index, edge: t.edge } : null;
+  }
+
   function over(ev: DragEvent): void {
     const from = source(ev);
     if (from === null) return; // not ours: leave it to whoever takes it
@@ -113,7 +127,9 @@ export function useRowDrag(opts: RowDragOptions): RowDrag {
     if (ev.dataTransfer) ev.dataTransfer.dropEffect = "move";
     const els = rows().filter((el) => !opts.candidate || opts.candidate(el, from));
     let at: RowDropTarget | null;
+    const held = opts.locate ? null : heldTarget(ev.clientY, els);
     if (opts.locate) at = opts.locate(ev, from);
+    else if (held) at = held;
     else {
       const t = dropTarget(ev.clientY, els.map((el) => el.getBoundingClientRect()));
       const el = t ? els[t.over] : undefined;
