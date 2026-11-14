@@ -29,6 +29,18 @@ export function dropTarget(y: number, boxes: readonly { top: number; bottom: num
   return boxes.length ? { over: boxes.length - 1, edge: "end" } : null;
 }
 
+/**
+ * Whether `y` is in the gap a drop target opened: below its row for `after`
+ * / `end`, above it for `before`. The gap is a margin, outside the row's box,
+ * so `dropTarget` would read the pointer there as the next row's top or the
+ * list's end; the line is drawn in it, though, so a pointer resting on the
+ * line must keep that target. `gap` is the margin in screen pixels.
+ */
+export function inDropGap(y: number, box: { top: number; bottom: number }, edge: DropEdge, gap: number): boolean {
+  if (gap <= 0) return false;
+  return edge === "before" ? y >= box.top - gap && y < box.top : y >= box.bottom && y <= box.bottom + gap;
+}
+
 /** The index the dragged row `from` ends up at for a drop target. */
 export function targetIndex(from: number, t: DropTarget): number {
   const at = t.edge === "before" ? t.over : t.over + 1;
