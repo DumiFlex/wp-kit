@@ -21,7 +21,7 @@ import Toolbar from "./Toolbar.vue";
 import { acceptList, dragItemMaybeAccepted, fileAccepted, formatBytes } from "./drop-zone";
 import { pageItems } from "./pagination";
 import { keyStep, keyToMark, percentOf, snap, snapToMarks, valueAt } from "./slider-math";
-import { dropIndex, dropTarget, moveItem, targetIndex } from "./sortable";
+import { dropIndex, dropTarget, inDropGap, moveItem, targetIndex } from "./sortable";
 
 const mounted: { unmount: () => void }[] = [];
 
@@ -79,6 +79,13 @@ describe("pure helpers", () => {
     expect(dropTarget(21, b)).toEqual({ over: 1, edge: "before" });
     expect(dropTarget(50, b)).toEqual({ over: 1, edge: "end" });
     expect(dropTarget(5, [])).toBeNull();
+    // The gap a target opened keeps it: a pointer on the line stays put.
+    expect(inDropGap(24, { top: 0, bottom: 20 }, "after", 14)).toBe(true);
+    expect(inDropGap(24, { top: 0, bottom: 20 }, "end", 14)).toBe(true);
+    expect(inDropGap(35, { top: 0, bottom: 20 }, "after", 14)).toBe(false);
+    expect(inDropGap(25, { top: 30, bottom: 50 }, "before", 14)).toBe(true);
+    expect(inDropGap(10, { top: 30, bottom: 50 }, "before", 14)).toBe(false);
+    expect(inDropGap(24, { top: 0, bottom: 20 }, "after", 0)).toBe(false);
     expect(targetIndex(0, { over: 2, edge: "after" })).toBe(2);
     expect(targetIndex(2, { over: 0, edge: "before" })).toBe(0);
     expect(targetIndex(1, { over: 0, edge: "after" })).toBe(1);
