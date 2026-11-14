@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.1](https://github.com/DumiFlex/wp-kit/compare/v0.20.0...v0.20.1) (2026-11-14)
+
+
+### Bug Fixes
+
+* **row-drag:** a pointer on the drop line keeps its target ([#168](https://github.com/DumiFlex/wp-kit/issues/168)) ([771659b](https://github.com/DumiFlex/wp-kit/commit/771659bf312762c7b6d6c3b43c0dfa77ae58db69))
+
 ## [0.20.0](https://github.com/DumiFlex/wp-kit/compare/v0.19.0...v0.20.0) (2026-11-13)
 
 
