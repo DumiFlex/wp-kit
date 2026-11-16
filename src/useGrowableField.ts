@@ -43,7 +43,10 @@ export interface GrowableField {
   updateOverflowHint: () => void;
   /** Same, deferred a frame — use at mount, before layout has settled. */
   scheduleOverflowHint: () => void;
-  /** Resize to fit content, UNLESS the user has taken manual control. */
+  /** Resize to fit content, UNLESS the user has taken manual control. A field
+   *  that calls this is one whose height the composable drives, so it is
+   *  re-fitted once the webfonts land too; one that never does (a host sized
+   *  by CSS `height: auto` + `max-height`) is left to its CSS. */
   autosize: () => void;
   /** Begin observing: wires the resize observer for the hint + grip-follow. */
   attach: () => void;
@@ -118,10 +121,14 @@ export function useGrowableField(
     const el = getEl();
     // The user's drag wins from the moment it happens. Re-running the fit
     // after that is what made a collapsed box spring open again.
+    drivesHeight = true;
     if (!el || userResized.value) return;
     el.style.height = "auto";
     lastHeight = setFitted(el, el.scrollHeight);
   }
+
+  /** Set by the first `autosize()`: the caller sizes this field through us. */
+  let drivesHeight = false;
 
   /** What this field's next shared layout pass should do. Set by the deferred
    *  entry points, cleared by the pass. */
@@ -407,12 +414,17 @@ export function useGrowableField(
      * Through the shared pass: every field on the page resolves here in the
      * same microtask burst, and measuring then sizing each in turn was one
      * full layout per field (151 of them, ~470 ms, opening a big wildcard).
+     *
+     * Re-fit only a field whose caller drives its height (`autosize`). A host
+     * sized by CSS (`RichTextInput`: `height: auto` + `max-height`) has no fit
+     * to redo, and writing one pinned its height at the first fit: an option
+     * field then stayed one line tall while its text wrapped onto three.
      */
     if (typeof document !== "undefined" && document.fonts?.ready) {
       void document.fonts.ready.then(() => {
         // The field may have unmounted during the load.
         if (!getEl()) return;
-        want.fit = true;
+        want.fit = drivesHeight;
         want.hint = true;
         queueLayout(batch, batch);
       });

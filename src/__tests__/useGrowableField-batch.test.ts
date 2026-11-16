@@ -86,8 +86,10 @@ afterEach(() => {
   Object.defineProperty(document, "fonts", { value: undefined, configurable: true });
 });
 
-/** N fields in one component, like the editor's option rows. */
-function mountFields(n: number, content = (i: number) => 40 + i, cap = Infinity) {
+/** N fields in one component, like the editor's option rows. `drives`: the
+ *  caller sizes them through `autosize` (the filter picker) rather than CSS
+ *  (`RichTextInput`). */
+function mountFields(n: number, content = (i: number) => 40 + i, cap = Infinity, drives = true) {
   const els = Array.from({ length: n }, () => ref<HTMLElement | null>(null));
   const apis: GrowableField[] = [];
   const Comp = defineComponent({
@@ -101,7 +103,10 @@ function mountFields(n: number, content = (i: number) => 40 + i, cap = Infinity)
   });
   const wrap = mount(Comp, { attachTo: document.body });
   els.forEach((el, i) => { if (el.value) instrument(el.value, i, content(i), cap); });
-  for (const api of apis) api.attach();
+  for (const api of apis) {
+    api.attach();
+    if (drives) api.autosize();
+  }
   return { wrap, apis, els };
 }
 
@@ -133,6 +138,25 @@ describe("useGrowableField — one layout pass for a page of fields", () => {
     // (the fit, then the hint against the fitted height) whatever N is.
     expect(layouts).toBeLessThanOrEqual(2);
     els.forEach((el, i) => expect(el.value?.style.height).toBe(`${40 + i}px`));
+    wrap.unmount();
+  });
+
+  it("leaves a CSS-sized field's height alone and only reads it", async () => {
+    // RichTextInput never calls autosize: its host is `height: auto` under a
+    // CSS max-height. Fitting it here pinned an inline height at the first
+    // fit, so an option field stayed one line tall as its text wrapped.
+    const N = 30;
+    const { wrap, els, apis } = mountFields(N, (i) => (i === 3 ? 500 : 50), 200, false);
+    runFrame();
+    layouts = 0;
+    log.length = 0;
+    await fontsLand();
+    runFrame();
+    expect(log.some((e) => e.startsWith("W"))).toBe(false);
+    expect(layouts).toBe(0);
+    els.forEach((el) => expect(el.value?.style.height).toBe(""));
+    expect(apis[3]?.hasMoreBelow.value).toBe(true);
+    expect(apis[4]?.hasMoreBelow.value).toBe(false);
     wrap.unmount();
   });
 
