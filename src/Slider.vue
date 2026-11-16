@@ -341,7 +341,8 @@ function passed(v: number): boolean {
 .wp-slider[data-size="sm"] .wp-slider__value { font-size: var(--wp-text-xs); }
 .wp-slider__input { flex: none; width: 84px; }
 .wp-slider[data-pair] .wp-slider__input { width: 76px; }
-.wp-slider[data-size="sm"] .wp-slider__input { width: 64px; }
+/* Fits "0.85" beside the sm arrows. */
+.wp-slider[data-size="sm"] .wp-slider__input { width: 72px; }
 .wp-slider[data-pair][data-size="sm"] .wp-slider__input { width: 60px; }
 /* bar: the row is the track; the fill and its edge show the value. */
 .wp-slider[data-variant="bar"] .wp-slider__track { margin: 0; min-width: 80px; }
