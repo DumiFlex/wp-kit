@@ -341,10 +341,17 @@ function isSectionEntry(entry: ContextMenuEntry): entry is ContextMenuSection {
   font-size: 11px;
   text-align: center;
   flex-shrink: 0;
-  /* Align with title baseline when subtitle is present (two-line layout). */
-  align-self: flex-start;
-  margin-top: 1px;
+  align-self: center;
 }
+/* A two-line row (title + subtitle): the icon and tick sit in the middle of
+ * both lines, a size up so they read against the taller row. */
+.wp-ctxmenu__item--with-sub .wp-ctxmenu__icon,
+.wp-ctxmenu__item--with-sub .wp-ctxmenu__icon-spacer,
+.wp-ctxmenu__item--with-sub .wp-ctxmenu__check {
+  width: 16px;
+  font-size: 13px;
+}
+.wp-ctxmenu__check { align-self: center; }
 .wp-ctxmenu__text {
   flex: 1;
   display: flex;
