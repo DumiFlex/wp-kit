@@ -62,7 +62,7 @@ export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-flash-color", "--wp-banner-o"
   // SelectionBar: where a sticky bar stops under a fixed header.
   "--wp-selection-bar-top",
   // DiffView: a mark's colour.
-  "--wp-diff-mark"] as const;
+  "--wp-diff-mark", "--wp-slider-len"] as const;
 
 /** Pieces that need a page with src/theme/ loaded (not the canvas). */
 export const PAGE_PIECES = [
