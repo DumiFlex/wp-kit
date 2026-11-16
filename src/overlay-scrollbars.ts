@@ -13,6 +13,7 @@
  * mark. A box that fits, or a browser with classic scrollbars, is left as it
  * was.
  */
+import { cancelLayout, queueLayout, type LayoutTask } from "./layout-batch";
 
 /** Room for an overlay bar when it is hovered (Firefox widens it then). */
 export const BAR_ROOM_PX = 12;
@@ -54,32 +55,61 @@ export function scrollingAxes(el: Element): string {
  * A box that fits keeps its normal padding. Re-measures when the box or one
  * of its children changes size, children come or go, or text is typed.
  * Returns a stop function.
+ *
+ * The measuring is deferred to the shared layout pass (`layout-batch.ts`):
+ * however many changes land in a frame (a list re-rendering row by row as a
+ * search is typed, every key in a textarea), each box is measured once, and
+ * all boxes on the page are measured together after the frame's DOM writes
+ * instead of forcing a layout inside every mutation callback.
  */
 export function watchBarRoom(el: HTMLElement): () => void {
+  let axes = "";
   // Measured without the room: the room narrows the box, which can make
   // content that wraps (a grid with `1fr` columns, text) short enough to fit,
   // and deciding on that would take the room away and put it back forever.
-  const update = (): void => {
-    const was = el.getAttribute("data-wp-bar");
-    if (was !== null) el.removeAttribute("data-wp-bar");
-    const axes = scrollingAxes(el);
-    if (axes) el.setAttribute("data-wp-bar", axes);
+  const task: LayoutTask = {
+    prepare() {
+      if (el.hasAttribute("data-wp-bar")) el.removeAttribute("data-wp-bar");
+    },
+    measure() {
+      axes = el.isConnected ? scrollingAxes(el) : "";
+    },
+    apply() {
+      if (axes) el.setAttribute("data-wp-bar", axes);
+    },
   };
+  const update = (): void => { queueLayout(task, task); };
+
   const ro = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
+  // Direct children are watched for size, so growth deeper down (a row
+  // getting taller) still reaches us through the child that holds it.
+  const watched = new Set<Element>();
   const observeChildren = (): void => {
     if (!ro) return;
-    ro.disconnect();
-    ro.observe(el);
-    for (const child of Array.from(el.children)) ro.observe(child);
+    for (const child of watched) {
+      if (child.parentElement !== el) { ro.unobserve(child); watched.delete(child); }
+    }
+    for (const child of Array.from(el.children)) {
+      if (!watched.has(child)) { ro.observe(child); watched.add(child); }
+    }
   };
-  const mo = typeof MutationObserver === "undefined" ? null : new MutationObserver(() => { observeChildren(); update(); });
+  const mo = typeof MutationObserver === "undefined"
+    ? null
+    : new MutationObserver((records) => {
+      // Re-sync the observed children only when the box's own children
+      // changed; re-observing them all made each one report again.
+      if (records.some((r) => r.type === "childList" && r.target === el)) observeChildren();
+      update();
+    });
   mo?.observe(el, { childList: true, subtree: true, characterData: true });
   el.addEventListener("input", update);
+  ro?.observe(el);
   observeChildren();
   update();
   return () => {
     ro?.disconnect();
     mo?.disconnect();
+    cancelLayout(task);
     el.removeEventListener("input", update);
   };
 }
