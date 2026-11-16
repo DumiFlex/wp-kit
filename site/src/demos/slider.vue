@@ -11,6 +11,12 @@ const tokens = ref<[number, number]>([40, 120]);
 const frames = ref<[number, number]>([2, 6]);
 const cfg = ref(7);
 const res = ref(1024);
+const lora = ref(0.85);
+const style = ref(0.6);
+const shot = ref(0.45);
+const faders = ref([0.85, 0.6, 1.2, 7]);
+const SHOT_MARKS = [{ value: 0.3 }, { value: 0.7 }];
+const shotWord = (v: number): string => (v <= 0.3 ? "close-up" : v <= 0.7 ? "medium shot" : "wide shot");
 const RES_MARKS = [512, 768, 1024, 1280, 1536].map((v) => ({ value: v, label: String(v) }));
 </script>
 
@@ -43,6 +49,20 @@ const RES_MARKS = [512, 768, 1024, 1280, 1536].map((v) => ({ value: v, label: St
     <div class="wp-kit__canvas">
       <p class="wp-kit__caption">Canvas pair, size sm</p>
       <Slider v-model="frames" :min="1" :max="10" size="sm" aria-label="Frames" with-input />
+    </div>
+    <p class="wp-kit__caption">variant="bar": the row is the track (fine-step 0.01: Shift drags finer)</p>
+    <Slider v-model="lora" variant="bar" :min="0" :max="1.5" :step="0.05" :fine-step="0.01" aria-label="Character LoRA"><template #label>Character LoRA</template></Slider>
+    <Slider v-model="shot" variant="bar" :min="0" :max="1" :step="0.05" :marks="SHOT_MARKS" :format="shotWord" aria-label="Camera"><template #label>Camera</template></Slider>
+    <div class="wp-kit__canvas">
+      <p class="wp-kit__caption">Canvas bar, size sm, with-input</p>
+      <Slider v-model="style" variant="bar" :min="0" :max="1.5" :step="0.05" size="sm" with-input aria-label="Style LoRA"><template #label>Style LoRA</template></Slider>
+    </div>
+    <p class="wp-kit__caption">variant="fader": upright tracks, value on top, label under</p>
+    <div style="display: flex; gap: 12px">
+      <Slider v-model="faders[0]" variant="fader" :min="0" :max="1.5" :step="0.05" show-value aria-label="Character"><template #label>Character</template></Slider>
+      <Slider v-model="faders[1]" variant="fader" :min="0" :max="1.5" :step="0.05" show-value aria-label="Style"><template #label>Style</template></Slider>
+      <Slider v-model="faders[2]" variant="fader" :min="0" :max="2" :step="0.1" show-value aria-label="Detail"><template #label>Detail</template></Slider>
+      <Slider v-model="faders[3]" variant="fader" :min="1" :max="15" size="sm" with-input aria-label="CFG"><template #label>CFG</template></Slider>
     </div>
   </div>
 </template>

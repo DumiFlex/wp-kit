@@ -1,0 +1,117 @@
+import { mount } from "@vue/test-utils";
+import { afterEach, describe, expect, it } from "vitest";
+import { nextTick } from "vue";
+import Slider from "../Slider.vue";
+import XYPad from "../XYPad.vue";
+
+const mounted: { unmount: () => void }[] = [];
+afterEach(() => {
+  mounted.splice(0).forEach((w) => w.unmount());
+  document.body.innerHTML = "";
+});
+
+function bound<P extends Record<string, unknown>>(comp: unknown, props: P, slots: Record<string, string> = {}) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- test helper over two components
+  const w: any = mount(comp as never, {
+    props: { ...props, "onUpdate:modelValue": (v: unknown) => w.setProps({ modelValue: v }) } as never,
+    slots,
+    attachTo: document.body,
+  });
+  mounted.push(w);
+  return w;
+}
+
+/** jsdom has no PointerEvent; a MouseEvent carries the same fields we read. */
+async function point(el: Element, type: string, init: MouseEventInit): Promise<void> {
+  el.dispatchEvent(new MouseEvent(type, { bubbles: true, button: 0, ...init }));
+  await nextTick();
+}
+
+function box(el: Element, w = 100, h = 100): void {
+  (el as HTMLElement).getBoundingClientRect = () => ({ top: 0, bottom: h, height: h, left: 0, right: w, width: w, x: 0, y: 0, toJSON: () => ({}) });
+}
+
+describe("XYPad", () => {
+  it("drags both numbers, with Y growing upward", async () => {
+    const w = bound(XYPad, { modelValue: [0, 0], xMin: 0, xMax: 100, xStep: 10, yMin: 0, yMax: 200, yStep: 10, ariaLabel: "Size" });
+    box(w.element);
+    await point(w.element, "pointerdown", { clientX: 31, clientY: 20 });
+    expect(w.props("modelValue")).toEqual([30, 160]);
+    await point(w.element, "pointermove", { clientX: 100, clientY: 100 });
+    expect(w.props("modelValue")).toEqual([100, 0]);
+    await point(w.element, "pointerup", { clientX: 100, clientY: 100 });
+    expect(w.emitted("change")?.[0]).toEqual([[100, 0]]);
+  });
+
+  it("Shift drags on the fine step", async () => {
+    const w = bound(XYPad, { modelValue: [0, 0], xMin: 0, xMax: 1, xStep: 0.1, yStep: 0.1, fineStep: 0.01 });
+    box(w.element);
+    await point(w.element, "pointerdown", { clientX: 37, clientY: 63 });
+    expect(w.props("modelValue")).toEqual([0.4, 0.4]);
+    await point(w.element, "pointermove", { clientX: 37, clientY: 63, shiftKey: true });
+    expect(w.props("modelValue")).toEqual([0.37, 0.37]);
+  });
+
+  it("moves X with Left/Right and Y with Up/Down, and says both", async () => {
+    const w = bound(XYPad, { modelValue: [5, 5], xMin: 0, xMax: 10, xStep: 1, yMin: 0, yMax: 10, yStep: 1, xLabel: "Width", yLabel: "Height" });
+    const t = w.find("[role=slider]");
+    await t.trigger("keydown", { key: "ArrowRight" });
+    await t.trigger("keydown", { key: "ArrowUp" });
+    expect(w.props("modelValue")).toEqual([6, 6]);
+    await t.trigger("keydown", { key: "ArrowDown", shiftKey: true });
+    expect(w.props("modelValue")).toEqual([6, 0]);
+    await t.trigger("keydown", { key: "End" });
+    expect(w.props("modelValue")).toEqual([10, 0]);
+    expect(t.attributes("aria-valuetext")).toBe("Width 10, Height 0");
+  });
+
+  it("does nothing while disabled, and shades the area when asked", async () => {
+    const w = bound(XYPad, { modelValue: [0.5, 0.25], disabled: true, area: true });
+    await w.find("[role=slider]").trigger("keydown", { key: "ArrowRight" });
+    expect(w.props("modelValue")).toEqual([0.5, 0.25]);
+    const a = w.find(".wp-xypad__area").attributes("style");
+    expect(a).toContain("width: 50%");
+    expect(a).toContain("height: 25%");
+  });
+});
+
+describe("Slider variants", () => {
+  it("bar puts the label and value inside the track", () => {
+    const w = bound(Slider, { modelValue: 0.6, min: 0, max: 1, step: 0.05, variant: "bar", ariaLabel: "Style" }, { label: "Style LoRA" });
+    expect(w.find(".wp-slider__track .wp-slider__label").text()).toBe("Style LoRA");
+    expect(w.find(".wp-slider__track .wp-slider__value").text()).toBe("0.6");
+    expect(w.find(".wp-slider__fill").attributes("style")).toContain("width: 60%");
+  });
+
+  it("fader stands up: a drag counts from the bottom", async () => {
+    const w = bound(Slider, { modelValue: 0, min: 0, max: 10, variant: "fader", ariaLabel: "CFG" }, { label: "CFG" });
+    const t = w.find(".wp-slider__track");
+    box(t.element, 28, 100);
+    await point(t.element, "pointerdown", { clientY: 30 });
+    expect(w.props("modelValue")).toBe(7);
+    expect(w.find("[role=slider]").attributes("aria-orientation")).toBe("vertical");
+    expect(w.find("[role=slider]").attributes("style")).toContain("bottom: 70%");
+    expect(w.find(".wp-slider__label").text()).toBe("CFG");
+  });
+
+  it("free drags and types on the fine step; the arrows keep the step", async () => {
+    const w = bound(Slider, { modelValue: 0, min: 0, max: 1, step: 0.05, fineStep: 0.01, free: true, ariaLabel: "W" });
+    const t = w.find(".wp-slider__track");
+    box(t.element);
+    await point(t.element, "pointerdown", { clientX: 37 });
+    expect(w.props("modelValue")).toBe(0.37);
+    await point(t.element, "pointerup", { clientX: 37 });
+    await w.find("[role=slider]").trigger("keydown", { key: "ArrowRight" });
+    expect(w.props("modelValue")).toBe(0.4);
+  });
+
+  it("without free, Shift drags on the fine step", async () => {
+    const w = bound(Slider, { modelValue: 0, min: 0, max: 1, step: 0.05, fineStep: 0.01, ariaLabel: "W" });
+    const t = w.find(".wp-slider__track");
+    box(t.element);
+    await point(t.element, "pointerdown", { clientX: 37 });
+    expect(w.props("modelValue")).toBe(0.35);
+    await point(t.element, "pointermove", { clientX: 37, shiftKey: true });
+    expect(w.props("modelValue")).toBe(0.37);
+  });
+});

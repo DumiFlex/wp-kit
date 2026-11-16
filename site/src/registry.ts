@@ -140,8 +140,13 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "slider", name: "Slider", group: "inputs", file: "src/Slider.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "A number you set by feel along a range: a weight, a threshold, a brush size. Arrows step, PageUp/PageDown take ten steps, Home/End jump to the ends; marks label key values and format says the value in words; snap settles on the marks (snap alone: only mark values, arrows mark to mark; :snap=\"N\": pulled onto a mark within N, free elsewhere). with-input adds a WpNumber for the exact number. Give it a pair ([low, high]) for a range: two thumbs that can't cross, kept min-gap apart, a WpNumber at each side with with-input.",
+    use: "A number you set by feel along a range: a weight, a threshold, a brush size. Arrows step, PageUp/PageDown take ten steps, Home/End jump to the ends; marks label key values and format says the value in words; snap settles on the marks (snap alone: only mark values, arrows mark to mark; :snap=\"N\": pulled onto a mark within N, free elsewhere). with-input adds a WpNumber for the exact number. Give it a pair ([low, high]) for a range: two thumbs that can't cross, kept min-gap apart, a WpNumber at each side with with-input. variant=\"bar\" makes the row a filled bar with the label slot and value inside; variant=\"fader\" stands it up (value on top, label under it, --wp-slider-len tall). fine-step: Shift while dragging uses it, and free makes every drag and typed number use it (the arrows keep step).",
     instead: "<input type=\"range\"> with the browser's track and thumb, or two Sliders for a range that can end up the wrong way round.",
+  },
+  {
+    id: "xy-pad", name: "XYPad", group: "inputs", file: "src/XYPad.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    use: "Two numbers set together by dragging a point over a pad: a width and a height, a mood from calm to wild and dark to bright. Y grows upward. area shades the box to the point, crosshair draws lines through it, grid puts dots on the pad, ratio shapes it, and the default slot draws over it (ratio lines, words at the edges). Left/Right move X, Up/Down move Y, Shift takes ten steps; fine-step + Shift drags finer.",
+    instead: "Two Sliders for numbers that only make sense together, or a canvas drawn by hand with its own pointer maths.",
   },
   {
     id: "tag-input", name: "TagInput", group: "inputs", file: "src/TagInput.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
@@ -599,7 +604,8 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "logo": `<Logo :size="28" />`,
   "relative-date": `<RelativeDate :value="row.updated_at" />`,
   "toolbar": `<Toolbar label="Text tools" attached><Button size="sm" icon="bold" aria-label="Bold" /><Button size="sm" icon="italic" aria-label="Italic" /></Toolbar>`,
-  "slider": `<Slider v-model="weight" :min="0" :max="2" :step="0.05" aria-label="Weight" with-input />\n<Slider v-model="range" :min="0" :max="200" :min-gap="20" aria-label="Token budget" show-value />\n<Slider v-model="width" :min="512" :max="1536" :marks="widths" snap aria-label="Width" />\n<Slider v-model="cfg" :min="1" :max="15" :step="0.5" :marks="presets" :snap="1" aria-label="CFG" />`,
+  "xy-pad": `<XYPad v-model="size" :x-min="512" :x-max="2048" :x-step="64" :y-min="512" :y-max="2048" :y-step="64" area aria-label="Size" x-label="Width" y-label="Height" />`,
+  "slider": `<Slider v-model="weight" :min="0" :max="2" :step="0.05" aria-label="Weight" with-input />\n<Slider v-model="range" :min="0" :max="200" :min-gap="20" aria-label="Token budget" show-value />\n<Slider v-model="width" :min="512" :max="1536" :marks="widths" snap aria-label="Width" />\n<Slider v-model="cfg" :min="1" :max="15" :step="0.5" :marks="presets" :snap="1" aria-label="CFG" />\n<Slider v-model="lora" variant="bar" :min="0" :max="1.5" :step="0.05" :fine-step="0.01" aria-label="Style LoRA"><template #label>Style LoRA</template></Slider>\n<Slider v-model="cfg" variant="fader" :min="1" :max="15" with-input aria-label="CFG"><template #label>CFG</template></Slider>`,
   "tag-input": `<TagInput v-model="tags" :suggestions="libraryTags" aria-label="Tags" />`,
   "inline-edit": `<InlineEdit v-model="mod.name" label="Wildcard name" :validate="(v) => taken(v) ? 'That name is taken' : null" />`,
   "drop-zone": `<DropZone accept=".txt,.yaml,.yml,.zip" multiple hint="Wildcard files or a zip" @files="load" @reject="explain" />`,
