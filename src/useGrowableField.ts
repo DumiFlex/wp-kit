@@ -25,8 +25,16 @@
  *
  * DOM-only and framework-light: takes an element getter, returns plain
  * functions plus one ref. Callers own their own `onMounted` / `watch`.
+ *
+ * Deferred work (the mount-time hint, the re-fit once the webfonts land, the
+ * resize observer's flush) goes through the shared `layout-batch` pass, so a
+ * page with 150 of these fields measures them all and then sizes them all:
+ * one layout per frame instead of one per field. The direct calls
+ * (`autosize`, `updateOverflowHint`) stay synchronous and touch only their
+ * own field, which is what typing in one field needs.
  */
 import { onBeforeUnmount, ref, type Ref } from "vue";
+import { cancelLayout, queueLayout, type LayoutTask } from "./layout-batch";
 
 export interface GrowableField {
   /** True while content extends past the visible bottom edge. */
@@ -71,32 +79,31 @@ export function useGrowableField(
   const hasMoreBelow = ref(false);
   const userResized = ref(false);
 
+  /** Reads only. Only text counts: the bottom padding scrolling out of view
+   *  hides nothing, so it is allowed for (a box a few px short of its padding
+   *  showed the hint under a fully visible last line). 2px slack absorbs
+   *  sub-pixel rounding at the exact bottom. */
+  function measureHint(el: HTMLElement): boolean {
+    const pad = parseFloat(getComputedStyle(el).paddingBottom) || 0;
+    return el.scrollHeight - el.scrollTop - el.clientHeight > pad + 2;
+  }
+
   function updateOverflowHint(): void {
     const el = getEl();
     if (!el) return;
-    // Only text counts: the bottom padding scrolling out of view hides
-    // nothing, so it is allowed for (a box a few px short of its padding
-    // showed the hint under a fully visible last line). 2px slack absorbs
-    // sub-pixel rounding at the exact bottom.
-    const pad = parseFloat(getComputedStyle(el).paddingBottom) || 0;
-    hasMoreBelow.value = el.scrollHeight - el.scrollTop - el.clientHeight > pad + 2;
+    hasMoreBelow.value = measureHint(el);
   }
 
   function scheduleOverflowHint(): void {
-    if (typeof requestAnimationFrame === "function") requestAnimationFrame(updateOverflowHint);
-    else updateOverflowHint();
+    want.hint = true;
+    queueLayout(batch, batch);
   }
 
-  function autosize(): void {
-    const el = getEl();
-    // The user's drag wins from the moment it happens. Re-running the fit
-    // after that is what made a collapsed box spring open again.
-    if (!el || userResized.value) return;
+  /** Writes the fitted height and arms `autoDriven`. Returns the height set. */
+  function setFitted(el: HTMLElement, contentHeight: number): number {
     autoDriven = true;
-    el.style.height = "auto";
-    const next = Math.max(opts.minHeight ?? 0, el.scrollHeight);
+    const next = Math.max(opts.minHeight ?? 0, contentHeight);
     el.style.height = `${next}px`;
-    lastHeight = next;
     // Release on the next frame: the observer fires asynchronously, and
     // clearing synchronously would let our own write look like a user drag.
     if (typeof requestAnimationFrame === "function") {
@@ -104,7 +111,78 @@ export function useGrowableField(
     } else {
       autoDriven = false;
     }
+    return next;
   }
+
+  function autosize(): void {
+    const el = getEl();
+    // The user's drag wins from the moment it happens. Re-running the fit
+    // after that is what made a collapsed box spring open again.
+    if (!el || userResized.value) return;
+    el.style.height = "auto";
+    lastHeight = setFitted(el, el.scrollHeight);
+  }
+
+  /** What this field's next shared layout pass should do. Set by the deferred
+   *  entry points, cleared by the pass. */
+  const want = { fit: false, hint: false, flush: false, baseline: false };
+  /** Read in `measure`, used in `apply`. */
+  let fitting = false;
+  let contentHeight = 0;
+  let boxHeight = 0;
+  let hint = false;
+
+  /**
+   * This field's part of the shared pass (`layout-batch.ts`): every field's
+   * `prepare` runs, then every `measure`, then every `apply`, so a page of
+   * fields costs one layout per frame rather than one per field.
+   *
+   * A fit takes two rounds: `height: auto` → read `scrollHeight` → set the
+   * height, and then (next round, same frame) the hint and the box height are
+   * read against the new height.
+   */
+  const batch: LayoutTask = {
+    prepare() {
+      const el = getEl();
+      fitting = want.fit && el !== null && !userResized.value;
+      want.fit = false;
+      if (fitting && el) el.style.height = "auto";
+    },
+    measure() {
+      const el = getEl();
+      if (!el) return;
+      if (fitting) {
+        contentHeight = el.scrollHeight;
+        return;
+      }
+      if (want.flush || want.baseline) boxHeight = el.getBoundingClientRect().height;
+      if (want.hint || want.flush) hint = measureHint(el);
+    },
+    apply() {
+      const el = getEl();
+      if (!el) {
+        fitting = false;
+        want.hint = want.flush = want.baseline = false;
+        return;
+      }
+      if (fitting) {
+        fitting = false;
+        lastHeight = setFitted(el, contentHeight);
+        // The fit changed what is hidden, and the box may sit under a CSS
+        // `max-height`: read both back against the height just set.
+        want.hint = true;
+        want.baseline = true;
+        queueLayout(batch, batch);
+        return;
+      }
+      if (want.hint || want.flush) hasMoreBelow.value = hint;
+      // With no starting height yet (or a fit just set one) there is nothing
+      // to compare against: the height read now IS the start, not a drag.
+      if (want.flush && !want.baseline) settle(boxHeight);
+      if (want.flush || want.baseline) lastHeight = boxHeight;
+      want.hint = want.flush = want.baseline = false;
+    },
+  };
 
   /** Keep the grip under the cursor while the box grows past the fold.
    *  Only ever scrolls DOWN, and only while the bottom is genuinely
@@ -136,7 +214,6 @@ export function useGrowableField(
   /** True between pointerdown on the field and the matching pointerup —
    *  i.e. while the user may be holding the resize handle. */
   let dragging = false;
-  let pending = false;
   /** Set once the height cap has been dropped for a manual drag. */
   let capLifted = false;
   /** Pointer Y at the previous move — the drag is incremental, so only the
@@ -153,14 +230,11 @@ export function useGrowableField(
    * dirties layout inside the very callback the browser is using to report
    * layout. Chrome throttles that (the "ResizeObserver loop" case) and stops
    * delivering for a frame, which the user feels as the drag seizing up until
-   * they release and re-grab. Deferring to rAF leaves the callback trivial.
+   * they release and re-grab. Deferring to the shared layout pass (next
+   * frame) leaves the callback trivial; the pass reads the box height and the
+   * hint (`batch.measure`) and then calls this with the height.
    */
-  function flush(): void {
-    pending = false;
-    const el = getEl();
-    if (!el) return;
-    const h = el.getBoundingClientRect().height;
-    updateOverflowHint();
+  function settle(h: number): void {
     // A height change we did not author is the user on the drag handle.
     if (!autoDriven && Math.abs(h - lastHeight) > 1) userResized.value = true;
     // Follows LIVE, including mid-drag. Scrolling by the overshoot moves the
@@ -178,14 +252,11 @@ export function useGrowableField(
     // observer is measuring. A resize handler that can change its own input is
     // the shape a runaway needs.
     if (dragging && h > lastHeight) followGrip();
-    lastHeight = h;
   }
 
   function schedule(): void {
-    if (pending) return;
-    pending = true;
-    if (typeof requestAnimationFrame === "function") requestAnimationFrame(flush);
-    else flush();
+    want.flush = true;
+    queueLayout(batch, batch);
   }
 
   /**
@@ -310,7 +381,11 @@ export function useGrowableField(
     obs = null;
     const el = getEl();
     if (!el) return;
-    lastHeight = el.getBoundingClientRect().height;
+    // The starting height, read in the shared pass rather than here: a page
+    // mounting 150 fields would otherwise lay out once per field, between
+    // whatever its other mount hooks write.
+    want.baseline = true;
+    queueLayout(batch, batch);
 
     /* Re-measure once the webfonts land.
      *
@@ -328,13 +403,18 @@ export function useGrowableField(
      *
      * `document.fonts.ready` resolves once, after all pending faces settle.
      * Cheap, and a no-op where the font was already cached.
+     *
+     * Through the shared pass: every field on the page resolves here in the
+     * same microtask burst, and measuring then sizing each in turn was one
+     * full layout per field (151 of them, ~470 ms, opening a big wildcard).
      */
     if (typeof document !== "undefined" && document.fonts?.ready) {
       void document.fonts.ready.then(() => {
         // The field may have unmounted during the load.
         if (!getEl()) return;
-        updateOverflowHint();
-        autosize();
+        want.fit = true;
+        want.hint = true;
+        queueLayout(batch, batch);
       });
     }
 
@@ -346,6 +426,7 @@ export function useGrowableField(
   onBeforeUnmount(() => {
     obs?.disconnect();
     obs = null;
+    cancelLayout(batch);
     onPointerUp();
   });
 

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { defineComponent, h, ref } from "vue";
 import { mount } from "@vue/test-utils";
 import { useGrowableField } from "../useGrowableField";
+import { flushLayout } from "../layout-batch";
 
 /**
  * jsdom has no ResizeObserver and no layout, so these exercise the parts that
@@ -54,7 +55,9 @@ beforeEach(() => {
     fn(0); return 0;
   });
 });
-afterEach(() => { vi.unstubAllGlobals(); });
+// A test that takes rAF away leaves the shared pass waiting; run it so the
+// next test starts clean.
+afterEach(() => { flushLayout(); vi.unstubAllGlobals(); });
 
 describe("useGrowableField — auto-grow yields to the drag", () => {
   it("auto-sizes while the user has not touched the handle", () => {
