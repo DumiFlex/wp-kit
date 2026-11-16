@@ -358,7 +358,7 @@ function passed(v: number): boolean {
 }
 .wp-slider[data-variant="bar"][data-pair] .wp-slider__fill { border-radius: 0; }
 .wp-slider[data-variant="bar"] .wp-slider__thumb {
-  top: 2px; bottom: 2px; width: 2px; height: auto; margin: 0 0 0 -1px; border: 0;
+  top: 0; bottom: 0; width: 2px; height: auto; margin: 0 0 0 -1px; border: 0;
   border-radius: min(1px, var(--wp-radius-cap, 999px)); background: var(--wp-accent); box-shadow: none; transform: none;
 }
 .wp-slider[data-variant="bar"] .wp-slider__track:hover .wp-slider__thumb,
@@ -390,7 +390,9 @@ function passed(v: number): boolean {
   top: auto; left: 50%; right: auto; width: 6px; margin: 0 0 0 -3px;
 }
 .wp-slider[data-variant="fader"] .wp-slider__rail { top: -4px; bottom: -4px; height: auto; }
-.wp-slider[data-variant="fader"] .wp-slider__fill { bottom: 0; height: 0; }
+/* The fill reaches the rail's bottom end (which runs 4px past the track),
+   so no bare rail shows under it. */
+.wp-slider[data-variant="fader"]:not([data-pair]) .wp-slider__fill { bottom: -4px; height: 0; padding-bottom: 4px; box-sizing: content-box; }
 .wp-slider[data-variant="fader"] .wp-slider__thumb {
   top: auto; left: 50%; width: 22px; height: 10px; margin: 0 0 -5px -11px;
   border-radius: min(3px, var(--wp-radius-cap, 999px)); background: var(--wp-bg);
