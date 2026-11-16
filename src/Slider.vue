@@ -352,28 +352,29 @@ function passed(v: number): boolean {
   border-radius: min(6px, var(--wp-radius-cap, 999px));
 }
 .wp-slider[data-variant="bar"] .wp-slider__fill {
-  left: 0; background: color-mix(in srgb, var(--wp-accent) 38%, transparent);
+  left: 0; background: color-mix(in srgb, var(--wp-accent) 30%, transparent);
   border-radius: min(6px, var(--wp-radius-cap, 999px)) 0 0 min(6px, var(--wp-radius-cap, 999px));
 }
 .wp-slider[data-variant="bar"][data-pair] .wp-slider__fill { border-radius: 0; }
 .wp-slider[data-variant="bar"] .wp-slider__thumb {
-  top: 3px; bottom: 3px; width: 2px; height: auto; margin: 0 0 0 -1px; border: 0;
+  top: 2px; bottom: 2px; width: 2px; height: auto; margin: 0 0 0 -1px; border: 0;
   border-radius: min(1px, var(--wp-radius-cap, 999px)); background: var(--wp-accent); box-shadow: none; transform: none;
 }
 .wp-slider[data-variant="bar"] .wp-slider__track:hover .wp-slider__thumb,
 .wp-slider[data-variant="bar"] .wp-slider__thumb[data-active] { transform: none; width: 3px; }
 .wp-slider[data-variant="bar"] .wp-slider__track:focus-within .wp-slider__rail { box-shadow: inset 0 0 0 1px var(--wp-accent), var(--wp-focus-ring); }
 .wp-slider[data-variant="bar"] .wp-slider__thumb:focus-visible { box-shadow: none; }
-.wp-slider[data-variant="bar"] .wp-slider__mark { top: 4px; bottom: 4px; height: auto; width: 1px; margin: 0; background: var(--wp-border-strong); }
+.wp-slider[data-variant="bar"] .wp-slider__mark { top: 3px; bottom: 3px; height: auto; width: 1px; margin: 0; background: var(--wp-border-strong); }
 .wp-slider__inner {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--wp-space-3);
-  padding: 0 var(--wp-space-4); pointer-events: none; min-width: 0;
+  padding: 0 var(--wp-space-3); pointer-events: none; min-width: 0;
 }
 .wp-slider__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--wp-text); font-size: var(--wp-text-sm); }
 .wp-slider[data-size="sm"] .wp-slider__label { font-size: var(--wp-text-xs); }
 .wp-slider__inner .wp-slider__value { font-family: var(--wp-font-mono); }
-.wp-slider[data-variant="bar"][data-size="sm"] { --_h: var(--wp-control-h-md); }
-.wp-slider[data-variant="bar"][data-size="md"] { --_h: var(--wp-control-h-lg); }
+/* As tall as the row's other controls: sm 24 px on the canvas, md 32 px. */
+.wp-slider[data-variant="bar"][data-size="sm"] { --_h: var(--wp-control-h-sm); }
+.wp-slider[data-variant="bar"][data-size="md"] { --_h: var(--wp-control-h-md); }
 
 /* fader: an upright track, the value above, the label under it. */
 .wp-slider[data-variant="fader"] {
