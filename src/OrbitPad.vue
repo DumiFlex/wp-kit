@@ -69,6 +69,11 @@ const emit = defineEmits<{
 const INNER = 12;
 const OUTER = 38;
 const SIDE_INNER = 14;
+// The side view's bust: neck and shoulders under a head at SIDE_CENTRE, the nose toward the front (right).
+const [SX, SY] = SIDE_CENTRE;
+const sideBust = `M ${SX - 1.5} ${SY + 3} H ${SX + 1.5} V ${SY + 5.5} H ${SX - 1.5} Z `
+  + `M ${SX - 6} ${SY + 11} V ${SY + 8} Q ${SX - 6} ${SY + 5} ${SX - 3} ${SY + 5} H ${SX + 3} Q ${SX + 6} ${SY + 5} ${SX + 6} ${SY + 8} V ${SY + 11} Z`;
+const sideNose = `M ${SX + 3.4} ${SY - 1} L ${SX + 5.6} ${SY + 0.8} L ${SX + 3.4} ${SY + 1.4} Z`;
 
 const topEl = ref<HTMLElement | null>(null);
 const sideEl = ref<HTMLElement | null>(null);
@@ -203,9 +208,10 @@ function onSideKey(ev: KeyboardEvent): void {
           <circle class="wp-orbit__ring wp-orbit__ring--in" cx="50" cy="50" :r="INNER" />
           <circle class="wp-orbit__path" cx="50" cy="50" :r="topR" />
           <line class="wp-orbit__stem" x1="50" y1="50" :x2="topAt[0]" :y2="topAt[1]" />
-          <!-- The subject from above, its nose toward the front (down). -->
-          <circle class="wp-orbit__subject" cx="50" cy="50" r="6" />
-          <path class="wp-orbit__nose" d="M 46 54 L 50 60 L 54 54 Z" />
+          <!-- A head-and-shoulders bust from above, its nose toward the front (down). -->
+          <ellipse class="wp-orbit__shoulders" cx="50" cy="49" rx="10" ry="4.2" />
+          <circle class="wp-orbit__subject wp-orbit__head" cx="50" cy="50" r="4.6" />
+          <path class="wp-orbit__subject" d="M 48.2 54 L 50 57.4 L 51.8 54 Z" />
         </svg>
         <span
           v-for="m in topMarks" :key="`a${m.at}`" class="wp-orbit__mark" :data-side="m.side" :data-on="m.on || undefined"
@@ -236,13 +242,14 @@ function onSideKey(ev: KeyboardEvent): void {
         @pointerdown="onDown('side', $event)" @pointermove="onMove" @pointerup="onUp" @pointercancel="onUp"
       >
         <svg class="wp-orbit__svg" viewBox="0 0 100 100" aria-hidden="true">
-          <line class="wp-orbit__ground" x1="4" :y1="SIDE_CENTRE[1] + 6" x2="96" :y2="SIDE_CENTRE[1] + 6" />
+          <line class="wp-orbit__ground" x1="4" :y1="SIDE_CENTRE[1] + 11" x2="96" :y2="SIDE_CENTRE[1] + 11" />
           <path class="wp-orbit__ring" :d="fullArc" />
           <path class="wp-orbit__path" :d="arcPath" />
           <line class="wp-orbit__stem" :x1="SIDE_CENTRE[0]" :y1="SIDE_CENTRE[1]" :x2="sideAt[0]" :y2="sideAt[1]" />
-          <!-- The subject from the side: a head over a body. -->
-          <circle class="wp-orbit__subject" :cx="SIDE_CENTRE[0]" :cy="SIDE_CENTRE[1] - 4" r="4" />
-          <rect class="wp-orbit__subject" :x="SIDE_CENTRE[0] - 3" :y="SIDE_CENTRE[1]" width="6" height="6" rx="1.5" />
+          <!-- A head-and-shoulders bust from the side, eyes at the centre, facing the front (right). -->
+          <path class="wp-orbit__shoulders" :d="sideBust" />
+          <circle class="wp-orbit__subject wp-orbit__head" :cx="SIDE_CENTRE[0]" :cy="SIDE_CENTRE[1]" r="3.8" />
+          <path class="wp-orbit__subject" :d="sideNose" />
         </svg>
         <span
           v-for="m in sideMarks" :key="`h${m.at}`" class="wp-orbit__mark wp-orbit__mark--side"
@@ -298,7 +305,8 @@ function onSideKey(ev: KeyboardEvent): void {
 .wp-orbit[data-variant="light"] .wp-orbit__stem { stroke-dasharray: 2 2; }
 .wp-orbit__ground { stroke: var(--wp-border-strong); stroke-width: 0.8; }
 .wp-orbit__subject { fill: var(--wp-text-muted); }
-.wp-orbit__nose { fill: var(--wp-text-muted); opacity: 0.7; }
+.wp-orbit__head { stroke: var(--wp-bg-1); stroke-width: 1; }
+.wp-orbit__shoulders { fill: var(--wp-text-muted); opacity: 0.55; }
 .wp-orbit__mark {
   position: absolute; transform: translate(-50%, -50%); pointer-events: none;
   font-size: 9px; line-height: 11px; color: var(--wp-text-muted); white-space: nowrap;
