@@ -13,7 +13,9 @@
  * them. `variant`: `pad` (the plain pad), `size` (area, `guides` ratio lines
  * through 0,0 and a "W × H" readout: a picture size) or `stick` (round, zero
  * in the middle, the point kept inside the circle). `x-bands` / `y-bands`
- * label stretches of an axis (words per range) as stripes. The default slot
+ * label stretches of an axis (words per range) as stripes. `tint` washes the
+ * four quarters in soft colours (warm above, cool below), a mood map at a
+ * glance. The default slot
  * draws over the pad; it gets the pad's percentages as `xPct` / `yPct`.
  * `fine-step` + Shift drags finer, like Slider.
  *
@@ -63,6 +65,8 @@ const props = withDefaults(defineProps<{
   xBands?: readonly PadBand[] | undefined;
   /** Labelled stretches of Y (stripes with their word beside them). */
   yBands?: readonly PadBand[] | undefined;
+  /** Soft colours per quarter: amber and rose above, teal and violet below. */
+  tint?: boolean | undefined;
   size?: "sm" | "md" | undefined;
   disabled?: boolean | undefined;
 }>(), {
@@ -224,6 +228,10 @@ function onKeydown(ev: KeyboardEvent): void {
     @pointerup="onPointerUp"
     @pointercancel="onPointerUp"
   >
+    <div v-if="tint" class="wp-xypad__zones" aria-hidden="true">
+      <span class="wp-xypad__zone" data-zone="tl" /><span class="wp-xypad__zone" data-zone="tr" />
+      <span class="wp-xypad__zone" data-zone="bl" /><span class="wp-xypad__zone" data-zone="br" />
+    </div>
     <div v-if="xBandSpans.length || yBandSpans.length" class="wp-xypad__bands" aria-hidden="true">
       <span
         v-for="(b, i) in xBandSpans" :key="`x${i}`" class="wp-xypad__band wp-xypad__band--x"
@@ -280,12 +288,13 @@ function onKeydown(ev: KeyboardEvent): void {
 <style scoped>
 .wp-xypad {
   --_thumb: 18px;
+  --_halo: 6px;
   position: relative; width: 100%; box-sizing: border-box; overflow: hidden;
   background: var(--wp-bg-1); box-shadow: inset 0 0 0 1px var(--wp-border);
   border-radius: min(8px, var(--wp-radius-cap, 999px));
   cursor: crosshair; touch-action: none; user-select: none;
 }
-.wp-xypad[data-size="sm"] { --_thumb: 14px; }
+.wp-xypad[data-size="sm"] { --_thumb: 14px; --_halo: 4px; }
 .wp-xypad__dot {
   position: absolute; width: 3px; height: 3px; margin: 0 0 -1.5px -1.5px;
   border-radius: min(50%, var(--wp-radius-cap, 999px)); background: var(--wp-border-strong); pointer-events: none;
@@ -309,6 +318,14 @@ function onKeydown(ev: KeyboardEvent): void {
   border-radius: min(4px, var(--wp-radius-cap, 999px)); background: color-mix(in srgb, var(--wp-bg) 85%, transparent);
   font-size: 11px; line-height: 14px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--wp-text);
 }
+.wp-xypad__zones {
+  position: absolute; inset: 0; display: grid; grid-template: 1fr 1fr / 1fr 1fr; pointer-events: none;
+}
+.wp-xypad__zone { box-sizing: border-box; }
+.wp-xypad__zone[data-zone="tl"] { background: color-mix(in srgb, var(--wp-amber) 9%, transparent); border-right: 1px solid var(--wp-border); border-bottom: 1px solid var(--wp-border); }
+.wp-xypad__zone[data-zone="tr"] { background: color-mix(in srgb, var(--wp-rose) 10%, transparent); border-bottom: 1px solid var(--wp-border); }
+.wp-xypad__zone[data-zone="bl"] { background: color-mix(in srgb, var(--wp-teal) 9%, transparent); border-right: 1px solid var(--wp-border); }
+.wp-xypad__zone[data-zone="br"] { background: color-mix(in srgb, var(--wp-violet) 12%, transparent); }
 .wp-xypad__bands { position: absolute; inset: 0; pointer-events: none; }
 .wp-xypad__band { position: absolute; box-sizing: border-box; }
 .wp-xypad__band--x { top: 0; bottom: 0; }
@@ -331,11 +348,12 @@ function onKeydown(ev: KeyboardEvent): void {
   position: absolute; box-sizing: border-box; width: var(--_thumb); height: var(--_thumb);
   margin: 0 0 calc(var(--_thumb) / -2) calc(var(--_thumb) / -2);
   border: 3px solid var(--wp-accent); border-radius: min(50%, var(--wp-radius-cap, 999px));
-  background: var(--wp-bg); box-shadow: var(--wp-shadow-sm); outline: none;
+  background: var(--wp-bg); outline: none;
+  box-shadow: 0 0 0 var(--_halo) color-mix(in srgb, var(--wp-accent) 20%, transparent), var(--wp-shadow-sm);
   transition: transform var(--wp-motion-quick), box-shadow var(--wp-motion-quick);
 }
 .wp-xypad:hover .wp-xypad__thumb, .wp-xypad[data-dragging] .wp-xypad__thumb { transform: scale(1.1); }
-.wp-xypad__thumb:focus-visible { box-shadow: var(--wp-focus-ring); }
+.wp-xypad__thumb:focus-visible { box-shadow: var(--wp-focus-ring), 0 0 0 var(--_halo) color-mix(in srgb, var(--wp-accent) 20%, transparent); }
 .wp-xypad[data-disabled] { opacity: 0.45; cursor: not-allowed; }
 .wp-xypad[data-disabled] .wp-xypad__thumb { transform: none; }
 @media (prefers-reduced-motion: reduce) {

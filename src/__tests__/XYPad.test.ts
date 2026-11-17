@@ -98,6 +98,13 @@ describe("XYPad", () => {
     expect(on).toEqual(["wild", "dark"]);
   });
 
+  it("tint washes the four quarters", () => {
+    const w = bound(XYPad, { modelValue: [0.5, 0.5], tint: true });
+    expect(w.findAll(".wp-xypad__zone").map((z: { attributes: (k: string) => string }) => z.attributes("data-zone"))).toEqual(["tl", "tr", "bl", "br"]);
+    const plain = bound(XYPad, { modelValue: [0.5, 0.5] });
+    expect(plain.find(".wp-xypad__zones").exists()).toBe(false);
+  });
+
   it("does nothing while disabled, and shades the area when asked", async () => {
     const w = bound(XYPad, { modelValue: [0.5, 0.25], disabled: true, area: true });
     await w.find("[role=slider]").trigger("keydown", { key: "ArrowRight" });
