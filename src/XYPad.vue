@@ -13,7 +13,9 @@
  * them. `variant`: `pad` (the plain pad), `size` (area, `guides` ratio lines
  * through 0,0 and a "W × H" readout: a picture size) or `stick` (round, zero
  * in the middle, the point kept inside the circle). `x-bands` / `y-bands`
- * label stretches of an axis (words per range) as stripes. The default slot
+ * label stretches of an axis (words per range) as stripes. `tint` colours
+ * each section the bands make (one colour per word, or per pair of words with
+ * bands on both axes), the one the point is in a little stronger. The default slot
  * draws over the pad; it gets the pad's percentages as `xPct` / `yPct`.
  * `fine-step` + Shift drags finer, like Slider.
  *
@@ -63,6 +65,8 @@ const props = withDefaults(defineProps<{
   xBands?: readonly PadBand[] | undefined;
   /** Labelled stretches of Y (stripes with their word beside them). */
   yBands?: readonly PadBand[] | undefined;
+  /** Colour each section the bands make (needs `x-bands` or `y-bands`). */
+  tint?: boolean | undefined;
   size?: "sm" | "md" | undefined;
   disabled?: boolean | undefined;
 }>(), {
@@ -100,6 +104,8 @@ const dots = computed(() => {
   }
   return out;
 });
+/** How many colours the sections take turns with (`data-tone` 0..5). */
+const CELL_TONES = 6;
 const xBandSpans = computed(() => (props.xBands?.length ? bandSpans(props.xBands, props.xMin, props.xMax) : []));
 const yBandSpans = computed(() => (props.yBands?.length ? bandSpans(props.yBands, props.yMin, props.yMax) : []));
 const guideLines = computed(() => {
@@ -108,6 +114,21 @@ const guideLines = computed(() => {
     const g = guideLine(r, props.xMin, props.xMax, props.yMin, props.yMax);
     return g ? [{ r, name: ratioName(1 / r), x1: g[0], y1: 100 - g[1], x2: g[2], y2: 100 - g[3] }] : [];
   });
+});
+/** The sections the bands cut the pad into, top row first, each with a colour. */
+const cells = computed(() => {
+  if (!props.tint || (!xBandSpans.value.length && !yBandSpans.value.length)) return [];
+  const xs = xBandSpans.value.length ? xBandSpans.value : [{ from: 0, to: 100, label: "" }];
+  const ys = (yBandSpans.value.length ? yBandSpans.value : [{ from: 0, to: 100, label: "" }]).slice().reverse();
+  const out: { key: string; left: number; width: number; bottom: number; height: number; tone: number; on: boolean }[] = [];
+  ys.forEach((yb, r) => xs.forEach((xb, c) => {
+    out.push({
+      key: `${r}-${c}`, left: xb.from, width: xb.to - xb.from, bottom: yb.from, height: yb.to - yb.from,
+      tone: (r * xs.length + c + (xs.length % CELL_TONES === 0 ? r : 0)) % CELL_TONES,
+      on: inBand(xb, xPct.value) && inBand(yb, yPct.value),
+    });
+  }));
+  return out;
 });
 const inBand = (s: { from: number; to: number }, pct: number): boolean => pct >= s.from && (pct < s.to || s.to === 100);
 
@@ -224,6 +245,12 @@ function onKeydown(ev: KeyboardEvent): void {
     @pointerup="onPointerUp"
     @pointercancel="onPointerUp"
   >
+    <div v-if="cells.length" class="wp-xypad__cells" aria-hidden="true">
+      <span
+        v-for="c in cells" :key="c.key" class="wp-xypad__cell" :data-tone="c.tone" :data-on="c.on || undefined"
+        :style="{ left: `${c.left}%`, width: `${c.width}%`, bottom: `${c.bottom}%`, height: `${c.height}%` }"
+      />
+    </div>
     <div v-if="xBandSpans.length || yBandSpans.length" class="wp-xypad__bands" aria-hidden="true">
       <span
         v-for="(b, i) in xBandSpans" :key="`x${i}`" class="wp-xypad__band wp-xypad__band--x"
@@ -280,12 +307,13 @@ function onKeydown(ev: KeyboardEvent): void {
 <style scoped>
 .wp-xypad {
   --_thumb: 18px;
+  --_halo: 6px;
   position: relative; width: 100%; box-sizing: border-box; overflow: hidden;
   background: var(--wp-bg-1); box-shadow: inset 0 0 0 1px var(--wp-border);
   border-radius: min(8px, var(--wp-radius-cap, 999px));
   cursor: crosshair; touch-action: none; user-select: none;
 }
-.wp-xypad[data-size="sm"] { --_thumb: 14px; }
+.wp-xypad[data-size="sm"] { --_thumb: 14px; --_halo: 4px; }
 .wp-xypad__dot {
   position: absolute; width: 3px; height: 3px; margin: 0 0 -1.5px -1.5px;
   border-radius: min(50%, var(--wp-radius-cap, 999px)); background: var(--wp-border-strong); pointer-events: none;
@@ -309,6 +337,14 @@ function onKeydown(ev: KeyboardEvent): void {
   border-radius: min(4px, var(--wp-radius-cap, 999px)); background: color-mix(in srgb, var(--wp-bg) 85%, transparent);
   font-size: 11px; line-height: 14px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--wp-text);
 }
+.wp-xypad__cells { position: absolute; inset: 0; pointer-events: none; }
+.wp-xypad__cell { position: absolute; --_tone: var(--wp-amber); background: color-mix(in srgb, var(--_tone) 9%, transparent); transition: background var(--wp-motion-quick); }
+.wp-xypad__cell[data-tone="1"] { --_tone: var(--wp-rose); }
+.wp-xypad__cell[data-tone="2"] { --_tone: var(--wp-teal); }
+.wp-xypad__cell[data-tone="3"] { --_tone: var(--wp-violet); }
+.wp-xypad__cell[data-tone="4"] { --_tone: var(--wp-green); }
+.wp-xypad__cell[data-tone="5"] { --_tone: var(--wp-red); }
+.wp-xypad__cell[data-on] { background: color-mix(in srgb, var(--_tone) 18%, transparent); }
 .wp-xypad__bands { position: absolute; inset: 0; pointer-events: none; }
 .wp-xypad__band { position: absolute; box-sizing: border-box; }
 .wp-xypad__band--x { top: 0; bottom: 0; }
@@ -331,11 +367,12 @@ function onKeydown(ev: KeyboardEvent): void {
   position: absolute; box-sizing: border-box; width: var(--_thumb); height: var(--_thumb);
   margin: 0 0 calc(var(--_thumb) / -2) calc(var(--_thumb) / -2);
   border: 3px solid var(--wp-accent); border-radius: min(50%, var(--wp-radius-cap, 999px));
-  background: var(--wp-bg); box-shadow: var(--wp-shadow-sm); outline: none;
+  background: var(--wp-bg); outline: none;
+  box-shadow: 0 0 0 var(--_halo) color-mix(in srgb, var(--wp-accent) 20%, transparent), var(--wp-shadow-sm);
   transition: transform var(--wp-motion-quick), box-shadow var(--wp-motion-quick);
 }
 .wp-xypad:hover .wp-xypad__thumb, .wp-xypad[data-dragging] .wp-xypad__thumb { transform: scale(1.1); }
-.wp-xypad__thumb:focus-visible { box-shadow: var(--wp-focus-ring); }
+.wp-xypad__thumb:focus-visible { box-shadow: var(--wp-focus-ring), 0 0 0 var(--_halo) color-mix(in srgb, var(--wp-accent) 20%, transparent); }
 .wp-xypad[data-disabled] { opacity: 0.45; cursor: not-allowed; }
 .wp-xypad[data-disabled] .wp-xypad__thumb { transform: none; }
 @media (prefers-reduced-motion: reduce) {

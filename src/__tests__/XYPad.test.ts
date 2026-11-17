@@ -98,6 +98,17 @@ describe("XYPad", () => {
     expect(on).toEqual(["wild", "dark"]);
   });
 
+  it("tint colours each section the bands make, the point's one stronger", () => {
+    const bands = { xBands: [{ to: 0.5, label: "calm" }, { to: 1, label: "wild" }], yBands: [{ to: 0.5, label: "dim" }, { to: 1, label: "bright" }] };
+    const w = bound(XYPad, { modelValue: [0.7, 0.2], tint: true, ...bands });
+    const cells = w.findAll(".wp-xypad__cell");
+    expect(cells.map((c: { attributes: (k: string) => string }) => c.attributes("data-tone"))).toEqual(["0", "1", "2", "3"]);
+    expect(cells.map((c: { attributes: (k: string) => string | undefined }) => c.attributes("data-on") !== undefined)).toEqual([false, false, false, true]);
+    const one = bound(XYPad, { modelValue: [0.2, 0.5], tint: true, xBands: bands.xBands });
+    expect(one.findAll(".wp-xypad__cell")).toHaveLength(2);
+    expect(bound(XYPad, { modelValue: [0.5, 0.5], tint: true }).find(".wp-xypad__cells").exists()).toBe(false);
+  });
+
   it("does nothing while disabled, and shades the area when asked", async () => {
     const w = bound(XYPad, { modelValue: [0.5, 0.25], disabled: true, area: true });
     await w.find("[role=slider]").trigger("keydown", { key: "ArrowRight" });

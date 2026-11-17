@@ -37,9 +37,9 @@ const moodWord = computed(() => `${mood.value[0] < 0.5 ? "calm" : "wild"}, ${moo
     <div style="max-width: 200px">
       <XYPad v-model="stickAt" variant="stick" :x-min="-1" :x-max="1" :y-min="-1" :y-max="1" :grid="0" :crosshair="false" aria-label="Pan" />
     </div>
-    <p class="wp-kit__caption">Word bands on both axes</p>
+    <p class="wp-kit__caption">Word bands on both axes, with tint: a colour per section</p>
     <div style="max-width: 300px">
-      <XYPad v-model="map" :grid="0" :x-bands="[{ to: 0.33, label: 'calm' }, { to: 0.66, label: 'lively' }, { to: 1, label: 'wild' }]" :y-bands="[{ to: 0.5, label: 'dark' }, { to: 1, label: 'bright' }]" aria-label="Mood map" />
+      <XYPad v-model="map" :grid="0" tint :x-bands="[{ to: 0.33, label: 'calm' }, { to: 0.66, label: 'lively' }, { to: 1, label: 'wild' }]" :y-bands="[{ to: 0.5, label: 'dark' }, { to: 1, label: 'bright' }]" aria-label="Mood map" />
     </div>
     <p class="wp-kit__caption">Dots on every step (stepDots) and snap-dots: the point lands on a dot</p>
     <div style="max-width: 200px">
