@@ -135,6 +135,7 @@ describe("WpImageZoom", () => {
   it("a second picture shares the first one's view, in two half-width panes", async () => {
     const w = mount(WpImageZoom, { props: { src: "a.png", second: "b.png" }, attachTo: document.body });
     await ready(w, { w: 408, h: 200 });
+    await w.findAll('[data-test="imgzoom-next"], .wp-imgzoom__next')[1]?.trigger("load");
     expect(w.classes()).toContain("is-pair");
     const imgs = w.findAll(".wp-imgzoom__img");
     expect(imgs).toHaveLength(2);
@@ -142,6 +143,54 @@ describe("WpImageZoom", () => {
     expect(w.find('[data-test="imgzoom-level"]').text()).toBe("25%");
     await w.find('[data-test="imgzoom-200"]').trigger("click");
     expect(imgs[0].attributes("style")).toEqual(imgs[1].attributes("style"));
+    // Another size or shape fits inside the first one's box instead of stretching.
+    expect(imgs[1].classes()).toContain("is-second");
+    w.unmount();
+  });
+
+  it("keeps the old picture until the next one has loaded, then swaps both in one step", async () => {
+    const w = mount(WpImageZoom, { props: { src: "a.png" }, attachTo: document.body });
+    await ready(w);
+    expect(w.find('[data-test="imgzoom-img"]').attributes("src")).toBe("a.png");
+    await w.setProps({ src: "b.png" });
+    // Still the old picture (and its size) while b.png loads.
+    const shown = w.find('[data-test="imgzoom-img"]');
+    expect(shown.attributes("src")).toBe("a.png");
+    expect(shown.attributes("style")).toContain("width: 800px");
+    const next = w.find('[data-test="imgzoom-next"]').element as HTMLImageElement;
+    Object.defineProperty(next, "naturalWidth", { value: 400, configurable: true });
+    Object.defineProperty(next, "naturalHeight", { value: 600, configurable: true });
+    await w.find('[data-test="imgzoom-next"]').trigger("load");
+    const after = w.find('[data-test="imgzoom-img"]');
+    expect(after.attributes("src")).toBe("b.png");
+    expect(after.attributes("style")).toContain("width: 400px");
+    expect(after.attributes("style")).toContain("height: 600px");
+    w.unmount();
+  });
+
+  it("a zoomed level carries over relative to Fit when the next picture has another size", async () => {
+    const w = mount(WpImageZoom, { props: { src: "a.png" }, attachTo: document.body });
+    // 800 x 800 in 400 x 200: Fit 25%.
+    await ready(w);
+    await w.find('[data-test="imgzoom-100"]').trigger("click");
+    expect(last(w)).toEqual([1]);
+    await w.setProps({ src: "b.png" });
+    const next = w.find('[data-test="imgzoom-next"]').element as HTMLImageElement;
+    // 1600 x 1600: Fit 12.5%, so the same size on screen is 50% of this one.
+    Object.defineProperty(next, "naturalWidth", { value: 1600, configurable: true });
+    Object.defineProperty(next, "naturalHeight", { value: 1600, configurable: true });
+    await w.find('[data-test="imgzoom-next"]').trigger("load");
+    expect(last(w)).toEqual([0.5]);
+    expect(w.find('[data-test="imgzoom-level"]').text()).toBe("50%");
+    // Fit stays Fit.
+    await w.find('[data-test="imgzoom-fit"]').trigger("click");
+    await w.setProps({ src: "c.png" });
+    const third = w.find('[data-test="imgzoom-next"]').element as HTMLImageElement;
+    Object.defineProperty(third, "naturalWidth", { value: 400, configurable: true });
+    Object.defineProperty(third, "naturalHeight", { value: 400, configurable: true });
+    await w.find('[data-test="imgzoom-next"]').trigger("load");
+    expect(last(w)).toEqual([null]);
+    expect(w.find('[data-test="imgzoom-level"]').text()).toBe("50%");
     w.unmount();
   });
 
