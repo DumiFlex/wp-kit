@@ -145,7 +145,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "xy-pad", name: "XYPad", group: "inputs", file: "src/XYPad.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
-    use: "Two numbers set together by dragging a point over a pad: a width and a height, a mood from calm to wild and dark to bright. Y grows upward. area shades the box to the point, crosshair draws lines through it, grid puts dots on the pad, ratio shapes it, and the default slot draws over it (ratio lines, words at the edges). Left/Right move X, Up/Down move Y, Shift takes ten steps; fine-step + Shift drags finer.",
+    use: "Two numbers set together by dragging a point over a pad: a width and a height, a mood from calm to wild and dark to bright. Y grows upward. area shades the box to the point, crosshair draws lines through it, grid puts dots on the pad (or x-dots / y-dots at given values; stepDots gives one per step) and snap-dots lands the point on them, ratio shapes it. variant size adds ratio guides and a W × H readout (a picture size), variant stick is round with zero in the middle, x-bands / y-bands label word ranges as stripes, and the default slot draws over it. Left/Right move X, Up/Down move Y, Shift takes ten steps; fine-step + Shift drags finer.",
     instead: "Two Sliders for numbers that only make sense together, or a canvas drawn by hand with its own pointer maths.",
   },
   {
@@ -604,7 +604,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "logo": `<Logo :size="28" />`,
   "relative-date": `<RelativeDate :value="row.updated_at" />`,
   "toolbar": `<Toolbar label="Text tools" attached><Button size="sm" icon="bold" aria-label="Bold" /><Button size="sm" icon="italic" aria-label="Italic" /></Toolbar>`,
-  "xy-pad": `<XYPad v-model="size" :x-min="512" :x-max="2048" :x-step="64" :y-min="512" :y-max="2048" :y-step="64" area aria-label="Size" x-label="Width" y-label="Height" />`,
+  "xy-pad": `<XYPad v-model="size" :x-min="512" :x-max="2048" :x-step="64" :y-min="512" :y-max="2048" :y-step="64" area aria-label="Size" x-label="Width" y-label="Height" />\n<XYPad v-model="size" variant="size" :x-max="2048" :x-step="64" :y-max="2048" :y-step="64" :x-dots="stepDots(0, 2048, 256)" :y-dots="stepDots(0, 2048, 256)" snap-dots aria-label="Size" />\n<XYPad v-model="pan" variant="stick" :x-min="-1" :y-min="-1" aria-label="Pan" />\n<XYPad v-model="mood" :x-bands="[{ to: 0.5, label: 'calm' }, { to: 1, label: 'wild' }]" aria-label="Mood" />`,
   "slider": `<Slider v-model="weight" :min="0" :max="2" :step="0.05" aria-label="Weight" with-input />\n<Slider v-model="range" :min="0" :max="200" :min-gap="20" aria-label="Token budget" show-value />\n<Slider v-model="width" :min="512" :max="1536" :marks="widths" snap aria-label="Width" />\n<Slider v-model="cfg" :min="1" :max="15" :step="0.5" :marks="presets" :snap="1" aria-label="CFG" />\n<Slider v-model="lora" variant="bar" :min="0" :max="1.5" :step="0.05" :fine-step="0.01" aria-label="Style LoRA"><template #label>Style LoRA</template></Slider>\n<Slider v-model="cfg" variant="fader" :min="1" :max="15" with-input aria-label="CFG"><template #label>CFG</template></Slider>`,
   "tag-input": `<TagInput v-model="tags" :suggestions="libraryTags" aria-label="Tags" />`,
   "inline-edit": `<InlineEdit v-model="mod.name" label="Wildcard name" :validate="(v) => taken(v) ? 'That name is taken' : null" />`,

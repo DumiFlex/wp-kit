@@ -65,6 +65,39 @@ describe("XYPad", () => {
     expect(t.attributes("aria-valuetext")).toBe("Width 10, Height 0");
   });
 
+  it("snap-dots lands the point on a dot, and the arrows walk dot to dot", async () => {
+    const w = bound(XYPad, { modelValue: [0, 0], xMin: 0, xMax: 100, xStep: 1, yMin: 0, yMax: 100, yStep: 1, xDots: [25, 50, 75], yDots: [50], snapDots: true });
+    box(w.element);
+    await point(w.element, "pointerdown", { clientX: 31, clientY: 30 });
+    expect(w.props("modelValue")).toEqual([25, 50]);
+    await point(w.element, "pointerup", { clientX: 31, clientY: 30 });
+    const t = w.find("[role=slider]");
+    await t.trigger("keydown", { key: "ArrowRight" });
+    await t.trigger("keydown", { key: "ArrowUp" });
+    expect(w.props("modelValue")).toEqual([50, 100]);
+    expect(w.findAll(".wp-xypad__dot")).toHaveLength(3);
+  });
+
+  it("stick keeps the point inside its circle; size draws guides and a readout", async () => {
+    const w = bound(XYPad, { modelValue: [0, 0], xMin: -1, xMax: 1, xStep: 0.01, yMin: -1, yMax: 1, yStep: 0.01, variant: "stick", grid: 0 });
+    box(w.element);
+    await point(w.element, "pointerdown", { clientX: 100, clientY: 0 });
+    const [x, y] = w.props("modelValue") as [number, number];
+    expect(Math.hypot(x, y)).toBeLessThanOrEqual(1.01);
+    expect(x).toBeCloseTo(0.71, 1);
+    expect(w.find(".wp-xypad__stem").exists()).toBe(true);
+    const s = bound(XYPad, { modelValue: [1024, 1024], xMin: 0, xMax: 2048, xStep: 64, yMin: 0, yMax: 2048, yStep: 64, variant: "size", guides: [1, 0.75] });
+    expect(s.findAll(".wp-xypad__guide")).toHaveLength(2);
+    expect(s.find(".wp-xypad__readout").text()).toBe("1024 × 1024");
+    expect(s.find(".wp-xypad__area").exists()).toBe(true);
+  });
+
+  it("bands label stretches of an axis and mark the one the point is in", () => {
+    const w = bound(XYPad, { modelValue: [0.7, 0.2], xBands: [{ to: 0.5, label: "calm" }, { to: 1, label: "wild" }], yBands: [{ to: 0.5, label: "dark" }, { to: 1, label: "bright" }] });
+    const on = w.findAll(".wp-xypad__band[data-on]").map((b: { text: () => string }) => b.text());
+    expect(on).toEqual(["wild", "dark"]);
+  });
+
   it("does nothing while disabled, and shades the area when asked", async () => {
     const w = bound(XYPad, { modelValue: [0.5, 0.25], disabled: true, area: true });
     await w.find("[role=slider]").trigger("keydown", { key: "ArrowRight" });

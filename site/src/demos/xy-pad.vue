@@ -1,10 +1,16 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import XYPad from "@kit/XYPad.vue";
+import { stepDots } from "@kit/xy-pad";
 
 const size = ref<[number, number]>([1024, 1344]);
 const mood = ref<[number, number]>([0.3, 0.7]);
 const small = ref<[number, number]>([0.5, 0.5]);
+const picture = ref<[number, number]>([1024, 1344]);
+const stickAt = ref<[number, number]>([0.3, -0.2]);
+const map = ref<[number, number]>([0.7, 0.3]);
+const gridAt = ref<[number, number]>([0.5, 0.5]);
+const quarters = stepDots(0, 1, 0.25);
 const mp = computed(() => ((size.value[0] * size.value[1]) / 1_000_000).toFixed(2));
 const moodWord = computed(() => `${mood.value[0] < 0.5 ? "calm" : "wild"}, ${mood.value[1] < 0.5 ? "dark" : "bright"}`);
 </script>
@@ -22,6 +28,22 @@ const moodWord = computed(() => `${mood.value[0] < 0.5 ? "calm" : "wild"}, ${moo
     <p class="wp-kit__caption">A mood pad, wider than tall, with a fine step for Shift: {{ moodWord }}</p>
     <div style="max-width: 360px">
       <XYPad v-model="mood" :ratio="1.6" :fine-step="0.001" :grid="8" aria-label="Mood" x-label="Energy" y-label="Light" />
+    </div>
+    <p class="wp-kit__caption">variant="size": area, ratio guides through 0,0 and a W × H readout</p>
+    <div style="max-width: 300px">
+      <XYPad v-model="picture" variant="size" :x-min="0" :x-max="2048" :x-step="64" :y-min="0" :y-max="2048" :y-step="64" :grid="0" aria-label="Picture size" x-label="Width" y-label="Height" />
+    </div>
+    <p class="wp-kit__caption">variant="stick": round, zero in the middle: {{ stickAt[0] }}, {{ stickAt[1] }}</p>
+    <div style="max-width: 200px">
+      <XYPad v-model="stickAt" variant="stick" :x-min="-1" :x-max="1" :y-min="-1" :y-max="1" :grid="0" :crosshair="false" aria-label="Pan" />
+    </div>
+    <p class="wp-kit__caption">Word bands on both axes</p>
+    <div style="max-width: 300px">
+      <XYPad v-model="map" :grid="0" :x-bands="[{ to: 0.33, label: 'calm' }, { to: 0.66, label: 'lively' }, { to: 1, label: 'wild' }]" :y-bands="[{ to: 0.5, label: 'dark' }, { to: 1, label: 'bright' }]" aria-label="Mood map" />
+    </div>
+    <p class="wp-kit__caption">Dots on every step (stepDots) and snap-dots: the point lands on a dot</p>
+    <div style="max-width: 200px">
+      <XYPad v-model="gridAt" :x-dots="quarters" :y-dots="quarters" snap-dots aria-label="Quarters" />
     </div>
     <div class="wp-kit__canvas">
       <p class="wp-kit__caption">Canvas, size sm, no crosshair</p>
