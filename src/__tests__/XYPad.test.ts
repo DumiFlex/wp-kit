@@ -159,3 +159,14 @@ describe("Slider variants", () => {
     expect(w.props("modelValue")).toBe(0.37);
   });
 });
+
+describe("XYPad ring", () => {
+  it("draws a ring round the point only when asked, sized by the number", () => {
+    const off = bound(XYPad, { modelValue: [0.5, 0.5] });
+    expect(off.find(".wp-xypad__ring").exists()).toBe(false);
+    const on = bound(XYPad, { modelValue: [0.25, 0.75], ring: 1.4 });
+    const ring = on.find(".wp-xypad__ring");
+    expect(ring.attributes("style")).toContain("left: 25%");
+    expect(ring.attributes("style")).toContain("--_ring: 1");
+  });
+});

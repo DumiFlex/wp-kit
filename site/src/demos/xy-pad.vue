@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
+import Slider from "@kit/Slider.vue";
 import XYPad from "@kit/XYPad.vue";
 import { stepDots } from "@kit/xy-pad";
 
@@ -10,6 +11,8 @@ const picture = ref<[number, number]>([1024, 1344]);
 const stickAt = ref<[number, number]>([0.3, -0.2]);
 const map = ref<[number, number]>([0.7, 0.3]);
 const gridAt = ref<[number, number]>([0.5, 0.5]);
+const lamp = ref<[number, number]>([0.3, 0.7]);
+const depth = ref(0.4);
 const quarters = stepDots(0, 1, 0.25);
 const mp = computed(() => ((size.value[0] * size.value[1]) / 1_000_000).toFixed(2));
 const moodWord = computed(() => `${mood.value[0] < 0.5 ? "calm" : "wild"}, ${mood.value[1] < 0.5 ? "dark" : "bright"}`);
@@ -44,6 +47,11 @@ const moodWord = computed(() => `${mood.value[0] < 0.5 ? "calm" : "wild"}, ${moo
     <p class="wp-kit__caption">Dots on every step (stepDots) and snap-dots: the point lands on a dot</p>
     <div style="max-width: 200px">
       <XYPad v-model="gridAt" :x-dots="quarters" :y-dots="quarters" snap-dots aria-label="Quarters" />
+    </div>
+    <p class="wp-kit__caption">ring: a third number on the pad, set by a fader beside it: {{ lamp[0] }}, {{ lamp[1] }}, {{ depth }}</p>
+    <div style="display: flex; gap: 10px; align-items: stretch; max-width: 280px">
+      <div style="flex: 1"><XYPad v-model="lamp" :ring="depth" :grid="4" aria-label="Light" x-label="Left to right" y-label="Low to high" /></div>
+      <Slider v-model="depth" variant="fader" :min="0" :max="1" :step="0.01" aria-label="Distance"><template #label>Z</template></Slider>
     </div>
     <div class="wp-kit__canvas">
       <p class="wp-kit__caption">Canvas, size sm, no crosshair</p>
