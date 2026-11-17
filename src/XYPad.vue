@@ -17,7 +17,9 @@
  * each section the bands make (one colour per word, or per pair of words with
  * bands on both axes), the one the point is in a little stronger. The default slot
  * draws over the pad; it gets the pad's percentages as `xPct` / `yPct`.
- * `fine-step` + Shift drags finer, like Slider.
+ * `fine-step` + Shift drags finer, like Slider. `ring` (0..1) draws a ring
+ * round the point that grows with it: a third number (a depth, a Z) shown
+ * on the pad, set by a Slider beside it.
  *
  * Keyboard: the point is one focus stop (role slider, its value read as
  * "Width 1024, Height 1344"). Left/Right move X, Up/Down move Y by one step
@@ -67,6 +69,8 @@ const props = withDefaults(defineProps<{
   yBands?: readonly PadBand[] | undefined;
   /** Colour each section the bands make (needs `x-bands` or `y-bands`). */
   tint?: boolean | undefined;
+  /** A ring round the point, 0 (tight) to 1 (wide): a third number shown on the pad (a Z). */
+  ring?: number | undefined;
   size?: "sm" | "md" | undefined;
   disabled?: boolean | undefined;
 }>(), {
@@ -286,6 +290,10 @@ function onKeydown(ev: KeyboardEvent): void {
       <span class="wp-xypad__line wp-xypad__line--h" :style="{ bottom: `${yPct}%` }" aria-hidden="true" />
     </template>
     <span v-if="sized" class="wp-xypad__readout" aria-hidden="true">{{ readout }}</span>
+    <span
+      v-if="ring !== undefined" class="wp-xypad__ring" aria-hidden="true"
+      :style="{ left: `${xPct}%`, bottom: `${yPct}%`, '--_ring': String(Math.min(1, Math.max(0, ring))) }"
+    />
     <!-- Focusable unless disabled (tabindex is bound). -->
     <!-- eslint-disable-next-line vuejs-accessibility/interactive-supports-focus -->
     <div
@@ -363,6 +371,14 @@ function onKeydown(ev: KeyboardEvent): void {
 .wp-xypad__line { position: absolute; pointer-events: none; background: color-mix(in srgb, var(--wp-accent) 35%, transparent); }
 .wp-xypad__line--v { top: 0; bottom: 0; width: 1px; margin-left: -0.5px; }
 .wp-xypad__line--h { left: 0; right: 0; height: 1px; margin-bottom: -0.5px; }
+.wp-xypad__ring {
+  --_d: calc(var(--_thumb) + 6px + var(--_ring) * 4 * var(--_thumb));
+  position: absolute; box-sizing: border-box; width: var(--_d); height: var(--_d);
+  margin: 0 0 calc(var(--_d) / -2) calc(var(--_d) / -2); pointer-events: none;
+  border: 1.5px solid color-mix(in srgb, var(--wp-accent) 60%, transparent);
+  border-radius: min(50%, var(--wp-radius-cap, 999px));
+  background: color-mix(in srgb, var(--wp-accent) 6%, transparent);
+}
 .wp-xypad__thumb {
   position: absolute; box-sizing: border-box; width: var(--_thumb); height: var(--_thumb);
   margin: 0 0 calc(var(--_thumb) / -2) calc(var(--_thumb) / -2);
