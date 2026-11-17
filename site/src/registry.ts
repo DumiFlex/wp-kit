@@ -145,7 +145,7 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "xy-pad", name: "XYPad", group: "inputs", file: "src/XYPad.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
-    use: "Two numbers set together by dragging a point over a pad: a width and a height, a mood from calm to wild and dark to bright. Y grows upward. area shades the box to the point, crosshair draws lines through it, grid puts dots on the pad (or x-dots / y-dots at given values; stepDots gives one per step) and snap-dots lands the point on them, ratio shapes it. variant size adds ratio guides and a W × H readout (a picture size), variant stick is round with zero in the middle, x-bands / y-bands label word ranges as stripes, tint washes the four quarters in soft colours (a mood map), and the default slot draws over it. Left/Right move X, Up/Down move Y, Shift takes ten steps; fine-step + Shift drags finer.",
+    use: "Two numbers set together by dragging a point over a pad: a width and a height, a mood from calm to wild and dark to bright. Y grows upward. area shades the box to the point, crosshair draws lines through it, grid puts dots on the pad (or x-dots / y-dots at given values; stepDots gives one per step) and snap-dots lands the point on them, ratio shapes it. variant size adds ratio guides and a W × H readout (a picture size), variant stick is round with zero in the middle, x-bands / y-bands label word ranges as stripes, tint colours each section the bands make (a mood map), and the default slot draws over it. Left/Right move X, Up/Down move Y, Shift takes ten steps; fine-step + Shift drags finer.",
     instead: "Two Sliders for numbers that only make sense together, or a canvas drawn by hand with its own pointer maths.",
   },
   {
