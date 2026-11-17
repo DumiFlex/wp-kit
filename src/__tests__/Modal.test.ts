@@ -47,6 +47,22 @@ describe("Modal.vue", () => {
     wrap.unmount();
   });
 
+  it("close says how it was closed: the ×, Escape or the backdrop", () => {
+    const wrap = mount(Modal, {
+      props: { open: true, title: "Pick" },
+      slots: { default: "<input />" },
+      attachTo: document.body,
+    });
+    (document.body.querySelector("[data-test='modal-close']") as HTMLElement).click();
+    document.body.querySelector("input")?.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+    const backdrop = document.body.querySelector("[data-test='modal-backdrop']") as HTMLElement;
+    backdrop.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+    backdrop.click();
+    expect(wrap.emitted("close")).toEqual([["button"], ["escape"], ["backdrop"]]);
+    expect(wrap.emitted("update:open")).toEqual([[false], [false], [false]]);
+    wrap.unmount();
+  });
+
   it("keeps keys pressed inside away from window, and hands them to keydown", async () => {
     const wrap = mount(Modal, { props: { open: true, title: "Edit" }, slots: { default: "<input />" }, attachTo: document.body });
     await nextTick();
