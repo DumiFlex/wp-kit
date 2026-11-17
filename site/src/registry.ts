@@ -154,6 +154,11 @@ export const KIT_ENTRIES: KitEntry[] = [
     instead: "Three Sliders for an angle, a height and a distance, or a hand-drawn dial with its own angle maths.",
   },
   {
+    id: "triangle-pad", name: "TrianglePad", group: "inputs", file: "src/TrianglePad.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
+    use: "A mix of three things as one point in a triangle: the closer to a corner, the more of it, and the three shares always add up to the total (100). Spokes to the corners grow with their share and each corner shows its word and share. step keeps shares whole, grid draws quarter lines, format says a share in words. Arrows move the point, Home goes to equal shares, 1/2/3 to a corner.",
+    instead: "Three Sliders that don't add up to 100, or two sliders and a third value worked out by hand.",
+  },
+  {
     id: "tag-input", name: "TagInput", group: "inputs", file: "src/TagInput.vue", surfaces: ["manager", "canvas", "community"], usedBy: [],
     use: "A list of short words as chips: tags, accepts axes, #tags. Enter or a comma adds, Backspace in the empty box removes the last, pasting \"a, b, c\" adds three; suggestions open under the box and follow it. allow-new=false keeps it to the suggestions.",
     instead: "A text box split on commas, or chips plus a separate Add box.",
@@ -612,6 +617,7 @@ export const KIT_EXAMPLES: Record<string, string> = {
   "xy-pad": `<XYPad v-model="size" :x-min="512" :x-max="2048" :x-step="64" :y-min="512" :y-max="2048" :y-step="64" area aria-label="Size" x-label="Width" y-label="Height" />\n<XYPad v-model="size" variant="size" :x-max="2048" :x-step="64" :y-max="2048" :y-step="64" :x-dots="stepDots(0, 2048, 256)" :y-dots="stepDots(0, 2048, 256)" snap-dots aria-label="Size" />\n<XYPad v-model="pan" variant="stick" :x-min="-1" :y-min="-1" aria-label="Pan" />\n<XYPad v-model="mood" :x-bands="[{ to: 0.5, label: 'calm' }, { to: 1, label: 'wild' }]" aria-label="Mood" />`,
   "slider": `<Slider v-model="weight" :min="0" :max="2" :step="0.05" aria-label="Weight" with-input />\n<Slider v-model="range" :min="0" :max="200" :min-gap="20" aria-label="Token budget" show-value />\n<Slider v-model="width" :min="512" :max="1536" :marks="widths" snap aria-label="Width" />\n<Slider v-model="cfg" :min="1" :max="15" :step="0.5" :marks="presets" :snap="1" aria-label="CFG" />\n<Slider v-model="lora" variant="bar" :min="0" :max="1.5" :step="0.05" :fine-step="0.01" aria-label="Style LoRA"><template #label>Style LoRA</template></Slider>\n<Slider v-model="cfg" variant="fader" :min="1" :max="15" with-input aria-label="CFG"><template #label>CFG</template></Slider>`,
   "orbit-pad": `<OrbitPad v-model="view" :around-step="15" :height-step="5" aria-label="Camera" />\n<OrbitPad v-model="light" variant="light" :around-marks="[{ at: 0, label: 'front' }, { at: 180, label: 'behind' }]" aria-label="Key light" />`,
+  "triangle-pad": `<TrianglePad v-model="mix" :labels="['Watercolour', 'Ink', 'Oil']" aria-label="Style mix" />`,
   "tag-input": `<TagInput v-model="tags" :suggestions="libraryTags" aria-label="Tags" />`,
   "inline-edit": `<InlineEdit v-model="mod.name" label="Wildcard name" :validate="(v) => taken(v) ? 'That name is taken' : null" />`,
   "drop-zone": `<DropZone accept=".txt,.yaml,.yml,.zip" multiple hint="Wildcard files or a zip" @files="load" @reject="explain" />`,
