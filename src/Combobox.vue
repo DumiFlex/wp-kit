@@ -11,6 +11,8 @@
  *   <Combobox v-model="cats" multiple :options="categories" aria-label="Categories" />
  *
  * `mono` sets the box and the options in the mono font (variable names, ids).
+ * An option's `icon` (+ `iconColor`) shows before its label in the list and
+ * on its chip, e.g. the kind of thing each option is.
  *
  * APG "combobox with list autocomplete": focus stays in the text field and
  * the lit option is named by aria-activedescendant.
@@ -19,7 +21,16 @@ import { computed, nextTick, ref, useId, watch } from "vue";
 import Popover from "./Popover.vue";
 import { useListNav } from "./useListNav";
 
-export interface ComboOption<V> { value: V; label: string; hint?: string; disabled?: boolean }
+export interface ComboOption<V> {
+  value: V;
+  label: string;
+  hint?: string | undefined;
+  disabled?: boolean | undefined;
+  /** A PrimeIcons class (`pi-sparkles`) shown before the label, in the list and on a chip. */
+  icon?: string | undefined;
+  /** The icon's colour (any CSS colour or `var(--…)`); the label's colour when absent. */
+  iconColor?: string | undefined;
+}
 
 const props = withDefaults(defineProps<{
   modelValue: T | null | T[];
@@ -59,7 +70,9 @@ const picks = computed<T[]>(() => {
   return v === null || v === undefined ? [] : [v];
 });
 const isPicked = (v: T): boolean => picks.value.includes(v);
-const labelOf = (v: T): string => props.options.find((o) => o.value === v)?.label ?? String(v);
+const optionOf = (v: T): ComboOption<T> | undefined => props.options.find((o) => o.value === v);
+const labelOf = (v: T): string => optionOf(v)?.label ?? String(v);
+const iconStyle = (o: ComboOption<T> | undefined): Record<string, string> | undefined => (o?.iconColor ? { color: o.iconColor } : undefined);
 const single = computed(() => (!props.multiple && picks.value.length ? labelOf(picks.value[0]) : ""));
 
 const matches = computed(() => {
@@ -185,6 +198,7 @@ function setOpen(v: boolean): void {
       >
         <template v-if="multiple">
           <span v-for="(v, i) in picks" :key="String(v)" class="wp-combo__chip">
+            <i v-if="optionOf(v)?.icon" class="pi wp-combo__icon" :class="optionOf(v)?.icon" :style="iconStyle(optionOf(v))" aria-hidden="true" />
             <span class="wp-combo__chip-text">{{ labelOf(v) }}</span>
             <button
               type="button"
@@ -250,6 +264,7 @@ function setOpen(v: boolean): void {
         @click="pick(o)"
       >
         <i class="pi pi-check wp-combo__tick" :data-on="isPicked(o.value) || undefined" aria-hidden="true" />
+        <i v-if="o.icon" class="pi wp-combo__icon wp-combo__opt-icon" :class="o.icon" :style="iconStyle(o)" aria-hidden="true" />
         <span class="wp-combo__opt-text">
           <span>{{ o.label }}</span>
           <span v-if="o.hint" class="wp-combo__hint">{{ o.hint }}</span>
@@ -314,6 +329,9 @@ function setOpen(v: boolean): void {
 .wp-combo__opt { display: flex; align-items: flex-start; gap: var(--wp-space-2); }
 .wp-combo__tick { width: 14px; margin-top: 2px; font-size: 10px; color: var(--wp-accent); visibility: hidden; }
 .wp-combo__tick[data-on] { visibility: visible; }
+.wp-combo__icon { flex: none; font-size: 10px; line-height: 1; color: var(--wp-text-muted); }
+.wp-combo__chip .wp-combo__icon { margin-right: 2px; font-size: 9px; }
+.wp-combo__opt-icon { width: 14px; margin-top: 2px; font-size: 11px; text-align: center; }
 .wp-combo__opt-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .wp-combo__hint { color: var(--wp-text-muted); font-size: var(--wp-text-xs); }
 .wp-combo__empty { padding: 6px 8px; color: var(--wp-text-muted); font-size: 12px; }
