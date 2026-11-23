@@ -14,8 +14,11 @@ export const STEP_DOTS_MAX = 16;
 
 /**
  * Dot positions (values) along one axis: one per step strictly inside the
- * range while that is at most `limit` dots, else `limit` evenly spaced ones
- * placed on steps. Ends are left out (the pad's edge is already there).
+ * range while that is at most `limit` dots, else one every k steps (the
+ * smallest k that keeps it to `limit`, or a little more when that splits the
+ * range evenly), so the dots stay evenly spaced.
+ * Without a step, `limit` evenly spaced dots. Ends are left out (the pad's
+ * edge is already there).
  */
 export function stepDots(min: number, max: number, step: number, limit = STEP_DOTS_MAX): number[] {
   if (!(max > min) || limit <= 0) return [];
@@ -24,6 +27,15 @@ export function stepDots(min: number, max: number, step: number, limit = STEP_DO
     const inner = Math.round(span / step) - 1;
     if (inner <= 0) return [];
     if (inner <= limit) return Array.from({ length: inner }, (_, i) => round(min + (i + 1) * step, step));
+    const steps = inner + 1;
+    // The fewest steps per dot that keeps to the limit, moved up to one that
+    // divides the range when there is one close by (no short last gap).
+    const least = Math.ceil(steps / (limit + 1));
+    let k = least;
+    for (let d = least; d <= least * 2; d++) if (steps % d === 0) { k = d; break; }
+    const out: number[] = [];
+    for (let n = k; n < steps; n += k) out.push(round(min + n * step, step));
+    return out;
   }
   const out: number[] = [];
   for (let i = 1; i <= limit; i++) {
