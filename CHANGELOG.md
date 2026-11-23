@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.21.0](https://github.com/DumiFlex/wp-kit/compare/v0.20.1...v0.21.0) (2026-11-23)
+
+
+### Features
+
+* **image-zoom:** steppable series and a whole-window modal size ([#185](https://github.com/DumiFlex/wp-kit/issues/185)) ([348e46e](https://github.com/DumiFlex/wp-kit/commit/348e46e9166caafc3c196f3d0aeb7b69db911857))
+* **modal:** close event says whether the ×, Escape or the backdrop closed it ([#179](https://github.com/DumiFlex/wp-kit/issues/179)) ([8af7bb0](https://github.com/DumiFlex/wp-kit/commit/8af7bb05b7581a777b89ad57690965eff9cf5037))
+* **orbit-pad:** add OrbitPad (around, height, distance) and a ring on XYPad for a third number ([#181](https://github.com/DumiFlex/wp-kit/issues/181)) ([5c5f91e](https://github.com/DumiFlex/wp-kit/commit/5c5f91eb1a26f17ff97164ccf1a2c228dbc5bb45))
+* **slider:** bar and fader variants, fine-step dragging, and an XYPad piece ([#172](https://github.com/DumiFlex/wp-kit/issues/172)) ([71c30cd](https://github.com/DumiFlex/wp-kit/commit/71c30cdc8dd33e677660539be5bea720cd3d2f35))
+* **triangle-pad:** a three-way mix as one point in a triangle ([#183](https://github.com/DumiFlex/wp-kit/issues/183)) ([5ed326f](https://github.com/DumiFlex/wp-kit/commit/5ed326fd41b0815e6cbdc6870c7e174a1fc056df))
+* **xypad:** colour each band section and give the point a halo ([#180](https://github.com/DumiFlex/wp-kit/issues/180)) ([1e6ba29](https://github.com/DumiFlex/wp-kit/commit/1e6ba298cf638714ca2a46e669aa9db0ec5e89c5))
+* **xypad:** dots at values with snap-dots, size and stick variants, word bands ([#178](https://github.com/DumiFlex/wp-kit/issues/178)) ([4e5470d](https://github.com/DumiFlex/wp-kit/commit/4e5470dda4968b16f34fec735d7b4922297a7fa5))
+
+
+### Bug Fixes
+
+* **image-zoom:** swap pictures only once loaded and keep the zoom across sizes ([#177](https://github.com/DumiFlex/wp-kit/issues/177)) ([d77bcf3](https://github.com/DumiFlex/wp-kit/commit/d77bcf37757b71b744d5ee3f99f4454fb25e6b68))
+* **menu:** centre a two-line row's icon and tick on both lines ([#173](https://github.com/DumiFlex/wp-kit/issues/173)) ([9404c8a](https://github.com/DumiFlex/wp-kit/commit/9404c8a750328295fb11e21ab8dc2cd1ddc5979a))
+* **orbit-pad:** draw the subject as a head-and-shoulders bust ([#182](https://github.com/DumiFlex/wp-kit/issues/182)) ([4ed9a37](https://github.com/DumiFlex/wp-kit/commit/4ed9a37240a8cda4e83033de3a3f965a80658d84))
+* **slider:** bar thumb runs the bar's full height, fader fill reaches the rail's end ([#176](https://github.com/DumiFlex/wp-kit/issues/176)) ([63704de](https://github.com/DumiFlex/wp-kit/commit/63704de8ded79f502a5313539c76517fe6c73c41))
+* **slider:** marks that don't shift the row, zoom-proof pad lines, clear orbit words ([#187](https://github.com/DumiFlex/wp-kit/issues/187)) ([7b66ffc](https://github.com/DumiFlex/wp-kit/commit/7b66ffc68b372739ca847d3c29a5186de52e00e9))
+* **slider:** slimmer bar variant, as tall as the row's other controls ([#174](https://github.com/DumiFlex/wp-kit/issues/174)) ([1594b41](https://github.com/DumiFlex/wp-kit/commit/1594b41d10395276ff80850f4f3340298e3e33a7))
+* **slider:** wider sm number box so two decimals fit beside the arrows ([#175](https://github.com/DumiFlex/wp-kit/issues/175)) ([ece47b1](https://github.com/DumiFlex/wp-kit/commit/ece47b1637dbd7f4b52a78a99bcc7f40763e02bb))
+* **xy-pad:** space step dots evenly past the dot limit ([#184](https://github.com/DumiFlex/wp-kit/issues/184)) ([2ed885c](https://github.com/DumiFlex/wp-kit/commit/2ed885c53e32e4b767c50bbcaa7145ef1809234d))
+
 ## [0.20.1](https://github.com/DumiFlex/wp-kit/compare/v0.20.0...v0.20.1) (2026-11-14)
 
 
