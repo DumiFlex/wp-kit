@@ -333,12 +333,13 @@ function onKeydown(ev: KeyboardEvent): void {
 }
 .wp-xypad[data-variant="stick"] { border-radius: min(50%, var(--wp-radius-cap, 999px)); }
 .wp-xypad__svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
-.wp-xypad__guide { stroke: var(--wp-text-muted); stroke-opacity: 0.45; stroke-width: 1; stroke-dasharray: 2 3; }
+.wp-xypad__guide { stroke: var(--wp-text-muted); stroke-opacity: 0.45; stroke-width: 1.5; stroke-dasharray: 2 3; }
 .wp-xypad__guide-name {
   position: absolute; transform: translate(-100%, 0); padding: 1px 3px; pointer-events: none;
   font-size: 9px; line-height: 11px; color: var(--wp-text-muted); white-space: nowrap;
 }
-.wp-xypad__axis { stroke: var(--wp-border-strong); stroke-width: 1; }
+/* 1.5, not 1: a 1px stroke drops out at canvas zooms under 1. */
+.wp-xypad__axis { stroke: var(--wp-border-strong); stroke-width: 1.5; }
 .wp-xypad__stem { stroke: var(--wp-accent); stroke-width: 2; stroke-linecap: round; }
 .wp-xypad__readout {
   position: absolute; bottom: 4px; right: 4px; padding: 1px 5px; pointer-events: none;
@@ -368,9 +369,12 @@ function onKeydown(ev: KeyboardEvent): void {
 .wp-xypad__band--y .wp-xypad__band-label { left: 4px; top: 50%; transform: translateY(-50%); }
 .wp-xypad__band[data-on] .wp-xypad__band-label { color: var(--wp-accent); font-weight: 600; }
 .wp-xypad__over { position: absolute; inset: 0; pointer-events: none; }
-.wp-xypad__line { position: absolute; pointer-events: none; background: color-mix(in srgb, var(--wp-accent) 35%, transparent); }
-.wp-xypad__line--v { top: 0; bottom: 0; width: 1px; margin-left: -0.5px; }
-.wp-xypad__line--h { left: 0; right: 0; height: 1px; margin-bottom: -0.5px; }
+/* The cross lines are borders on empty boxes, not 1px-wide boxes: at canvas
+   zooms under 1 a box that thin rounds to no pixels in some places and the
+   line breaks up or vanishes, while a border keeps at least one pixel. */
+.wp-xypad__line { position: absolute; pointer-events: none; box-sizing: content-box; --_line: color-mix(in srgb, var(--wp-accent) 35%, transparent); }
+.wp-xypad__line--v { top: 0; bottom: 0; width: 0; border-left: 1px solid var(--_line); margin-left: -0.5px; }
+.wp-xypad__line--h { left: 0; right: 0; height: 0; border-bottom: 1px solid var(--_line); margin-bottom: -0.5px; }
 .wp-xypad__ring {
   --_d: calc(var(--_thumb) + 6px + var(--_ring) * 4 * var(--_thumb));
   position: absolute; box-sizing: border-box; width: var(--_d); height: var(--_d);

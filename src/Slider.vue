@@ -214,7 +214,7 @@ function passed(v: number): boolean {
     :data-pair="isPair || undefined"
     :data-disabled="disabled || undefined"
     :data-dragging="active !== null || undefined"
-    :data-marked="marks?.length && variant === 'line' ? 'true' : undefined"
+    :data-marked="variant === 'line' && marks?.some((m) => m.label) ? 'true' : undefined"
   >
     <WpNumber
       v-if="withInput && (isPair || vertical)"
@@ -365,7 +365,13 @@ function passed(v: number): boolean {
 .wp-slider[data-variant="bar"] .wp-slider__thumb[data-active] { transform: none; width: 3px; }
 .wp-slider[data-variant="bar"] .wp-slider__track:focus-within .wp-slider__rail { box-shadow: inset 0 0 0 1px var(--wp-accent), var(--wp-focus-ring); }
 .wp-slider[data-variant="bar"] .wp-slider__thumb:focus-visible { box-shadow: none; }
-.wp-slider[data-variant="bar"] .wp-slider__mark { top: 3px; bottom: 3px; height: auto; width: 1px; margin: 0; background: var(--wp-border-strong); }
+.wp-slider[data-variant="bar"] .wp-slider__mark {
+  top: auto; bottom: 1px; height: 30%; width: 2px; margin: 0 0 0 -1px;
+  background: color-mix(in srgb, var(--wp-text) 32%, transparent);
+}
+/* Ticks stand on the bar's lower edge like a ruler, clear of the label; on
+   the filled side they read as lighter notches in the fill. */
+.wp-slider[data-variant="bar"] .wp-slider__mark[data-passed] { background: color-mix(in srgb, var(--wp-accent) 55%, var(--wp-text)); }
 .wp-slider__inner {
   position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--wp-space-3);
   padding: 0 var(--wp-space-3); pointer-events: none; min-width: 0;
@@ -397,7 +403,7 @@ function passed(v: number): boolean {
   top: auto; left: 50%; width: 22px; height: 10px; margin: 0 0 -5px -11px;
   border-radius: min(3px, var(--wp-radius-cap, 999px)); background: var(--wp-bg);
 }
-.wp-slider[data-variant="fader"] .wp-slider__mark { top: auto; left: 50%; width: 14px; height: 1px; margin: 0 0 0 -7px; }
+.wp-slider[data-variant="fader"] .wp-slider__mark { top: auto; left: 50%; width: 14px; height: 2px; margin: 0 0 -1px -7px; }
 .wp-slider[data-variant="fader"] .wp-slider__input { width: 64px; }
 .wp-slider[data-variant="fader"] .wp-slider__value {
   display: flex; align-items: center; justify-content: center; min-height: var(--_h); font-family: var(--wp-font-mono);
