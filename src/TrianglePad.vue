@@ -167,7 +167,7 @@ function onKey(ev: KeyboardEvent): void {
 }
 .wp-tri__svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
 .wp-tri__face { fill: color-mix(in srgb, var(--wp-text) 3%, transparent); stroke: var(--wp-border-strong); stroke-width: 0.8; stroke-linejoin: round; }
-.wp-tri__grid { stroke: var(--wp-border); stroke-width: 0.5; stroke-dasharray: 1.5 2; }
+.wp-tri__grid { stroke: var(--wp-border); stroke-width: 0.75; stroke-dasharray: 1.5 2; }
 .wp-tri__spoke { stroke: var(--_c); stroke-linecap: round; opacity: 0.8; }
 .wp-tri__corner { fill: var(--_c); }
 [data-corner="0"] { --_c: var(--wp-amber); }

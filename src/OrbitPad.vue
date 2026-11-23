@@ -309,7 +309,10 @@ function onSideKey(ev: KeyboardEvent): void {
 .wp-orbit__shoulders { fill: var(--wp-text-muted); opacity: 0.55; }
 .wp-orbit__mark {
   position: absolute; transform: translate(-50%, -50%); pointer-events: none;
-  font-size: 9px; line-height: 11px; color: var(--wp-text-muted); white-space: nowrap;
+  font-size: 9.5px; line-height: 12px; color: var(--wp-text-muted); white-space: nowrap;
+  /* A plate in the pane's colour, so a ring or the ground line passing
+     under a word never runs through its letters. */
+  padding: 0 3px; border-radius: min(3px, var(--wp-radius-cap, 999px)); background: var(--wp-bg-1);
 }
 /* Words stay inside their pane: hug the ring on the side they sit. */
 .wp-orbit__mark[data-side="start"] { transform: translate(-2px, -50%); }
