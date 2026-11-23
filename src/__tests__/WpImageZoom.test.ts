@@ -17,6 +17,12 @@ async function ready(w: ReturnType<typeof mount>, size = { w: 400, h: 200 }, nat
   await w.find("img").trigger("load");
 }
 
+/** jsdom has no PointerEvent: a MouseEvent of that type reaches the same listeners. */
+async function fire(el: Element, type: string, x: number, y = 100) {
+  el.dispatchEvent(new MouseEvent(type, { clientX: x, clientY: y, bubbles: true, cancelable: true }));
+  await Promise.resolve();
+}
+
 function last(w: ReturnType<typeof mount>): unknown[] | undefined {
   const all = w.emitted("update:zoom");
   return all?.[all.length - 1];
@@ -209,6 +215,42 @@ describe("WpImageZoom", () => {
     expect(w.find('[data-test="foot"]').exists()).toBe(true);
     Object.defineProperty(document, "fullscreenElement", { value: null, configurable: true });
     document.dispatchEvent(new Event("fullscreenchange"));
+    w.unmount();
+  });
+  it("steppable: edge arrows, a click beside the picture and Shift+wheel emit step", async () => {
+    const w = mount(WpImageZoom, { props: { src: "a.png", steppable: true }, attachTo: document.body });
+    // 800 x 800 at Fit in 400 x 200: the picture is 200 px wide, x 100..300.
+    await ready(w);
+    const stage = w.find('[data-test="imgzoom-stage"]');
+    const click = async (x: number) => {
+      await fire(stage.element, "pointerdown", x);
+      await fire(stage.element, "pointerup", x);
+    };
+    await click(20);
+    await click(380);
+    await click(200); // on the picture: no step
+    // A press that moves is a drag, never a step.
+    await fire(stage.element, "pointerdown", 20);
+    await fire(stage.element, "pointerup", 60);
+    await w.find('[data-test="imgzoom-step-next"]').trigger("click");
+    await w.find('[data-test="imgzoom-step-prev"]').trigger("click");
+    stage.element.dispatchEvent(new WheelEvent("wheel", { deltaY: 100, shiftKey: true, cancelable: true }));
+    expect(w.emitted("step")).toEqual([[-1], [1], [1], [-1], [1]]);
+    // Shift+wheel stepped; it did not zoom.
+    expect(w.find('[data-test="imgzoom-level"]').text()).toBe("25%");
+    await fire(stage.element, "pointermove", 20);
+    expect(stage.classes()).toContain("is-prev");
+    w.unmount();
+  });
+
+  it("without steppable there are no arrows and a side click does nothing", async () => {
+    const w = mount(WpImageZoom, { props: { src: "a.png" }, attachTo: document.body });
+    await ready(w);
+    const stage = w.find('[data-test="imgzoom-stage"]');
+    await fire(stage.element, "pointerdown", 20);
+    await fire(stage.element, "pointerup", 20);
+    expect(w.find('[data-test="imgzoom-step-next"]').exists()).toBe(false);
+    expect(w.emitted("step")).toBeUndefined();
     w.unmount();
   });
 });

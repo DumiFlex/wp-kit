@@ -17,6 +17,11 @@
  * each picture, `fullscreen` along the bottom only while fullscreen (it fades
  * with the bar), default over the whole stage.
  *
+ * `steppable` is for a series: ‹ › on the stage's edges (they fade with the
+ * bar), a click in the clear space beside the picture (left half back, right
+ * half on) and Shift+wheel or a sideways swipe all emit `step` with -1 or 1;
+ * the plain wheel keeps zooming. The parent changes `src`.
+ *
  * `v-model:zoom` is the level (`null` = Fit). The viewer also keeps the spot
  * it shows when `src` changes, so stepping through a series stays on the same
  * part of each picture (the hands in every frame). Pictures may differ in
@@ -56,12 +61,14 @@ const props = withDefaults(defineProps<{
   second?: string | null | undefined;
   secondAlt?: string | undefined;
   size?: "sm" | "md" | undefined;
+  /** Part of a series: edge arrows, side clicks and Shift+wheel emit `step`. */
+  steppable?: boolean | undefined;
 }>(), {
   alt: "", zoom: null, controls: true, hint: undefined, fullscreen: false,
-  minimap: false, autohide: false, second: null, secondAlt: "", size: "sm",
+  minimap: false, autohide: false, second: null, secondAlt: "", size: "sm", steppable: false,
 });
 
-const emit = defineEmits<{ "update:zoom": [zoom: number | null] }>();
+const emit = defineEmits<{ "update:zoom": [zoom: number | null]; step: [delta: -1 | 1] }>();
 
 const root = ref<HTMLElement | null>(null);
 const stage = ref<HTMLElement | null>(null);
@@ -207,7 +214,29 @@ function local(ev: { clientX: number; clientY: number }): { x: number; y: number
   return { x, y: ev.clientY - r.top };
 }
 
+/** Shift+wheel or a sideways swipe: one notch (or a swipe's worth) is one picture. */
+const WHEEL_STEP = 60;
+const WHEEL_REST_MS = 140;
+let wheelSum = 0;
+let wheelAt = 0;
+function stepWheel(ev: WheelEvent): void {
+  // Shift turns a mouse wheel's deltaY into deltaX in some browsers; take whichever moved.
+  const raw = Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? ev.deltaX : ev.deltaY;
+  const px = ev.deltaMode === 1 ? raw * 33 : raw;
+  const t = ev.timeStamp || Date.now();
+  if (t - wheelAt > WHEEL_REST_MS) wheelSum = 0;
+  wheelAt = t;
+  wheelSum += px;
+  if (Math.abs(wheelSum) < WHEEL_STEP) return;
+  emit("step", wheelSum > 0 ? 1 : -1);
+  wheelSum = 0;
+}
+
 function onWheel(ev: WheelEvent): void {
+  if (props.steppable && (ev.shiftKey || Math.abs(ev.deltaX) > Math.abs(ev.deltaY))) {
+    stepWheel(ev);
+    return;
+  }
   if (!ready.value) return;
   // A mouse notch is ~100 px (or 3 lines); a trackpad pinch sends many small ones.
   const delta = ev.deltaMode === 1 ? ev.deltaY * 33 : ev.deltaY;
@@ -215,25 +244,54 @@ function onWheel(ev: WheelEvent): void {
   setZoom(view.value.scale * factor, local(ev));
 }
 
+/** Is a stage point (pane px) off the picture, in the clear space around it? */
+function offPicture(p: { x: number; y: number }): boolean {
+  const v = view.value;
+  const w = image.value.width * v.scale;
+  const h = image.value.height * v.scale;
+  return p.x < v.x || p.x > v.x + w || p.y < v.y || p.y > v.y + h;
+}
+/** Which way a click at this pointer steps: -1 (left half), 1 (right half), 0 (on the picture or not steppable). */
+function sideAt(ev: PointerEvent | MouseEvent): -1 | 0 | 1 {
+  if (!props.steppable || !ready.value || !offPicture(local(ev))) return 0;
+  const r = stage.value?.getBoundingClientRect();
+  if (!r) return 0;
+  return ev.clientX - r.left < r.width / 2 ? -1 : 1;
+}
+const hoverSide = ref<-1 | 0 | 1>(0);
+/** A press that may become a side click: it steps if it lifts without moving. */
+let press: { id: number; x: number; y: number } | null = null;
+const CLICK_SLOP = 5;
+
 let drag: { id: number; x: number; y: number; vx: number; vy: number } | null = null;
 const dragging = ref(false);
 function onDown(ev: PointerEvent): void {
+  if (ev.button === 0 && props.steppable) press = { id: ev.pointerId, x: ev.clientX, y: ev.clientY };
   if (ev.button !== 0 || !canPan.value) return;
   drag = { id: ev.pointerId, x: ev.clientX, y: ev.clientY, vx: view.value.x, vy: view.value.y };
   dragging.value = true;
   (ev.currentTarget as HTMLElement).setPointerCapture?.(ev.pointerId);
 }
 function onMove(ev: PointerEvent): void {
+  if (props.steppable && !drag) hoverSide.value = sideAt(ev);
   if (!drag || drag.id !== ev.pointerId) return;
   place(clampView({ scale: view.value.scale, x: drag.vx + ev.clientX - drag.x, y: drag.vy + ev.clientY - drag.y }, image.value, stageSize.value));
 }
 function onUp(ev: PointerEvent): void {
+  const was = press;
+  press = null;
+  if (was && was.id === ev.pointerId && ev.type === "pointerup"
+    && Math.hypot(ev.clientX - was.x, ev.clientY - was.y) < CLICK_SLOP) {
+    const side = sideAt(ev);
+    if (side) emit("step", side);
+  }
   if (!drag || drag.id !== ev.pointerId) return;
   drag = null;
   dragging.value = false;
 }
 function onDouble(ev: MouseEvent): void {
-  if (!ready.value) return;
+  // Two quick side clicks step twice; they never also zoom.
+  if (!ready.value || sideAt(ev)) return;
   if (isFit.value || view.value.scale < 1 - 1e-3) setZoom(1, local(ev));
   else setZoom(null);
 }
@@ -358,7 +416,7 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
     <div
       ref="stage"
       class="wp-imgzoom__stage"
-      :class="{ 'can-pan': canPan, 'is-dragging': dragging }"
+      :class="{ 'can-pan': canPan, 'is-dragging': dragging, 'is-prev': hoverSide === -1, 'is-next': hoverSide === 1 }"
       tabindex="0"
       role="application"
       aria-roledescription="picture zoom"
@@ -369,6 +427,7 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
       @pointermove="onMove"
       @pointerup="onUp"
       @pointercancel="onUp"
+      @pointerleave="hoverSide = 0"
       @dblclick="onDouble"
       @keydown="onKey"
     >
@@ -403,6 +462,17 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
         <slot name="second" />
       </div>
       <slot />
+      <template v-if="steppable">
+        <!-- The arrows take their own presses, so the stage behind never pans or side-steps. -->
+        <!-- eslint-disable-next-line vuejs-accessibility/mouse-events-have-key-events -->
+        <span class="wp-imgzoom__edge is-prev wp-imgzoom__chrome" @pointerdown.stop @pointerenter="chromeEnter" @pointerleave="chromeLeave">
+          <Button variant="ghost" size="md" icon="pi-chevron-left" aria-label="Previous picture" data-test="imgzoom-step-prev" @click="emit('step', -1)" />
+        </span>
+        <!-- eslint-disable-next-line vuejs-accessibility/mouse-events-have-key-events -->
+        <span class="wp-imgzoom__edge is-next wp-imgzoom__chrome" @pointerdown.stop @pointerenter="chromeEnter" @pointerleave="chromeLeave">
+          <Button variant="ghost" size="md" icon="pi-chevron-right" aria-label="Next picture" data-test="imgzoom-step-next" @click="emit('step', 1)" />
+        </span>
+      </template>
       <!-- The mini-map takes its own pointer drags, so the stage behind it never pans. -->
       <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
       <div
@@ -563,6 +633,20 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
 .wp-imgzoom__stage:focus-visible { box-shadow: inset 0 0 0 2px var(--wp-border-focus); }
 .wp-imgzoom__stage.can-pan { cursor: grab; }
 .wp-imgzoom__stage.is-dragging { cursor: grabbing; }
+.wp-imgzoom__stage.is-prev { cursor: w-resize; }
+.wp-imgzoom__stage.is-next { cursor: e-resize; }
+.wp-imgzoom__edge {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  border-radius: var(--wp-radius-cap, 999px);
+  /* Over a picture: a dark scrim in both themes, like the hint. */
+  background: rgb(0 0 0 / 0.45);
+}
+.wp-imgzoom__edge.is-prev { left: var(--wp-space-3); }
+.wp-imgzoom__edge.is-next { right: var(--wp-space-3); }
+.wp-imgzoom__edge :deep(.wp-btn) { color: white; border-radius: var(--wp-radius-cap, 999px); }
 .wp-imgzoom__img {
   position: absolute;
   top: 0;
