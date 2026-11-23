@@ -17,10 +17,19 @@
  * each picture, `fullscreen` along the bottom only while fullscreen (it fades
  * with the bar), default over the whole stage.
  *
+ * `steppable` is for a series: ‹ › on the stage's edges (they fade with the
+ * bar), a click in the clear space beside the picture (left half back, right
+ * half on) and Shift+wheel or a sideways swipe all emit `step` with -1 or 1;
+ * the plain wheel keeps zooming. The parent changes `src`.
+ *
  * `v-model:zoom` is the level (`null` = Fit). The viewer also keeps the spot
  * it shows when `src` changes, so stepping through a series stays on the same
- * part of each picture (the hands in every frame). Works on the canvas and
- * in the manager.
+ * part of each picture (the hands in every frame). Pictures may differ in
+ * size: the old one stays until the next has loaded, then both swap in one
+ * step, and a zoomed level carries over relative to Fit (a 1024 px picture at
+ * 100% steps to a 2048 px one at 50%), so the spot keeps its size on screen.
+ * A `second` picture of another size or shape sits inside the first one's
+ * box, never stretched. Works on the canvas and in the manager.
  *
  *   <WpImageZoom v-model:zoom="zoom" :src="url" alt="Frame 3" />
  */
@@ -52,12 +61,14 @@ const props = withDefaults(defineProps<{
   second?: string | null | undefined;
   secondAlt?: string | undefined;
   size?: "sm" | "md" | undefined;
+  /** Part of a series: edge arrows, side clicks and Shift+wheel emit `step`. */
+  steppable?: boolean | undefined;
 }>(), {
   alt: "", zoom: null, controls: true, hint: undefined, fullscreen: false,
-  minimap: false, autohide: false, second: null, secondAlt: "", size: "sm",
+  minimap: false, autohide: false, second: null, secondAlt: "", size: "sm", steppable: false,
 });
 
-const emit = defineEmits<{ "update:zoom": [zoom: number | null] }>();
+const emit = defineEmits<{ "update:zoom": [zoom: number | null]; step: [delta: -1 | 1] }>();
 
 const root = ref<HTMLElement | null>(null);
 const stage = ref<HTMLElement | null>(null);
@@ -66,6 +77,11 @@ const image = ref<Size>({ width: 0, height: 0 });
 const view = ref<View>({ scale: 1, x: 0, y: 0 });
 /** The image point (0..1) at the middle of the stage, carried to the next `src`. */
 let centre = { x: 0.5, y: 0.5 };
+/** The pictures on screen. A new `src` / `second` loads in a hidden <img>
+ *  first and swaps in only once it has, with its own size, so a picture of
+ *  another size never shows stretched into the old one's box. */
+const shownSrc = ref("");
+const shownSecond = ref<string | null>(null);
 
 /** The level shown; follows `zoom`, and works without a v-model too. */
 const current = ref<number | null>(props.zoom);
@@ -135,11 +151,38 @@ watch(() => props.zoom, (z) => {
   relayout();
 });
 
+/** The next `src` has loaded: swap it in with its size in one step, once the
+ *  browser has decoded it (so the swap never shows a blank frame). */
 function onLoad(ev: Event): void {
   const img = ev.target as HTMLImageElement;
-  image.value = { width: img.naturalWidth, height: img.naturalHeight };
+  const want = props.src;
+  const commit = (): void => { if (props.src === want) swapIn(img); };
+  if (typeof img.decode === "function") void img.decode().then(commit, commit);
+  else commit();
+}
+function swapIn(img: HTMLImageElement): void {
+  const next: Size = { width: img.naturalWidth, height: img.naturalHeight };
+  const old = image.value;
+  const resized = old.width > 0 && next.width > 0 && (old.width !== next.width || old.height !== next.height);
+  if (resized && current.value !== null && stageSize.value.width > 0) {
+    // Keep the level relative to Fit, so the kept spot keeps its size on screen.
+    const scale = current.value * (fitScale(next, stageSize.value) / fitScale(old, stageSize.value));
+    current.value = scale;
+    emit("update:zoom", scale);
+  }
+  if (next.width > 0) image.value = next;
+  shownSrc.value = props.src;
   relayout();
 }
+function onError(): void {
+  // Show the broken picture rather than keep an old one under a new caption.
+  shownSrc.value = props.src;
+}
+/** A picture still waiting for the next one to load dims a little (after a beat, so a fast load never flickers). */
+const staleFirst = computed(() => !!shownSrc.value && shownSrc.value !== props.src);
+const staleSecond = computed(() => !!shownSecond.value && !!props.second && shownSecond.value !== props.second);
+function onSecondLoad(): void { shownSecond.value = props.second; }
+watch(() => props.second, (s) => { if (!s) shownSecond.value = null; });
 
 let observer: ResizeObserver | null = null;
 let measureStage: (() => void) | null = null;
@@ -171,7 +214,29 @@ function local(ev: { clientX: number; clientY: number }): { x: number; y: number
   return { x, y: ev.clientY - r.top };
 }
 
+/** Shift+wheel or a sideways swipe: one notch (or a swipe's worth) is one picture. */
+const WHEEL_STEP = 60;
+const WHEEL_REST_MS = 140;
+let wheelSum = 0;
+let wheelAt = 0;
+function stepWheel(ev: WheelEvent): void {
+  // Shift turns a mouse wheel's deltaY into deltaX in some browsers; take whichever moved.
+  const raw = Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? ev.deltaX : ev.deltaY;
+  const px = ev.deltaMode === 1 ? raw * 33 : raw;
+  const t = ev.timeStamp || Date.now();
+  if (t - wheelAt > WHEEL_REST_MS) wheelSum = 0;
+  wheelAt = t;
+  wheelSum += px;
+  if (Math.abs(wheelSum) < WHEEL_STEP) return;
+  emit("step", wheelSum > 0 ? 1 : -1);
+  wheelSum = 0;
+}
+
 function onWheel(ev: WheelEvent): void {
+  if (props.steppable && (ev.shiftKey || Math.abs(ev.deltaX) > Math.abs(ev.deltaY))) {
+    stepWheel(ev);
+    return;
+  }
   if (!ready.value) return;
   // A mouse notch is ~100 px (or 3 lines); a trackpad pinch sends many small ones.
   const delta = ev.deltaMode === 1 ? ev.deltaY * 33 : ev.deltaY;
@@ -179,25 +244,54 @@ function onWheel(ev: WheelEvent): void {
   setZoom(view.value.scale * factor, local(ev));
 }
 
+/** Is a stage point (pane px) off the picture, in the clear space around it? */
+function offPicture(p: { x: number; y: number }): boolean {
+  const v = view.value;
+  const w = image.value.width * v.scale;
+  const h = image.value.height * v.scale;
+  return p.x < v.x || p.x > v.x + w || p.y < v.y || p.y > v.y + h;
+}
+/** Which way a click at this pointer steps: -1 (left half), 1 (right half), 0 (on the picture or not steppable). */
+function sideAt(ev: PointerEvent | MouseEvent): -1 | 0 | 1 {
+  if (!props.steppable || !ready.value || !offPicture(local(ev))) return 0;
+  const r = stage.value?.getBoundingClientRect();
+  if (!r) return 0;
+  return ev.clientX - r.left < r.width / 2 ? -1 : 1;
+}
+const hoverSide = ref<-1 | 0 | 1>(0);
+/** A press that may become a side click: it steps if it lifts without moving. */
+let press: { id: number; x: number; y: number } | null = null;
+const CLICK_SLOP = 5;
+
 let drag: { id: number; x: number; y: number; vx: number; vy: number } | null = null;
 const dragging = ref(false);
 function onDown(ev: PointerEvent): void {
+  if (ev.button === 0 && props.steppable) press = { id: ev.pointerId, x: ev.clientX, y: ev.clientY };
   if (ev.button !== 0 || !canPan.value) return;
   drag = { id: ev.pointerId, x: ev.clientX, y: ev.clientY, vx: view.value.x, vy: view.value.y };
   dragging.value = true;
   (ev.currentTarget as HTMLElement).setPointerCapture?.(ev.pointerId);
 }
 function onMove(ev: PointerEvent): void {
+  if (props.steppable && !drag) hoverSide.value = sideAt(ev);
   if (!drag || drag.id !== ev.pointerId) return;
   place(clampView({ scale: view.value.scale, x: drag.vx + ev.clientX - drag.x, y: drag.vy + ev.clientY - drag.y }, image.value, stageSize.value));
 }
 function onUp(ev: PointerEvent): void {
+  const was = press;
+  press = null;
+  if (was && was.id === ev.pointerId && ev.type === "pointerup"
+    && Math.hypot(ev.clientX - was.x, ev.clientY - was.y) < CLICK_SLOP) {
+    const side = sideAt(ev);
+    if (side) emit("step", side);
+  }
   if (!drag || drag.id !== ev.pointerId) return;
   drag = null;
   dragging.value = false;
 }
 function onDouble(ev: MouseEvent): void {
-  if (!ready.value) return;
+  // Two quick side clicks step twice; they never also zoom.
+  if (!ready.value || sideAt(ev)) return;
   if (isFit.value || view.value.scale < 1 - 1e-3) setZoom(1, local(ev));
   else setZoom(null);
 }
@@ -220,7 +314,7 @@ const imgStyle = computed(() => ({
   width: `${image.value.width}px`,
   height: `${image.value.height}px`,
   transform: `translate(${view.value.x}px, ${view.value.y}px) scale(${view.value.scale})`,
-  visibility: ready.value ? ("visible" as const) : ("hidden" as const),
+  visibility: ready.value && shownSrc.value ? ("visible" as const) : ("hidden" as const),
 }));
 const level = computed(() => percent(view.value.scale));
 
@@ -267,7 +361,7 @@ function chromeEnter(): void { onChrome = true; wake(); }
 function chromeLeave(): void { onChrome = false; wake(); }
 watch(() => props.autohide, wake, { immediate: true });
 // Stepping to another picture or changing the level (keys from the parent too) counts as activity.
-watch(() => [props.src, props.second, current.value], wake);
+watch(() => [shownSrc.value, shownSecond.value, current.value], wake);
 // Any move or key anywhere in the viewer (slots included) brings the chrome back.
 watch(root, (el, old) => {
   old?.removeEventListener("pointermove", wake);
@@ -322,7 +416,7 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
     <div
       ref="stage"
       class="wp-imgzoom__stage"
-      :class="{ 'can-pan': canPan, 'is-dragging': dragging }"
+      :class="{ 'can-pan': canPan, 'is-dragging': dragging, 'is-prev': hoverSide === -1, 'is-next': hoverSide === 1 }"
       tabindex="0"
       role="application"
       aria-roledescription="picture zoom"
@@ -333,33 +427,52 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
       @pointermove="onMove"
       @pointerup="onUp"
       @pointercancel="onUp"
+      @pointerleave="hoverSide = 0"
       @dblclick="onDouble"
       @keydown="onKey"
     >
+      <!-- The next pictures load out of sight; the shown ones swap only once they have. -->
+      <img :src="src" alt="" class="wp-imgzoom__next" aria-hidden="true" data-test="imgzoom-next" @load="onLoad" @error="onError">
+      <img v-if="second" :src="second" alt="" class="wp-imgzoom__next" aria-hidden="true" @load="onSecondLoad" @error="onSecondLoad">
       <div class="wp-imgzoom__pane">
         <img
-          :src="src"
+          v-if="shownSrc"
+          :src="shownSrc"
           alt=""
           class="wp-imgzoom__img"
-          :class="{ 'is-pixels': view.scale >= 4 }"
+          :class="{ 'is-pixels': view.scale >= 4, 'is-stale': staleFirst }"
           :style="imgStyle"
           draggable="false"
-          @load="onLoad"
+          data-test="imgzoom-img"
         >
         <slot name="first" />
       </div>
       <div v-if="second" class="wp-imgzoom__pane" data-test="imgzoom-second">
+        <!-- Drawn in the first picture's box: another size or shape fits inside it (contain). -->
         <img
-          :src="second"
+          v-if="shownSecond"
+          :src="shownSecond"
           :alt="secondAlt"
-          class="wp-imgzoom__img"
-          :class="{ 'is-pixels': view.scale >= 4 }"
+          class="wp-imgzoom__img is-second"
+          :class="{ 'is-pixels': view.scale >= 4, 'is-stale': staleSecond }"
           :style="imgStyle"
           draggable="false"
+          data-test="imgzoom-second-img"
         >
         <slot name="second" />
       </div>
       <slot />
+      <template v-if="steppable">
+        <!-- The arrows take their own presses, so the stage behind never pans or side-steps. -->
+        <!-- eslint-disable-next-line vuejs-accessibility/mouse-events-have-key-events -->
+        <span class="wp-imgzoom__edge is-prev wp-imgzoom__chrome" @pointerdown.stop @pointerenter="chromeEnter" @pointerleave="chromeLeave">
+          <Button variant="ghost" size="md" icon="pi-chevron-left" aria-label="Previous picture" data-test="imgzoom-step-prev" @click="emit('step', -1)" />
+        </span>
+        <!-- eslint-disable-next-line vuejs-accessibility/mouse-events-have-key-events -->
+        <span class="wp-imgzoom__edge is-next wp-imgzoom__chrome" @pointerdown.stop @pointerenter="chromeEnter" @pointerleave="chromeLeave">
+          <Button variant="ghost" size="md" icon="pi-chevron-right" aria-label="Next picture" data-test="imgzoom-step-next" @click="emit('step', 1)" />
+        </span>
+      </template>
       <!-- The mini-map takes its own pointer drags, so the stage behind it never pans. -->
       <!-- eslint-disable-next-line vuejs-accessibility/no-static-element-interactions -->
       <div
@@ -375,7 +488,7 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
         @pointerenter="chromeEnter"
         @pointerleave="chromeLeave"
       >
-        <img :src="src" alt="" draggable="false">
+        <img :src="shownSrc" alt="" draggable="false">
         <span class="wp-imgzoom__map-box" :style="mapBox" data-test="imgzoom-map-box" />
       </div>
     </div>
@@ -520,6 +633,20 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
 .wp-imgzoom__stage:focus-visible { box-shadow: inset 0 0 0 2px var(--wp-border-focus); }
 .wp-imgzoom__stage.can-pan { cursor: grab; }
 .wp-imgzoom__stage.is-dragging { cursor: grabbing; }
+.wp-imgzoom__stage.is-prev { cursor: w-resize; }
+.wp-imgzoom__stage.is-next { cursor: e-resize; }
+.wp-imgzoom__edge {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  border-radius: var(--wp-radius-cap, 999px);
+  /* Over a picture: a dark scrim in both themes, like the hint. */
+  background: rgb(0 0 0 / 0.45);
+}
+.wp-imgzoom__edge.is-prev { left: var(--wp-space-3); }
+.wp-imgzoom__edge.is-next { right: var(--wp-space-3); }
+.wp-imgzoom__edge :deep(.wp-btn) { color: white; border-radius: var(--wp-radius-cap, 999px); }
 .wp-imgzoom__img {
   position: absolute;
   top: 0;
@@ -530,6 +657,18 @@ const at = (s: number): boolean => !isFit.value && Math.abs(view.value.scale - s
   pointer-events: none;
 }
 .wp-imgzoom__img.is-pixels { image-rendering: pixelated; }
+.wp-imgzoom__img.is-second { object-fit: contain; }
+.wp-imgzoom__img.is-stale { opacity: 0.55; transition: opacity 0.15s ease 0.2s; }
+@media (prefers-reduced-motion: reduce) {
+  .wp-imgzoom__img.is-stale { transition: none; }
+}
+.wp-imgzoom__next {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
 .wp-imgzoom__hint {
   margin: 0;
   padding: var(--wp-space-1) var(--wp-space-3);

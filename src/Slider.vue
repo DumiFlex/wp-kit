@@ -24,6 +24,15 @@
  *
  *   <Slider v-model="cfg" :min="1" :max="30" :marks="[{ value: 7, label: '7' }]" :snap="1" />
  *
+ * `variant` changes the look, not the behaviour. `bar` makes the whole row
+ * the track: a filled bar with the `label` slot inside on the left and the
+ * value on the right (a LoRA strength you drag anywhere on). `fader` stands
+ * the track up (a mixing-desk fader: value on top, `label` slot under it,
+ * `--wp-slider-len` sets its height, 140px by default).
+ *
+ *   <Slider v-model="lora" variant="bar" :min="0" :max="1.5" :step="0.05"><template #label>Style LoRA</template></Slider>
+ *   <Slider v-model="cfg" variant="fader" :min="1" :max="15" with-input><template #label>CFG</template></Slider>
+ *
  * APG slider: each thumb is a focus stop; arrows move one step, PageUp /
  * PageDown ten, Home / End jump to the ends (for a pair, the ends that thumb
  * can reach), and `format` gives screen readers the value as words ("32 px").
@@ -59,7 +68,19 @@ const props = withDefaults(defineProps<{
   showValue?: boolean | undefined;
   /** Put a WpNumber after the track (a pair: one at each side) to type the exact value. */
   withInput?: boolean | undefined;
-}>(), { min: 0, max: 100, step: 1, minGap: 0, size: "md", ariaLabel: undefined, marks: undefined });
+  /**
+   * A finer step for dragging: Shift while dragging uses it, and with `free`
+   * every drag and typed number does (the arrows keep `step`). E.g. step 0.05
+   * with fine-step 0.01 lands a drag on 0.37.
+   */
+  fineStep?: number | undefined;
+  /** Drag and type at `fine-step` instead of `step` (needs `fine-step`). */
+  free?: boolean | undefined;
+  /** line: a thin track and round thumbs; bar: the row is a filled bar; fader: an upright track. */
+  variant?: "line" | "bar" | "fader" | undefined;
+}>(), { min: 0, max: 100, step: 1, minGap: 0, size: "md", ariaLabel: undefined, marks: undefined, variant: "line" });
+
+defineSlots<{ label?: () => unknown }>();
 
 const emit = defineEmits<{ (e: "update:modelValue", v: T): void; (e: "change", v: T): void }>();
 
@@ -68,7 +89,15 @@ const trackEl = ref<HTMLElement | null>(null);
 const active = ref<0 | 1 | null>(null);
 
 const isPair = computed(() => Array.isArray(props.modelValue));
-const sn = (v: number): number => snap(v, props.min, props.max, props.step);
+const vertical = computed(() => props.variant === "fader");
+/** Where a value sits along the track, as a CSS position (left, or bottom for a fader). */
+const side = computed(() => (vertical.value ? "bottom" : "left"));
+const along = computed(() => (vertical.value ? "height" : "width"));
+/** The finest step a value may sit on: `fine-step` when given, else `step`. */
+const fine = computed(() => (props.fineStep && props.fineStep > 0 ? props.fineStep : props.step));
+const sn = (v: number): number => snap(v, props.min, props.max, fine.value);
+/** Snap a typed or keyed value: on `fine-step` with `free`, else on `step`. */
+const snIn = (v: number): number => snap(v, props.min, props.max, props.free ? fine.value : props.step);
 /** The marks' values inside the range, for `snap`. */
 const markValues = computed(() => (props.marks ?? []).map((m) => m.value).filter((v) => v >= props.min && v <= props.max));
 /** Only marks can be picked (`snap` true with marks). */
@@ -123,7 +152,13 @@ function current(): T {
 
 function fromPointer(ev: PointerEvent): number {
   const r = trackEl.value?.getBoundingClientRect();
-  return r ? toMark(valueAt(ev.clientX, r.left, r.width, props.min, props.max, props.step)) : lo.value;
+  if (!r) return lo.value;
+  const st = props.free || ev.shiftKey ? fine.value : props.step;
+  // A fader counts up from its bottom edge: flip y so the same maths applies.
+  const v = vertical.value
+    ? valueAt(-ev.clientY, -r.bottom, r.height, props.min, props.max, st)
+    : valueAt(ev.clientX, r.left, r.width, props.min, props.max, st);
+  return toMark(v);
 }
 
 function onPointerDown(ev: PointerEvent): void {
@@ -163,7 +198,7 @@ function onKeydown(ev: KeyboardEvent, i: 0 | 1): void {
 
 function onTyped(i: 0 | 1, v: number | null): void {
   if (v === null || props.disabled) return;
-  emit("change", setEnd(i, marksOnly.value ? toMark(sn(v)) : sn(v)));
+  emit("change", setEnd(i, marksOnly.value ? toMark(snIn(v)) : snIn(v)));
 }
 
 function passed(v: number): boolean {
@@ -175,23 +210,25 @@ function passed(v: number): boolean {
   <div
     class="wp-slider"
     :data-size="size"
+    :data-variant="variant"
     :data-pair="isPair || undefined"
     :data-disabled="disabled || undefined"
     :data-dragging="active !== null || undefined"
-    :data-marked="marks?.length ? 'true' : undefined"
+    :data-marked="variant === 'line' && marks?.some((m) => m.label) ? 'true' : undefined"
   >
     <WpNumber
-      v-if="withInput && isPair"
+      v-if="withInput && (isPair || vertical)"
       class="wp-slider__input"
       :model-value="lo"
       :min="min"
-      :max="hi - props.minGap"
+      :max="isPair ? hi - props.minGap : max"
       :step="step"
       :size="size"
       :disabled="disabled"
-      :aria-label="thumbLabel(0)"
+      :aria-label="isPair ? thumbLabel(0) : (ariaLabel ? `${ariaLabel}, exact value` : 'Exact value')"
       @update:model-value="onTyped(0, $event)"
     />
+    <span v-else-if="vertical && (showValue || !withInput)" class="wp-slider__value" aria-hidden="true">{{ text(lo) }}</span>
     <div
       ref="trackEl"
       class="wp-slider__track"
@@ -204,17 +241,21 @@ function passed(v: number): boolean {
       <div
         class="wp-slider__fill"
         :style="isPair
-          ? { left: `${loPct}%`, width: `${hiPct - loPct}%` }
-          : { width: `calc(${loPct}% + var(--_thumb) / 2)` }"
+          ? { [side]: `${loPct}%`, [along]: `${hiPct - loPct}%` }
+          : { [along]: variant === 'line' ? `calc(${loPct}% + var(--_thumb) / 2)` : `${loPct}%` }"
       />
       <span
         v-for="m in marks ?? []"
         :key="m.value"
         class="wp-slider__mark"
         :data-passed="passed(m.value) || undefined"
-        :style="{ left: `${percentOf(m.value, props.min, props.max)}%` }"
+        :style="{ [side]: `${percentOf(m.value, props.min, props.max)}%` }"
         aria-hidden="true"
-      ><span v-if="m.label" class="wp-slider__mark-label">{{ m.label }}</span></span>
+      ><span v-if="m.label && variant === 'line'" class="wp-slider__mark-label">{{ m.label }}</span></span>
+      <span v-if="variant === 'bar'" class="wp-slider__inner">
+        <span class="wp-slider__label"><slot name="label" /></span>
+        <span v-if="!withInput || showValue" class="wp-slider__value" aria-hidden="true">{{ isPair ? `${text(lo)} – ${text(hi)}` : text(lo) }}</span>
+      </span>
       <!-- Focusable unless disabled (tabindex is bound). -->
       <!-- eslint-disable-next-line vuejs-accessibility/interactive-supports-focus -->
       <div
@@ -228,15 +269,17 @@ function passed(v: number): boolean {
         :aria-valuemax="limits(i)[1]"
         :aria-valuenow="v"
         :aria-valuetext="format ? text(v) : undefined"
+        :aria-orientation="vertical ? 'vertical' : undefined"
         :aria-disabled="disabled || undefined"
         :data-active="active === i || undefined"
-        :style="{ left: `${pcts[i]}%` }"
+        :style="{ [side]: `${pcts[i]}%` }"
         @keydown="onKeydown($event, i === 1 ? 1 : 0)"
       />
     </div>
-    <span v-if="showValue && !withInput" class="wp-slider__value" aria-hidden="true">{{ isPair ? `${text(lo)} – ${text(hi)}` : text(lo) }}</span>
+    <span v-if="vertical && $slots.label" class="wp-slider__label"><slot name="label" /></span>
+    <span v-if="showValue && !withInput && variant === 'line'" class="wp-slider__value" aria-hidden="true">{{ isPair ? `${text(lo)} – ${text(hi)}` : text(lo) }}</span>
     <WpNumber
-      v-if="withInput"
+      v-if="withInput && !vertical"
       class="wp-slider__input"
       :model-value="isPair ? hi : lo"
       :min="isPair ? lo + props.minGap : min"
@@ -298,8 +341,74 @@ function passed(v: number): boolean {
 .wp-slider[data-size="sm"] .wp-slider__value { font-size: var(--wp-text-xs); }
 .wp-slider__input { flex: none; width: 84px; }
 .wp-slider[data-pair] .wp-slider__input { width: 76px; }
-.wp-slider[data-size="sm"] .wp-slider__input { width: 64px; }
+/* Fits "0.85" beside the sm arrows. */
+.wp-slider[data-size="sm"] .wp-slider__input { width: 72px; }
 .wp-slider[data-pair][data-size="sm"] .wp-slider__input { width: 60px; }
+/* bar: the row is the track; the fill and its edge show the value. */
+.wp-slider[data-variant="bar"] .wp-slider__track { margin: 0; min-width: 80px; }
+.wp-slider[data-variant="bar"] .wp-slider__rail,
+.wp-slider[data-variant="bar"] .wp-slider__fill { top: 0; bottom: 0; height: auto; margin: 0; }
+.wp-slider[data-variant="bar"] .wp-slider__rail {
+  left: 0; right: 0; background: var(--wp-bg-1); box-shadow: inset 0 0 0 1px var(--wp-border);
+  border-radius: min(6px, var(--wp-radius-cap, 999px));
+}
+.wp-slider[data-variant="bar"] .wp-slider__fill {
+  left: 0; background: color-mix(in srgb, var(--wp-accent) 30%, transparent);
+  border-radius: min(6px, var(--wp-radius-cap, 999px)) 0 0 min(6px, var(--wp-radius-cap, 999px));
+}
+.wp-slider[data-variant="bar"][data-pair] .wp-slider__fill { border-radius: 0; }
+.wp-slider[data-variant="bar"] .wp-slider__thumb {
+  top: 0; bottom: 0; width: 2px; height: auto; margin: 0 0 0 -1px; border: 0;
+  border-radius: min(1px, var(--wp-radius-cap, 999px)); background: var(--wp-accent); box-shadow: none; transform: none;
+}
+.wp-slider[data-variant="bar"] .wp-slider__track:hover .wp-slider__thumb,
+.wp-slider[data-variant="bar"] .wp-slider__thumb[data-active] { transform: none; width: 3px; }
+.wp-slider[data-variant="bar"] .wp-slider__track:focus-within .wp-slider__rail { box-shadow: inset 0 0 0 1px var(--wp-accent), var(--wp-focus-ring); }
+.wp-slider[data-variant="bar"] .wp-slider__thumb:focus-visible { box-shadow: none; }
+.wp-slider[data-variant="bar"] .wp-slider__mark {
+  top: auto; bottom: 1px; height: 30%; width: 2px; margin: 0 0 0 -1px;
+  background: color-mix(in srgb, var(--wp-text) 32%, transparent);
+}
+/* Ticks stand on the bar's lower edge like a ruler, clear of the label; on
+   the filled side they read as lighter notches in the fill. */
+.wp-slider[data-variant="bar"] .wp-slider__mark[data-passed] { background: color-mix(in srgb, var(--wp-accent) 55%, var(--wp-text)); }
+.wp-slider__inner {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; gap: var(--wp-space-3);
+  padding: 0 var(--wp-space-3); pointer-events: none; min-width: 0;
+}
+.wp-slider__label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--wp-text); font-size: var(--wp-text-sm); }
+.wp-slider[data-size="sm"] .wp-slider__label { font-size: var(--wp-text-xs); }
+.wp-slider__inner .wp-slider__value { font-family: var(--wp-font-mono); }
+/* As tall as the row's other controls: sm 24 px on the canvas, md 32 px. */
+.wp-slider[data-variant="bar"][data-size="sm"] { --_h: var(--wp-control-h-sm); }
+.wp-slider[data-variant="bar"][data-size="md"] { --_h: var(--wp-control-h-md); }
+
+/* fader: an upright track, the value above, the label under it. */
+.wp-slider[data-variant="fader"] {
+  --_len: var(--wp-slider-len, 140px);
+  flex-direction: column; width: auto; min-width: 48px; gap: var(--wp-space-3); min-height: 0;
+}
+.wp-slider[data-variant="fader"] .wp-slider__track {
+  flex: none; width: 28px; min-width: 0; height: var(--_len); margin: 6px 0;
+}
+.wp-slider[data-variant="fader"] .wp-slider__rail,
+.wp-slider[data-variant="fader"] .wp-slider__fill {
+  top: auto; left: 50%; right: auto; width: 6px; margin: 0 0 0 -3px;
+}
+.wp-slider[data-variant="fader"] .wp-slider__rail { top: -4px; bottom: -4px; height: auto; }
+/* The fill reaches the rail's bottom end (which runs 4px past the track),
+   so no bare rail shows under it. */
+.wp-slider[data-variant="fader"]:not([data-pair]) .wp-slider__fill { bottom: -4px; height: 0; padding-bottom: 4px; box-sizing: content-box; }
+.wp-slider[data-variant="fader"] .wp-slider__thumb {
+  top: auto; left: 50%; width: 22px; height: 10px; margin: 0 0 -5px -11px;
+  border-radius: min(3px, var(--wp-radius-cap, 999px)); background: var(--wp-bg);
+}
+.wp-slider[data-variant="fader"] .wp-slider__mark { top: auto; left: 50%; width: 14px; height: 2px; margin: 0 0 -1px -7px; }
+.wp-slider[data-variant="fader"] .wp-slider__input { width: 64px; }
+.wp-slider[data-variant="fader"] .wp-slider__value {
+  display: flex; align-items: center; justify-content: center; min-height: var(--_h); font-family: var(--wp-font-mono);
+}
+.wp-slider[data-variant="fader"] .wp-slider__label { text-align: center; max-width: 100%; font-weight: 600; }
 .wp-slider[data-disabled] { opacity: 0.45; }
 .wp-slider[data-disabled] .wp-slider__track { cursor: not-allowed; }
 .wp-slider[data-disabled] .wp-slider__thumb { transform: none; }

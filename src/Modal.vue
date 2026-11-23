@@ -13,6 +13,9 @@
  * `#header` puts `:id="titleId"` on its own heading. `keydown` gives every key
  * pressed inside (the shield stops them before `window`), so a dialog's own
  * keys go there, not on a window listener. ConfirmModal is built on it.
+ * `close` comes first with how it was closed (`"button"` for the ×,
+ * `"escape"`, `"backdrop"`), for a dialog whose × and Escape do different
+ * things (the Image Filter picker: Escape steps back a mode, the × hides it).
  *
  * `accent` (any CSS colour, e.g. `var(--wp-kind-wildcard)`) tints the header
  * (`"brand"` lays a soft wash of the brand gradient instead, as the pickers have)
@@ -32,7 +35,7 @@ const props = withDefaults(defineProps<{
   open: boolean;
   title?: string | undefined;
   /** `full` is a work window (95% of the view, 1280px at most, a fixed 90vh tall) for pickers and editors. */
-  size?: "sm" | "md" | "lg" | "full" | undefined;
+  size?: "sm" | "md" | "lg" | "full" | "screen" | undefined;
   closeOnBackdrop?: boolean | undefined;
   /** A CSS colour that tints the header and colours `icon`; `"brand"` for the brand-gradient wash. */
   accent?: string | undefined;
@@ -46,19 +49,22 @@ const emit = defineEmits<{
   (e: "update:open", v: boolean): void;
   /** Every keydown inside the dialog. */
   (e: "keydown", ev: KeyboardEvent): void;
+  /** How it was closed, sent just before `update:open`. */
+  (e: "close", reason: "button" | "escape" | "backdrop"): void;
 }>();
 
 const slots = useSlots();
 const dialog = ref<HTMLElement | null>(null);
 const titleId = `wp-modal-title-${useId()}`;
 
-function close(): void {
+function close(reason: "button" | "escape" | "backdrop" = "button"): void {
+  emit("close", reason);
   emit("update:open", false);
 }
 
 function onShellClose(reason: "escape" | "backdrop"): void {
   if (reason === "backdrop" && !props.closeOnBackdrop) return;
-  close();
+  close(reason);
 }
 
 const focus = useDialogFocus(dialog, () => props.open, {
@@ -100,7 +106,7 @@ function onKeydown(ev: KeyboardEvent): void {
         <h3 v-if="title" :id="titleId" class="wp-modal__title">{{ title }}</h3>
         <slot name="header" :title-id="titleId" />
         <span class="wp-modal__spacer" />
-        <Button variant="ghost" icon="times" aria-label="Close" kbd="Esc" data-test="modal-close" @click="close" />
+        <Button variant="ghost" icon="times" aria-label="Close" kbd="Esc" data-test="modal-close" @click="close('button')" />
       </header>
       <div class="wp-modal__body" :class="{ 'wp-modal__body--flush': flush }">
         <slot />
@@ -135,6 +141,8 @@ function onKeydown(ev: KeyboardEvent): void {
 .wp-modal--lg { max-width: 880px; }
 /* One size whatever the content, so switching views never moves the window. */
 .wp-modal--full { max-width: min(1280px, 95vw); height: 90vh; max-height: 90vh; }
+/* The whole window inside the overlay's 20px gutter: a viewer that should be as big as it gets. */
+.wp-modal--screen { max-width: none; height: calc(100vh - 40px); max-height: calc(100vh - 40px); }
 .wp-modal__head {
   display: flex;
   align-items: center;

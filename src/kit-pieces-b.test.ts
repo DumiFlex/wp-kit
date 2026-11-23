@@ -270,6 +270,14 @@ describe("DescriptionList and CodeBlock", () => {
 });
 
 describe("Slider", () => {
+  it("keeps room under the track only for marks with labels", () => {
+    const bare = bound(Slider, { modelValue: 1, min: 0, max: 4, marks: [{ value: 1 }, { value: 2 }] });
+    expect(bare.find(".wp-slider").attributes("data-marked")).toBeUndefined();
+    expect(bare.findAll(".wp-slider__mark")).toHaveLength(2);
+    const labelled = bound(Slider, { modelValue: 1, min: 0, max: 4, marks: [{ value: 2, label: "2" }] });
+    expect(labelled.find(".wp-slider").attributes("data-marked")).toBe("true");
+  });
+
   it("steps with the keys and clamps", async () => {
     const w = bound(Slider, { modelValue: 1, min: 0, max: 2, step: 0.5, ariaLabel: "Weight" });
     const thumb = w.find("[role=slider]");
