@@ -7,6 +7,12 @@ describe("xy-pad helpers", () => {
     expect(stepDots(512, 1024, 64)).toEqual([576, 640, 704, 768, 832, 896, 960]);
     const many = stepDots(0, 100, 1, 4);
     expect(many).toEqual([20, 40, 60, 80]);
+    // Past the limit: one every k steps, evenly spaced, and on a k that splits the range when one is close.
+    expect(stepDots(0, 1, 0.05)).toEqual([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]);
+    expect(stepDots(0, 1, 0.01)).toEqual([0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]);
+    expect(stepDots(0, 23, 1, 4)).toEqual([5, 10, 15, 20]);
+    const gaps = (d: number[]): number[] => d.slice(1).map((v, i) => Number((v - (d[i] ?? 0)).toFixed(6)));
+    expect(new Set(gaps(stepDots(512, 2048, 32))).size).toBe(1);
     expect(stepDots(0, 1, 1)).toEqual([]);
     expect(stepDots(1, 1, 0.1)).toEqual([]);
   });
