@@ -10,6 +10,7 @@ const modalOpen = ref(false);
 const editOpen = ref(false);
 const pickOpen = ref(false);
 const fullOpen = ref(false);
+const screenOpen = ref(false);
 </script>
 
 <template>
@@ -46,6 +47,10 @@ const fullOpen = ref(false);
   <Button @click="fullOpen = true">Open a work window</Button>
   <Modal v-model:open="fullOpen" title="Pick images" size="full" accent="var(--wp-accent)" icon="filter">
     <p>`size="full"` keeps one size in every view, for pickers and editors that fill the screen.</p>
+  </Modal>
+  <Button @click="screenOpen = true">Open the whole window</Button>
+  <Modal v-model:open="screenOpen" title="Zoom" size="screen" accent="var(--wp-accent)" icon="search-plus">
+    <p>`size="screen"` takes the whole browser window inside the backdrop's gutter, for a viewer that should be as big as it gets (the Image Filter's Zoom).</p>
   </Modal>
 </template>
 

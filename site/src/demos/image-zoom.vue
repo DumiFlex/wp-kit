@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import Button from "@kit/Button.vue";
 import WpImageZoom from "@kit/WpImageZoom.vue";
 
 /** A big test picture with fine print, so 100% and 200% show something Fit can't. */
@@ -20,11 +19,12 @@ function picture(hue: number): string {
 const pictures = [picture(220), picture(150), picture(20)];
 const at = ref(0);
 const zoom = ref<number | null>(null);
+function step(delta: -1 | 1): void { at.value = (at.value + delta + pictures.length) % pictures.length; }
 </script>
 
 <template>
   <div class="wp-kit__stack wp-kit__stack--wide">
-    <p class="wp-kit__caption">Scroll to zoom toward the pointer, drag to move, double-click for 100%. Step to the next picture: the level and spot stay. Zoomed in, the mini-map shows where you are; keep the mouse still and the bar fades.</p>
+    <p class="wp-kit__caption">Scroll to zoom toward the pointer, drag to move, double-click for 100%. It is steppable: ‹ › on the edges, a click beside the picture or Shift+wheel steps to the next picture, and the level and spot stay. Zoomed in, the mini-map shows where you are; keep the mouse still and the bar fades.</p>
     <div class="wp-kit-zoom wp-kit-zoom--tall">
       <WpImageZoom
         v-model:zoom="zoom"
@@ -33,10 +33,10 @@ const zoom = ref<number | null>(null);
         hint="Drag to move · scroll to zoom"
         minimap
         autohide
+        steppable
+        @step="step"
       >
-        <template #bar-end>
-          <Button size="sm" variant="ghost" icon="pi-chevron-right" aria-label="Next picture" @click="at = (at + 1) % pictures.length" />
-        </template>
+        <template #first><span class="wp-kit-zoom__cap">{{ at + 1 }} / {{ pictures.length }}</span></template>
       </WpImageZoom>
     </div>
     <p class="wp-kit__caption">Level: {{ zoom === null ? "Fit" : `${Math.round(zoom * 100)}%` }}. With a second picture (synced compare): both sides move together.</p>

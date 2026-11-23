@@ -35,7 +35,7 @@ const props = withDefaults(defineProps<{
   open: boolean;
   title?: string | undefined;
   /** `full` is a work window (95% of the view, 1280px at most, a fixed 90vh tall) for pickers and editors. */
-  size?: "sm" | "md" | "lg" | "full" | undefined;
+  size?: "sm" | "md" | "lg" | "full" | "screen" | undefined;
   closeOnBackdrop?: boolean | undefined;
   /** A CSS colour that tints the header and colours `icon`; `"brand"` for the brand-gradient wash. */
   accent?: string | undefined;
@@ -141,6 +141,8 @@ function onKeydown(ev: KeyboardEvent): void {
 .wp-modal--lg { max-width: 880px; }
 /* One size whatever the content, so switching views never moves the window. */
 .wp-modal--full { max-width: min(1280px, 95vw); height: 90vh; max-height: 90vh; }
+/* The whole window inside the overlay's 20px gutter: a viewer that should be as big as it gets. */
+.wp-modal--screen { max-width: none; height: calc(100vh - 40px); max-height: calc(100vh - 40px); }
 .wp-modal__head {
   display: flex;
   align-items: center;
