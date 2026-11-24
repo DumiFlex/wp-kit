@@ -16,6 +16,9 @@
  *
  *   <Slider v-model="range" :min="0" :max="2" :step="0.1" :min-gap="0.2" aria-label="Weight" with-input />
  *
+ * Holding Ctrl (or ⌘) while dragging skips every snap: the fine step and no
+ * marks.
+ *
  * `snap` settles the thumb on the marks. `snap` (true) makes the marks the only
  * values: a drag, a click or a typed number lands on the nearest mark and
  * the arrows go mark to mark. A number pulls the thumb onto a mark only once
@@ -153,12 +156,14 @@ function current(): T {
 function fromPointer(ev: PointerEvent): number {
   const r = trackEl.value?.getBoundingClientRect();
   if (!r) return lo.value;
-  const st = props.free || ev.shiftKey ? fine.value : props.step;
+  // Ctrl (or ⌘) skips every snap: the finest step and no marks.
+  const loose = ev.ctrlKey || ev.metaKey;
+  const st = props.free || ev.shiftKey || loose ? fine.value : props.step;
   // A fader counts up from its bottom edge: flip y so the same maths applies.
   const v = vertical.value
     ? valueAt(-ev.clientY, -r.bottom, r.height, props.min, props.max, st)
     : valueAt(ev.clientX, r.left, r.width, props.min, props.max, st);
-  return toMark(v);
+  return loose ? v : toMark(v);
 }
 
 function onPointerDown(ev: PointerEvent): void {

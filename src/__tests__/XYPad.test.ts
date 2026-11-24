@@ -78,6 +78,28 @@ describe("XYPad", () => {
     expect(w.findAll(".wp-xypad__dot")).toHaveLength(3);
   });
 
+  it("Ctrl drags free of dots and steps", async () => {
+    const w = bound(XYPad, { modelValue: [0, 0], xMin: 0, xMax: 100, xStep: 10, yMin: 0, yMax: 100, yStep: 10, fineStep: 1, xDots: [50], yDots: [50], snapDots: true });
+    box(w.element);
+    await point(w.element, "pointerdown", { clientX: 33, clientY: 63, ctrlKey: true });
+    expect(w.props("modelValue")).toEqual([33, 37]);
+    await point(w.element, "pointermove", { clientX: 33, clientY: 63 });
+    expect(w.props("modelValue")).toEqual([50, 50]);
+  });
+
+  it("size lands a drag near a guide line on that ratio, unless Ctrl is held", async () => {
+    const w = bound(XYPad, { modelValue: [0, 0], xMin: 0, xMax: 2048, xStep: 64, yMin: 0, yMax: 2048, yStep: 64, fineStep: 1, variant: "size", guides: [0.5625] });
+    box(w.element);
+    // 1024 across, 600 up: near 16:9 (576 up), so it lands on 1024 × 576.
+    await point(w.element, "pointerdown", { clientX: 50, clientY: 100 - (600 / 2048) * 100 });
+    expect(w.props("modelValue")).toEqual([1024, 576]);
+    await point(w.element, "pointermove", { clientX: 50, clientY: 100 - (600 / 2048) * 100, ctrlKey: true });
+    expect(w.props("modelValue")).toEqual([1024, 600]);
+    // Far from the line: the steps alone.
+    await point(w.element, "pointermove", { clientX: 50, clientY: 30 });
+    expect(w.props("modelValue")).toEqual([1024, 1408]);
+  });
+
   it("stick keeps the point inside its circle; size draws guides and a readout", async () => {
     const w = bound(XYPad, { modelValue: [0, 0], xMin: -1, xMax: 1, xStep: 0.01, yMin: -1, yMax: 1, yStep: 0.01, variant: "stick", grid: 0 });
     box(w.element);
@@ -156,6 +178,16 @@ describe("Slider variants", () => {
     await point(t.element, "pointerdown", { clientX: 37 });
     expect(w.props("modelValue")).toBe(0.35);
     await point(t.element, "pointermove", { clientX: 37, shiftKey: true });
+    expect(w.props("modelValue")).toBe(0.37);
+  });
+
+  it("Ctrl drags free of the marks a slider snaps to", async () => {
+    const w = bound(Slider, { modelValue: 0, min: 0, max: 1, step: 0.05, fineStep: 0.01, marks: [{ value: 0.5 }], snap: true, ariaLabel: "W" });
+    const t = w.find(".wp-slider__track");
+    box(t.element);
+    await point(t.element, "pointerdown", { clientX: 37 });
+    expect(w.props("modelValue")).toBe(0.5);
+    await point(t.element, "pointermove", { clientX: 37, ctrlKey: true });
     expect(w.props("modelValue")).toBe(0.37);
   });
 });
