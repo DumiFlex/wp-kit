@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bandSpans, evenDots, guideLine, insideCircle, nearestStop, ratioName, stepDots } from "../xy-pad";
+import { bandSpans, evenDots, guideLine, insideCircle, nearGuide, nearestStop, ratioName, stepDots } from "../xy-pad";
 
 describe("xy-pad helpers", () => {
   it("stepDots puts one dot per step inside the range, or spreads them on steps", () => {
@@ -47,5 +47,11 @@ describe("xy-pad helpers", () => {
     expect(insideCircle(50, 60)).toEqual([50, 60]);
     const [x, y] = insideCircle(100, 100);
     expect(Math.hypot(x - 50, y - 50)).toBeCloseTo(50);
+  });
+  it("nearGuide finds the guide line a point is near, in percent of the pad", () => {
+    // 1024 × 600 on a 0..2048 pad is 0.8% off the 16:9 line (y = 0.5625 x).
+    expect(nearGuide(1024, 600, [1, 0.5625], 0, 2048, 0, 2048)).toEqual({ x: expect.closeTo(1034, 0), ratio: 0.5625 });
+    expect(nearGuide(1024, 1408, [1, 0.5625], 0, 2048, 0, 2048)).toBeNull();
+    expect(nearGuide(1, 1, [1], 0, 0, 0, 1)).toBeNull();
   });
 });

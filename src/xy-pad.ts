@@ -94,6 +94,34 @@ export function guideLine(
   return [px(lo), py(lo * ratio), px(hi), py(hi * ratio)];
 }
 
+/**
+ * The point (values) pulled onto the nearest guide line (`y = r x`) when it
+ * is within `reach` percent of the pad, else null. X keeps its spot along the
+ * line; the caller snaps it to its step and sets Y from it.
+ */
+export function nearGuide(
+  xv: number, yv: number, ratios: readonly number[],
+  xMin: number, xMax: number, yMin: number, yMax: number, reach = 3,
+): { x: number; ratio: number } | null {
+  if (!(xMax > xMin) || !(yMax > yMin)) return null;
+  const px = ((xv - xMin) / (xMax - xMin)) * 100;
+  const py = ((yv - yMin) / (yMax - yMin)) * 100;
+  let best: { x: number; ratio: number; d: number } | null = null;
+  for (const r of ratios) {
+    const g = guideLine(r, xMin, xMax, yMin, yMax);
+    if (!g) continue;
+    const [x1, y1, x2, y2] = g;
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const len = dx * dx + dy * dy;
+    if (!(len > 0)) continue;
+    const t = Math.min(1, Math.max(0, ((px - x1) * dx + (py - y1) * dy) / len));
+    const d = Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
+    if (d <= reach && (!best || d < best.d)) best = { x: xMin + ((x1 + t * dx) / 100) * (xMax - xMin), ratio: r, d };
+  }
+  return best ? { x: best.x, ratio: best.ratio } : null;
+}
+
 /** A ratio as a short name: 1.333 → "4:3", 0.5625 → "9:16"; else "1.25:1". */
 export function ratioName(r: number): string {
   for (let d = 1; d <= 21; d++) {
