@@ -107,7 +107,9 @@ const dots = computed(() => {
   const ys = yStops.value.map((v) => percentOf(v, props.yMin, props.yMax));
   const out: { l: number; b: number }[] = [];
   for (const l of xs) for (const b of ys) {
-    if (stick.value && Math.hypot(l - 50, b - 50) > 50) continue;
+    // Stick: only dots well inside the circle. A dot on its edge came and
+    // went with float noise (one side drawn, the other not) and crowded it.
+    if (stick.value && Math.hypot(l - 50, b - 50) > 48) continue;
     out.push({ l, b });
   }
   return out;

@@ -78,6 +78,15 @@ describe("XYPad", () => {
     expect(w.findAll(".wp-xypad__dot")).toHaveLength(3);
   });
 
+  it("stick draws only dots well inside its circle, the same on every side", () => {
+    const w = bound(XYPad, { modelValue: [0, 0], xMin: -1, xMax: 1, yMin: -1, yMax: 1, variant: "stick", xDots: [-0.8, -0.6, 0, 0.6, 0.8], yDots: [-0.8, -0.6, 0, 0.6, 0.8] });
+    const at = w.findAll(".wp-xypad__dot").map((d: { attributes: (n: string) => string }) => d.attributes("style"));
+    // (±0.8, ±0.6) sit right on the edge: none of the eight is drawn.
+    expect(at.some((st: string) => st.includes("left: 10%") && st.includes("bottom: 20%"))).toBe(false);
+    expect(at.some((st: string) => st.includes("left: 90%") && st.includes("bottom: 80%"))).toBe(false);
+    expect(at).toHaveLength(13);
+  });
+
   it("Ctrl drags free of dots and steps", async () => {
     const w = bound(XYPad, { modelValue: [0, 0], xMin: 0, xMax: 100, xStep: 10, yMin: 0, yMax: 100, yStep: 10, fineStep: 1, xDots: [50], yDots: [50], snapDots: true });
     box(w.element);
