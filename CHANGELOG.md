@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.0](https://github.com/DumiFlex/wp-kit/compare/v0.22.0...v0.23.0) (2026-11-25)
+
+
+### Features
+
+* **working-line:** grey highlight sweep by default, a grow entrance, nested disclosure chevrons ([#195](https://github.com/DumiFlex/wp-kit/issues/195)) ([5cc30d2](https://github.com/DumiFlex/wp-kit/commit/5cc30d297e4728f15689b7f4843ff7fd6863b9cc))
+
 ## [0.22.0](https://github.com/DumiFlex/wp-kit/compare/v0.21.0...v0.22.0) (2026-11-25)
 
 
