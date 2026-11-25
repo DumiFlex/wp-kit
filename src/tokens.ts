@@ -58,7 +58,7 @@ export const LOCAL_TOKENS = ["--wp-hsv-hue", "--wp-flash-color", "--wp-banner-o"
   // row-drag.css: the drop gap and its line.
   "--wp-rowdrag-gap", "--wp-rowdrag-inset", "--wp-rowdrag-color",
   // motion.css entrances.
-  "--wp-enter-o", "--wp-enter-s", "--wp-enter-y", "--wp-enter-x",
+  "--wp-enter-o", "--wp-enter-s", "--wp-enter-y", "--wp-enter-x", "--wp-enter-origin",
   // SelectionBar: where a sticky bar stops under a fixed header.
   "--wp-selection-bar-top",
   // DiffView: a mark's colour.

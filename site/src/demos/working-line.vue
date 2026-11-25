@@ -12,6 +12,8 @@ const { word, time } = useWorkingDemo();
     <WorkingLine :word="word" :time="time" variant="shuffle" tempo="mid" />
     <WorkingLine :word="word" :time="time" variant="orbit" tempo="fast" />
     <WorkingLine :word="word" :time="time" variant="burst" tempo="mid" />
+    <p class="wp-kit__muted">The default sweep keeps the word grey; wash="colour" paints it in the logo's colours.</p>
+    <WorkingLine :word="word" :time="time" variant="typing" tempo="mid" wash="colour" />
     <div class="wp-kit__canvas">
       <p class="wp-kit__caption">Inline, community colours</p>
       <WorkingLine :word="word" :time="time" inline brand="community" variant="orbit" tempo="mid" :size="16" />

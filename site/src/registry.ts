@@ -386,12 +386,12 @@ export const KIT_ENTRIES: KitEntry[] = [
   },
   {
     id: "working-line", name: "WorkingLine", group: "feedback", file: "src/WorkingLine.vue", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "The \"model is working\" line, like Claude Code's: a mark drawn from the logo's sparkles (variant typing, shuffle, orbit or burst), a word that crossfades when it changes, and the time so far. It only draws; the app picks the word, time and tempo (slow while the model reads, mid while it thinks, fast while it writes). wordKey keeps a token count ticking up from crossfading every time. inline makes it smaller for a top bar.",
+    use: "The \"model is working\" line, like Claude Code's: a mark drawn from the logo's sparkles (variant typing, shuffle, orbit or burst), a word that crossfades when it changes, and the time so far. It only draws; the app picks the word, time and tempo (slow while the model reads, mid while it thinks, fast while it writes). The word is grey with a lighter band sweeping over it (wash=\"colour\" paints it in the logo's colours instead). wordKey keeps a token count ticking up from crossfading every time. inline makes it smaller for a top bar.",
     instead: "LoadingMark plus a status text when an AI request is running.",
   },
   {
     id: "motion-css", name: "Entrance classes (motion.css)", group: "feedback", file: "src/motion.css", surfaces: ["manager", "canvas", "community"], usedBy: ["extension"],
-    use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves. wp-flash is a one-shot ring for the row that just changed (colour from --wp-flash-color).",
+    use: "Classes for things that appear while you watch: wp-enter-fade (each new run of streamed text), wp-enter-pop (a reaction), wp-enter-grow (a new message bubble growing into its place, from --wp-enter-origin), wp-enter-rise (a chip by a selection; data-from=\"below\" when it sits under it), wp-enter-drop (a panel that asks for something) and wp-attention (a ring that pulses three times). Set --wp-enter-x when the element shifts itself sideways (a chip centred with -50%). They animate registered properties, so text stays sharp while it moves. wp-flash is a one-shot ring for the row that just changed (colour from --wp-flash-color).",
     instead: "A keyframe of opacity or transform in each component.",
   },
   // Overlays

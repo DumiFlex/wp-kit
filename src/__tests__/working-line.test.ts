@@ -25,6 +25,11 @@ describe("WorkingLine", () => {
     expect(w.findAll("svg path").length).toBeGreaterThan(0);
   });
 
+  it("paints the word grey with a sweep unless asked for colour", () => {
+    expect(mount(WorkingLine, { props: { word: "x" } }).get(".wp-wl").attributes("data-wash")).toBe("sweep");
+    expect(mount(WorkingLine, { props: { word: "x", wash: "colour" } }).get(".wp-wl").attributes("data-wash")).toBe("colour");
+  });
+
   it("uses the community colours when asked", () => {
     const w = mount(WorkingLine, { props: { word: "x", brand: "community" } });
     expect(w.get(".wp-wl").attributes("style")).toContain("#da7550");
