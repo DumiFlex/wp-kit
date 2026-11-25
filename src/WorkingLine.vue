@@ -15,6 +15,10 @@
  * `tempo` sets their speed: slow while the model reads, mid while it thinks,
  * fast while it writes.
  *
+ * The word's colour (`wash`): `sweep` (default) keeps it the muted text
+ * colour with a lighter band passing over it, so the line stays calm next
+ * to the work; `colour` paints it in the logo's colours with a white band.
+ *
  * The word crossfades in place when `wordKey` changes (default: the word),
  * so a token count ticking up can keep its key and not flicker. Its box is
  * never narrower than the word: it widens at once and narrows smoothly once
@@ -47,7 +51,10 @@ const props = withDefaults(defineProps<{
   /** The whole status, for screen readers and the tooltip; defaults to the word. */
   label?: string | undefined;
   brand?: LogoBrand | undefined;
-}>(), { variant: "typing", tempo: "slow", size: 22, inline: false, brand: "extension" });
+  /** How the word is painted: `sweep` (muted text, a lighter band passing)
+   *  or `colour` (the logo's colours, a white band). */
+  wash?: "sweep" | "colour" | undefined;
+}>(), { variant: "typing", tempo: "slow", size: 22, inline: false, brand: "extension", wash: "sweep" });
 
 const key = computed(() => props.wordKey ?? props.word);
 const name = computed(() => props.label ?? props.word);
@@ -101,6 +108,7 @@ onBeforeUnmount(() => resized?.disconnect());
     :data-variant="variant"
     :data-inline="inline ? 'true' : undefined"
     :data-drawn="drawn ? 'true' : undefined"
+    :data-wash="wash"
     role="status"
     :aria-label="name"
     :title="name"
@@ -184,6 +192,14 @@ onBeforeUnmount(() => resized?.disconnect());
   background-position: 150% 0, 0 0;
   -webkit-background-clip: text; background-clip: text; color: transparent;
   animation: wp-wl-shimmer 2.6s linear infinite;
+}
+/* Sweep: the muted text colour with a lighter band passing over it, no
+   colours, so the line doesn't pull the eye off the work. */
+.wp-wl[data-wash="sweep"] .wp-wl__word {
+  /* Only the paint changes: the same band and timing as the colour wash. */
+  background-image:
+    linear-gradient(100deg, transparent 35%, var(--wp-text) 50%, transparent 65%),
+    linear-gradient(var(--wp-text-muted), var(--wp-text-muted));
 }
 @keyframes wp-wl-shimmer {
   0% { background-position: 150% 0, 0 0; }
