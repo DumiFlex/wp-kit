@@ -14,6 +14,7 @@ const n = ref(0);
     <div :key="n" class="wp-kit__row">
       <span class="wp-kit__inline wp-enter-fade">Fade</span>
       <span class="wp-chip wp-enter-pop">👍 Pop</span>
+      <span class="wp-chip wp-enter-grow">Grow</span>
       <span class="wp-chip wp-enter-rise">Rise</span>
       <span class="wp-chip wp-enter-rise" data-from="below">Rise from below</span>
       <span class="wp-chip wp-enter-drop wp-attention">Drop + attention</span>

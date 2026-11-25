@@ -7,6 +7,9 @@
  *   .wp-enter-pop     pops in with a small overshoot (320 ms): a reaction.
  *   .wp-enter-rise    rises 4 px into place (140 ms): a chip above a
  *                     selection; add data-from="below" when it sits under it.
+ *   .wp-enter-grow    grows into its place (220 ms, no overshoot): a new
+ *                     message bubble. It grows from its own corner, set
+ *                     with --wp-enter-origin (bottom right by default).
  *   .wp-enter-drop    drops 6 px into place (500 ms): a panel that asks for
  *                     something.
  *   .wp-attention     a soft accent ring that pulses three times (after
@@ -41,6 +44,12 @@
     transform: translateX(var(--wp-enter-x, 0px)) scale(var(--wp-enter-s));
     animation: wp-enter-pop 0.32s cubic-bezier(0.3, 1.6, 0.5, 1) both;
   }
+  .wp-enter-grow {
+    opacity: var(--wp-enter-o);
+    transform: translateX(var(--wp-enter-x, 0px)) scale(var(--wp-enter-s));
+    transform-origin: var(--wp-enter-origin, 100% 100%);
+    animation: wp-enter-grow 0.22s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+  }
   .wp-enter-rise {
     opacity: var(--wp-enter-o);
     transform: translate(var(--wp-enter-x, 0px), var(--wp-enter-y));
@@ -63,6 +72,10 @@
     from { --wp-enter-s: 0.3; --wp-enter-o: 0; }
     to { --wp-enter-s: 1; --wp-enter-o: 1; }
   }
+  @keyframes wp-enter-grow {
+    from { --wp-enter-s: 0.92; --wp-enter-o: 0; }
+    to { --wp-enter-s: 1; --wp-enter-o: 1; }
+  }
   @keyframes wp-enter-rise {
     from { --wp-enter-o: 0; --wp-enter-y: 4px; }
     to { --wp-enter-o: 1; --wp-enter-y: 0px; }
@@ -83,6 +96,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .wp-enter-fade, .wp-enter-pop, .wp-enter-rise, .wp-enter-drop, .wp-attention, .wp-flash { animation: none; }
+    .wp-enter-fade, .wp-enter-pop, .wp-enter-grow, .wp-enter-rise, .wp-enter-drop, .wp-attention, .wp-flash { animation: none; }
   }
 }
