@@ -196,16 +196,10 @@ onBeforeUnmount(() => resized?.disconnect());
 /* Sweep: the muted text colour with a lighter band passing over it, no
    colours, so the line doesn't pull the eye off the work. */
 .wp-wl[data-wash="sweep"] .wp-wl__word {
-  background:
-    linear-gradient(100deg, var(--wp-text-muted) 35%, var(--wp-text) 50%, var(--wp-text-muted) 65%)
-    no-repeat;
-  background-size: 250% 100%;
-  background-position: 150% 0;
-  animation-name: wp-wl-sweep;
-}
-@keyframes wp-wl-sweep {
-  0% { background-position: 150% 0; }
-  70%, 100% { background-position: -50% 0; }
+  /* Only the paint changes: the same band and timing as the colour wash. */
+  background-image:
+    linear-gradient(100deg, transparent 35%, var(--wp-text) 50%, transparent 65%),
+    linear-gradient(var(--wp-text-muted), var(--wp-text-muted));
 }
 @keyframes wp-wl-shimmer {
   0% { background-position: 150% 0, 0 0; }

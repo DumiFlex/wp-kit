@@ -125,7 +125,8 @@ function toggle(): void {
   color: var(--wp-text-muted);
   transition: transform var(--wp-motion-swap) var(--wp-motion-curve-collapse);
 }
-.wp-disclosure[data-open="true"] .wp-disclosure__chev { transform: rotate(90deg); }
+/* Only its own chevron: a nested disclosure turns its own. */
+.wp-disclosure[data-open="true"] > .wp-disclosure__head .wp-disclosure__chev { transform: rotate(90deg); }
 .wp-disclosure__count {
   padding: 1px 6px;
   border-radius: var(--wp-radius-cap, 999px);
