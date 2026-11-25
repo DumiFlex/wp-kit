@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.22.0](https://github.com/DumiFlex/wp-kit/compare/v0.21.0...v0.22.0) (2026-11-25)
+
+
+### Features
+
+* **combobox:** an icon (and colour) before an option's label ([#186](https://github.com/DumiFlex/wp-kit/issues/186)) ([64d9deb](https://github.com/DumiFlex/wp-kit/commit/64d9deb73db1c46fe086d8299213c8a490a884ae))
+* **xy-pad:** size drags land on guide lines, ctrl drags free of every snap ([#191](https://github.com/DumiFlex/wp-kit/issues/191)) ([c83f864](https://github.com/DumiFlex/wp-kit/commit/c83f8640dcd7572a6aeabfeba5e8a8d39361121d))
+
 ## [0.21.0](https://github.com/DumiFlex/wp-kit/compare/v0.20.1...v0.21.0) (2026-11-23)
 
 
