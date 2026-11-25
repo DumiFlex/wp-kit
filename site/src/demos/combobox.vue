@@ -15,6 +15,12 @@ const model = ref<string | null>("pony");
 const cats = ref<string[]>(["lighting", "styles"]);
 const none = ref<string | null>(null);
 const canvas = ref<string | null>("flux");
+const rows = [
+  { value: "a", label: "Mood", icon: "pi-sparkles", iconColor: "var(--wp-kind-wildcard)" },
+  { value: "b", label: "Outfit colour", icon: "pi-arrow-right-arrow-left", iconColor: "var(--wp-kind-derivation)", hint: "seed only" },
+  { value: "c", label: "Quality tags", icon: "pi-tag", iconColor: "var(--wp-kind-fixed)", hint: "seed only" },
+];
+const picked = ref<string[]>(["a"]);
 </script>
 
 <template>
@@ -24,6 +30,7 @@ const canvas = ref<string | null>("flux");
     <Combobox v-model="none" :options="models" aria-label="Invalid" invalid />
     <Combobox :model-value="'$seed'" :options="[{ value: '$seed', label: '$seed' }, { value: '$mood', label: '$mood' }, { value: '$outfit_color', label: '$outfit_color' }]" aria-label="Variable" mono />
     <Combobox :model-value="'sdxl'" :options="models" aria-label="Disabled" disabled />
+    <Combobox v-model="picked" multiple :options="rows" aria-label="Rows with icons" placeholder="Pick rows" />
     <div class="wp-kit__canvas">
       <p class="wp-kit__caption">Canvas, size sm</p>
       <Combobox v-model="canvas" :options="models" size="sm" aria-label="Canvas model" />

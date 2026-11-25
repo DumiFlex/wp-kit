@@ -17,7 +17,9 @@
  * each section the bands make (one colour per word, or per pair of words with
  * bands on both axes), the one the point is in a little stronger. The default slot
  * draws over the pad; it gets the pad's percentages as `xPct` / `yPct`.
- * `fine-step` + Shift drags finer, like Slider. `ring` (0..1) draws a ring
+ * `fine-step` + Shift drags finer, like Slider; Ctrl (or ⌘) drags free of every
+ * snap (fine step, no dots, no guide lines). With the size variant a drag near
+ * a guide line lands on it (`snap-guides`, on by default). `ring` (0..1) draws a ring
  * round the point that grows with it: a third number (a depth, a Z) shown
  * on the pad, set by a Slider beside it.
  *
@@ -28,7 +30,7 @@
  */
 import { computed, ref } from "vue";
 import { keyStep, percentOf, snap } from "./slider-math";
-import { bandSpans, evenDots, guideLine, insideCircle, nearestStop, ratioName, type PadBand } from "./xy-pad";
+import { bandSpans, evenDots, guideLine, insideCircle, nearGuide, nearestStop, ratioName, type PadBand } from "./xy-pad";
 
 const props = withDefaults(defineProps<{
   modelValue: [number, number];
@@ -63,6 +65,8 @@ const props = withDefaults(defineProps<{
   variant?: "pad" | "size" | "stick" | undefined;
   /** Height-over-width ratios drawn as lines through 0,0 by the size variant. */
   guides?: readonly number[] | undefined;
+  /** Size variant: a drag near a guide line lands on it (that exact ratio). */
+  snapGuides?: boolean | undefined;
   /** Labelled stretches of X (stripes with their word under them). */
   xBands?: readonly PadBand[] | undefined;
   /** Labelled stretches of Y (stripes with their word beside them). */
@@ -76,7 +80,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   xMin: 0, xMax: 1, xStep: 0.01, yMin: 0, yMax: 1, yStep: 0.01, ratio: 1,
   xLabel: "X", yLabel: "Y", crosshair: true, grid: 6, size: "md", variant: "pad",
-  guides: () => [1, 4 / 3, 3 / 4, 16 / 9, 9 / 16],
+  guides: () => [1, 4 / 3, 3 / 4, 16 / 9, 9 / 16], snapGuides: true,
 });
 
 const emit = defineEmits<{ (e: "update:modelValue", v: [number, number]): void; (e: "change", v: [number, number]): void }>();
@@ -103,7 +107,9 @@ const dots = computed(() => {
   const ys = yStops.value.map((v) => percentOf(v, props.yMin, props.yMax));
   const out: { l: number; b: number }[] = [];
   for (const l of xs) for (const b of ys) {
-    if (stick.value && Math.hypot(l - 50, b - 50) > 50) continue;
+    // Stick: only dots well inside the circle. A dot on its edge came and
+    // went with float noise (one side drawn, the other not) and crowded it.
+    if (stick.value && Math.hypot(l - 50, b - 50) > 48) continue;
     out.push({ l, b });
   }
   return out;
@@ -142,16 +148,19 @@ function set(nx: number, ny: number): [number, number] {
   return next;
 }
 
-/** One axis's value at `t` (0..1) of the pad: on its step, then its dots when asked. */
-function axisAt(t: number, min: number, max: number, step: number, stops: readonly number[]): number {
+/** One axis's value at `t` (0..1) of the pad: on its step, then its dots when asked
+ *  (not with `loose`: Ctrl held). */
+function axisAt(t: number, min: number, max: number, step: number, stops: readonly number[], loose: boolean): number {
   const v = snap(min + t * (max - min), min, max, step);
-  return props.snapDots ? nearestStop(v, stops, min, max) : v;
+  return props.snapDots && !loose ? nearestStop(v, stops, min, max) : v;
 }
 
 function fromPointer(ev: PointerEvent): [number, number] {
   const r = padEl.value?.getBoundingClientRect();
   if (!r) return [x.value, y.value];
-  const fine = ev.shiftKey && props.fineStep;
+  // Ctrl (or ⌘) skips every snap: the fine step, no dots, no guide lines.
+  const loose = ev.ctrlKey || ev.metaKey;
+  const fine = (ev.shiftKey || loose) && props.fineStep;
   const xs = fine ? (props.fineStep ?? props.xStep) : props.xStep;
   const ys = fine ? (props.fineStep ?? props.yStep) : props.yStep;
   const clamp = (t: number): number => Math.min(1, Math.max(0, t));
@@ -162,7 +171,16 @@ function fromPointer(ev: PointerEvent): [number, number] {
     tx = cx / 100;
     ty = cy / 100;
   }
-  return [axisAt(tx, props.xMin, props.xMax, xs, xStops.value), axisAt(ty, props.yMin, props.yMax, ys, yStops.value)];
+  const nx = axisAt(tx, props.xMin, props.xMax, xs, xStops.value, loose);
+  const ny = axisAt(ty, props.yMin, props.yMax, ys, yStops.value, loose);
+  if (!sized.value || !props.snapGuides || loose) return [nx, ny];
+  const g = nearGuide(
+    props.xMin + tx * (props.xMax - props.xMin), props.yMin + ty * (props.yMax - props.yMin),
+    props.guides, props.xMin, props.xMax, props.yMin, props.yMax,
+  );
+  if (!g) return [nx, ny];
+  const gx = snap(g.x, props.xMin, props.xMax, xs);
+  return [gx, snap(gx * g.ratio, props.yMin, props.yMax, ys)];
 }
 
 function onPointerDown(ev: PointerEvent): void {

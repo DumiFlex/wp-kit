@@ -177,6 +177,21 @@ describe("Combobox", () => {
     expect(w.props("modelValue")).toEqual(["sdxl"]);
   });
 
+  it("shows an option's icon in the list and on its chip", async () => {
+    const withIcons = [
+      { value: "a", label: "Mood", icon: "pi-sparkles", iconColor: "red" },
+      { value: "b", label: "Quality" },
+    ];
+    const w = bound(Combobox, { modelValue: ["a"], options: withIcons, multiple: true, ariaLabel: "Rows" });
+    const chipIcon = w.get(".wp-combo__chip .wp-combo__icon");
+    expect(chipIcon.classes()).toContain("pi-sparkles");
+    expect(chipIcon.attributes("style")).toContain("color: red");
+    await w.get("input").trigger("focus");
+    const opts = [...document.querySelectorAll<HTMLElement>("[role=option]")];
+    expect(opts[0].querySelector(".wp-combo__opt-icon")?.classList.contains("pi-sparkles")).toBe(true);
+    expect(opts[1].querySelector(".wp-combo__opt-icon")).toBeNull();
+  });
+
   it("clearable empties a single pick", async () => {
     const w = bound(Combobox, { modelValue: "pony", options, clearable: true, ariaLabel: "Model" });
     await w.get(".wp-combo__clear").trigger("click");
